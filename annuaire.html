@@ -105,6 +105,29 @@
 .photo-ph { width: 56px; height: 56px; background: var(--ink3); border: 1px solid var(--bdr); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--parch4); font-style: italic; }
 .url-hint { font-family: 'Cormorant Garamond', serif; font-size: 0.68rem; color: var(--parch4); font-style: italic; margin-top: 0.3rem; }
 </style>
+
+<!-- Sélecteur de thème -->
+<script>
+(function(){
+  var saved = localStorage.getItem('psy_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', saved);
+  
+  window.setTheme = function(t){
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('psy_theme', t);
+    document.querySelectorAll('.theme-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.theme === t);
+    });
+  };
+  
+  document.addEventListener('DOMContentLoaded', function(){
+    var current = localStorage.getItem('psy_theme') || 'dark';
+    document.querySelectorAll('.theme-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.theme === current);
+    });
+  });
+})();
+</script>
 </head>
 <body>
 
@@ -117,6 +140,12 @@
     <a href="visite.html">Visite</a>
   </div>
   <div class="navbar-right">
+
+    <div class="theme-switcher" title="Changer le thème">
+      <button class="theme-btn theme-btn-dark"      data-theme="dark"      onclick="setTheme('dark')"      title="Sombre"></button>
+      <button class="theme-btn theme-btn-parchment" data-theme="parchment" onclick="setTheme('parchment')" title="Parchemin"></button>
+      <button class="theme-btn theme-btn-day"       data-theme="day"       onclick="setTheme('day')"       title="Jour"></button>
+    </div>
     <span class="navbar-user" id="navbar-user"></span>
     <button class="btn btn-sm" id="logout-btn">Quitter</button>
   </div>
