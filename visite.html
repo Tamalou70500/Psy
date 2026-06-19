@@ -314,8 +314,69 @@
         </div>
       </div>
       <div class="form-group field-full">
-        <label class="form-label">Couleur cheveux, yeux, cicatrices, signes particuliers</label>
-        <textarea class="form-control" id="e-aspect" placeholder="Cheveux bruns, yeux bleu clair, cicatrice à l'œil droit…" style="min-height:70px"></textarea>
+        <label class="form-label">Teint / Couleur de peau</label>
+        <div class="radio-group">
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Clair</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Mat</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Basané</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Brun foncé</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Très foncé</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Rougeaud</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Pâle / Blafard</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-peau')">Couperosé</span>
+        </div>
+        <span id="rg-peau" style="display:none"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Couleur des yeux</label>
+        <div class="radio-group">
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Bleu clair</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Bleu foncé</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Gris</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Vert</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Noisette</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Marron</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Noir</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-yeux')">Ambre</span>
+        </div>
+        <span id="rg-yeux" style="display:none"></span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Couleur des cheveux</label>
+        <div class="radio-group">
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Blond clair</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Blond foncé</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Châtain clair</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Châtain foncé</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Brun</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Noir</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Roux</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Gris</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Blanc</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-cheveux')">Chauve</span>
+        </div>
+        <span id="rg-cheveux" style="display:none"></span>
+      </div>
+
+      <div class="form-group field-full">
+        <label class="form-label">Cicatrices & signes particuliers <span style="color:var(--parch4);font-style:italic;font-size:0.85em">(laisser vide si aucun)</span></label>
+        <textarea class="form-control" id="e-aspect" placeholder="Ex : cicatrice à l'œil droit, tatouage bras gauche, doigt manquant main droite…" style="min-height:65px"></textarea>
+      </div>
+
+      <div class="form-group field-full">
+        <label class="form-label">Barbe / Moustache</label>
+        <div class="radio-group">
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-barbe')">Rasé de près</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-barbe')">Légère barbe</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-barbe')">Barbe courte</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-barbe')">Barbe longue</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-barbe')">Moustache</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-barbe')">Moustache & barbe</span>
+          <span class="radio-opt" onclick="toggleSingle(this,'rg-barbe')">Aucune</span>
+        </div>
+        <span id="rg-barbe" style="display:none"></span>
       </div>
       <div class="form-group field-full">
         <label class="form-label">Observations</label>
@@ -715,10 +776,26 @@ window.toggle = function(el){
   el.classList.toggle('selected');
 };
 window.toggleSingle = function(el, groupId){
-  const group = document.getElementById(groupId)||el.parentElement;
-  group.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected'));
+  // groupId peut être un id de span caché (pour radio-group custom) ou pas
+  const span = document.getElementById(groupId);
+  if(span){
+    // Trouver le parent radio-group commun
+    el.parentElement.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected'));
+    // Stocker la valeur dans le span caché
+    span.textContent = el.textContent;
+  } else {
+    const group = document.getElementById(groupId)||el.parentElement;
+    group.querySelectorAll('.radio-opt').forEach(o=>o.classList.remove('selected'));
+  }
   el.classList.add('selected');
 };
+
+// Récupérer valeur d'un groupe radio custom (via span caché)
+function getRadioVal(groupId){
+  const span = document.getElementById(groupId);
+  if(span) return span.textContent || '—';
+  return '—';
+}
 
 function getSelected(container){
   return [...container.querySelectorAll('.radio-opt.selected')].map(o=>o.textContent).join(', ');
@@ -877,9 +954,13 @@ function generateCertificat(){
     `────────────────────────────────────────`,
     `Taille            : ${data.taille||'—'} cm`,
     `Poids             : ${data.poids||'—'} kg`,
+    `Teint / Peau      : ${getRadioVal('rg-peau')}`,
+    `Yeux              : ${getRadioVal('rg-yeux')}`,
+    `Cheveux           : ${getRadioVal('rg-cheveux')}`,
+    `Barbe             : ${getRadioVal('rg-barbe')}`,
     `Posture           : ${data.posture||'—'}`,
     `Aspect général    : ${data.aspectGlobal||'—'}`,
-    data.aspect        ? `Signes particuliers : ${data.aspect}` : '',
+    data.aspect        ? `Signes particuliers : ${data.aspect||'Aucun'}` : '',
     data.obsApparence  ? `Observations        : ${data.obsApparence}` : '',
     ``,
     `────────────────────────────────────────`,
