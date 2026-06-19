@@ -3,61 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Annuaire — Dr. Abernathy Lucius</title>
+<title>Dossiers — Cabinet du Dr. Abernathy Lucius</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-.page-header {
-  background:var(--ink2);
-  border-bottom:1px solid var(--border);
-  padding:1.25rem 1.5rem;
-  display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:1rem;
+.page-band {
+  background: var(--ink2);
+  border-bottom: 1px solid var(--bdr);
+  padding: 1.5rem 2rem;
+  display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
 }
-.page-header-left h2 { margin:0; }
-.page-header-left .label { margin-top:3px; display:block; }
+.page-band h2 { margin: 0; }
+.page-band .eyebrow { margin-bottom: 0.3rem; }
 
-.grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr)); gap:10px; margin-top:1rem; }
-
-.pcard {
-  background:var(--ink2); border:1px solid var(--border); border-radius:var(--r-lg);
-  padding:1rem 1.1rem; cursor:pointer; transition:border-color .2s, transform .15s;
-  text-decoration:none; display:block; position:relative; overflow:hidden;
+.toolbar {
+  display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
+  padding: 1rem 2rem;
+  border-bottom: 1px solid var(--bdr);
+  background: var(--ink);
 }
-.pcard::after { content:''; position:absolute; inset:0; background:linear-gradient(135deg,rgba(184,132,58,0.04) 0%,transparent 60%); pointer-events:none; }
-.pcard:hover { border-color:var(--gold); transform:translateY(-2px); text-decoration:none; }
+.search-wrap { position: relative; flex: 1; min-width: 200px; }
+.search-wrap input { padding-left: 2rem; }
+.search-icon { position: absolute; left: 0.7rem; top: 50%; transform: translateY(-50%); color: var(--parch4); font-style: italic; font-family: 'EB Garamond', serif; font-size: 1rem; pointer-events: none; }
 
-.pcard-head { display:flex; align-items:center; gap:0.75rem; margin-bottom:0.6rem; }
-.avatar { width:44px; height:44px; border-radius:50%; object-fit:cover; border:1px solid var(--border2); flex-shrink:0; }
-.avatar-ph {
-  width:44px; height:44px; border-radius:50%; background:var(--ink3);
-  border:1px solid var(--border); display:flex; align-items:center; justify-content:center;
-  font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--parchment3); flex-shrink:0;
-}
-.pcard-name { font-family:'Playfair Display',serif; font-size:0.98rem; color:var(--gold-light); }
-.pcard-meta { font-family:'Courier Prime',monospace; font-size:0.68rem; color:var(--parchment4); margin-top:2px; letter-spacing:0.04em; }
-.pcard-diag { font-size:0.82rem; color:var(--parchment3); font-style:italic; margin-bottom:0.5rem; line-height:1.4; }
-.pcard-foot { display:flex; align-items:center; justify-content:space-between; padding-top:0.6rem; border-top:1px solid var(--border); }
-.pcard-seances { font-family:'Courier Prime',monospace; font-size:0.68rem; color:var(--parchment4); }
-
-.search-wrap { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
-.search-input-wrap { position:relative; flex:1; min-width:180px; }
-.search-input-wrap input { padding-left:2rem; }
-.search-icon { position:absolute; left:0.7rem; top:50%; transform:translateY(-50%); font-size:0.85rem; color:var(--parchment4); pointer-events:none; }
-
-.filters { display:flex; gap:5px; flex-wrap:wrap; }
+.filters { display: flex; gap: 4px; }
 .fpill {
-  padding:3px 11px; border-radius:20px; border:1px solid var(--border);
-  background:transparent; color:var(--parchment4); font-family:'Courier Prime',monospace;
-  font-size:0.68rem; letter-spacing:0.06em; text-transform:uppercase; cursor:pointer; transition:all .15s;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.65rem; letter-spacing: 0.14em; text-transform: uppercase;
+  padding: 0.25rem 0.9rem; border: 1px solid var(--bdr); background: transparent;
+  color: var(--parch4); cursor: pointer; transition: all .15s;
 }
-.fpill:hover { border-color:var(--border2); color:var(--parchment2); }
-.fpill.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.fpill:hover { border-color: var(--bdr2); color: var(--parch2); }
+.fpill.active { border-color: var(--gold); color: var(--gold); background: var(--gold-dim); }
 
-.empty { text-align:center; padding:3rem 1rem; color:var(--parchment4); font-style:italic; grid-column:1/-1; }
-.loading { text-align:center; padding:3rem 1rem; color:var(--parchment4); font-style:italic; grid-column:1/-1; }
+/* GRILLE */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1px;
+  background: var(--bdr);
+  margin: 1px;
+}
+.pcard {
+  background: var(--ink2);
+  padding: 1.4rem 1.5rem;
+  cursor: pointer; transition: background .2s;
+  text-decoration: none; display: block;
+  position: relative; overflow: hidden;
+}
+.pcard::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0;
+  width: 2px; background: transparent; transition: background .2s;
+}
+.pcard:hover { background: var(--ink3); text-decoration: none; }
+.pcard:hover::before { background: var(--gold-d); }
 
-.modal-photo-row { display:flex; align-items:center; gap:1rem; margin-top:0.4rem; }
-.modal-photo-ph { width:60px; height:60px; border-radius:50%; background:var(--ink3); border:1px dashed var(--border2); display:flex; align-items:center; justify-content:center; font-size:1.5rem; color:var(--parchment4); }
-.modal-photo-img { width:60px; height:60px; border-radius:50%; object-fit:cover; border:1px solid var(--border2); display:none; }
+.pcard-head { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 0.75rem; }
+.avatar {
+  width: 46px; height: 46px; flex-shrink: 0;
+  object-fit: cover; filter: sepia(10%) contrast(1.05);
+  border: 1px solid var(--bdr2);
+}
+.avatar-ph {
+  width: 46px; height: 46px; flex-shrink: 0;
+  background: var(--ink4); border: 1px solid var(--bdr);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 1rem;
+  color: var(--parch3); font-style: italic;
+}
+.pcard-name {
+  font-family: 'Playfair Display', serif;
+  font-size: 1rem; color: var(--parch); letter-spacing: 0.01em;
+}
+.pcard-meta { font-family: 'Cormorant Garamond', serif; font-size: 0.68rem; letter-spacing: 0.1em; color: var(--parch4); margin-top: 2px; text-transform: uppercase; }
+.pcard-diag { font-family: 'EB Garamond', serif; font-size: 0.88rem; color: var(--parch3); font-style: italic; margin-bottom: 0.75rem; line-height: 1.5; }
+.pcard-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  padding-top: 0.65rem; border-top: 1px solid var(--bdr);
+}
+.pcard-seances { font-family: 'Cormorant Garamond', serif; font-size: 0.65rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--parch4); }
+
+.empty-state {
+  grid-column: 1/-1; text-align: center;
+  padding: 5rem 1rem;
+  font-family: 'Cormorant Garamond', serif; font-size: 1rem;
+  color: var(--parch4); font-style: italic;
+}
+.empty-state strong { display: block; font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--parch3); margin-bottom: 0.5rem; font-style: normal; font-weight: 400; }
+
+/* STAT BAR */
+.stat-bar {
+  padding: 0.6rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid var(--bdr);
+  background: var(--ink);
+}
+
+/* MODAL */
+.photo-preview-wrap { display: flex; align-items: flex-start; gap: 1rem; margin-top: 0.5rem; }
+.photo-thumb { width: 56px; height: 56px; object-fit: cover; border: 1px solid var(--bdr2); display: none; filter: sepia(10%); }
+.photo-ph { width: 56px; height: 56px; background: var(--ink3); border: 1px solid var(--bdr); display: flex; align-items: center; justify-content: center; font-family: 'Playfair Display', serif; font-size: 1.2rem; color: var(--parch4); font-style: italic; }
+.url-hint { font-family: 'Cormorant Garamond', serif; font-size: 0.68rem; color: var(--parch4); font-style: italic; margin-top: 0.3rem; }
 </style>
 </head>
 <body>
@@ -66,7 +112,7 @@
   <span class="navbar-brand">Dr. Abernathy Lucius</span>
   <div class="navbar-sep"></div>
   <div class="navbar-links">
-    <a href="annuaire.html" class="active">Annuaire</a>
+    <a href="annuaire.html" class="active">Dossiers</a>
     <a href="lexique.html">Lexique</a>
   </div>
   <div class="navbar-right">
@@ -75,33 +121,33 @@
   </div>
 </nav>
 
-<div class="page-header">
-  <div class="page-header-left">
-    <h2>Annuaire des patients</h2>
-    <span class="label" id="count-label">Chargement…</span>
+<div class="page-band">
+  <div>
+    <span class="eyebrow">Cabinet · Sunset, Texas · 1904</span>
+    <h2>Dossiers des patients</h2>
   </div>
-  <button class="btn btn-gold" onclick="openModal()">+ Nouveau dossier</button>
+  <button class="btn btn-gold" onclick="openModal()">+ Ouvrir un dossier</button>
 </div>
 
-<div class="container-wide">
-  <div class="card mb-2 mt-2">
-    <div class="search-wrap">
-      <div class="search-input-wrap">
-        <span class="search-icon">⚲</span>
-        <input class="form-control" type="text" id="search" placeholder="Rechercher nom, diagnostic, origine…" oninput="renderGrid()">
-      </div>
-      <div class="filters">
-        <button class="fpill active" onclick="setStatut(this,'all')">Tous</button>
-        <button class="fpill" onclick="setStatut(this,'stable')">Stable</button>
-        <button class="fpill" onclick="setStatut(this,'suivi')">En suivi</button>
-        <button class="fpill" onclick="setStatut(this,'grave')">Grave</button>
-      </div>
-    </div>
+<div class="toolbar">
+  <div class="search-wrap">
+    <span class="search-icon">⚲</span>
+    <input class="form-control" type="text" id="search" placeholder="Nom, diagnostic, origine…" oninput="renderGrid()" style="background:var(--ink3);">
   </div>
+  <div class="filters">
+    <button class="fpill active" onclick="setS(this,'all')">Tous</button>
+    <button class="fpill" onclick="setS(this,'stable')">Stable</button>
+    <button class="fpill" onclick="setS(this,'suivi')">En suivi</button>
+    <button class="fpill" onclick="setS(this,'grave')">Grave</button>
+  </div>
+</div>
 
-  <div class="grid" id="grid">
-    <div class="loading">Consultation des archives…</div>
-  </div>
+<div class="stat-bar">
+  <span class="label" id="count-label">—</span>
+</div>
+
+<div class="grid" id="grid">
+  <div class="empty-state"><strong>Chargement</strong>Consultation des archives…</div>
 </div>
 
 <!-- MODAL -->
@@ -125,24 +171,21 @@
     <div class="form-group"><label class="form-label">Origine</label><input class="form-control" id="f-origine" placeholder="Blackwater"></div>
     <div class="form-group"><label class="form-label">Profession</label><input class="form-control" id="f-profession" placeholder="Éleveur"></div>
   </div>
-  <div class="form-group"><label class="form-label">Statut</label>
+  <div class="form-group"><label class="form-label">Statut clinique</label>
     <select class="form-control" id="f-statut"><option value="suivi">En suivi</option><option value="stable">Stable</option><option value="grave">Grave</option></select>
   </div>
-  <div class="form-group"><label class="form-label">Diagnostic initial</label><input class="form-control" id="f-diagnostic" placeholder="Mélancolie, Neurasthénie…"></div>
+  <div class="form-group"><label class="form-label">Diagnostic initial</label><input class="form-control" id="f-diagnostic" placeholder="Mélancolie, neurasthénie…"></div>
   <div class="form-group">
-    <label class="form-label">Portrait RP</label>
-    <div class="modal-photo-row">
-      <div class="modal-photo-ph" id="pp">✦</div>
-      <img class="modal-photo-img" id="pi" alt="">
-      <div>
-        <input type="file" id="f-photo" accept="image/*" style="display:none" onchange="loadPhoto(this)">
-        <button class="btn btn-sm" onclick="document.getElementById('f-photo').click()">Choisir un portrait</button>
-        <p class="label mt-1">Personnage RP uniquement</p>
-      </div>
+    <label class="form-label">Portrait du patient (URL)</label>
+    <div class="photo-preview-wrap">
+      <div class="photo-ph" id="pp">✦</div>
+      <img class="photo-thumb" id="pi" alt="">
     </div>
+    <input class="form-control mt-1" id="f-photo" placeholder="https://cdn.discordapp.com/… ou imgur.com/…" oninput="previewUrl(this,'pi','pp')">
+    <p class="url-hint">Lien direct vers l'image (Discord CDN, Imgur, etc.)</p>
   </div>
   <div id="merr" class="alert alert-error hidden">Nom et prénom requis.</div>
-  <div style="display:flex;gap:8px;margin-top:0.75rem">
+  <div style="display:flex;gap:8px;margin-top:1rem">
     <button class="btn w-full" onclick="closeModal()">Annuler</button>
     <button class="btn btn-gold w-full" id="cbtn" onclick="createPatient()">Ouvrir le dossier</button>
   </div>
@@ -152,31 +195,33 @@
 <script src="js/auth.js"></script>
 <script type="module">
 import { patientsLoad, patientsCreate } from './js/patients.js';
-
-const session = authRequire();
-authInjectUser();
+const session = authRequire(); authInjectUser();
 document.getElementById('logout-btn').onclick = authLogout;
 
-const SBADGE = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
-const SLABEL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
+const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
+const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
+let all=[], activeS='all';
 
-let all=[], activeS='all', photoB64='';
+async function loadAll(){ all = await patientsLoad(); renderGrid(); }
 
-async function loadAll(){ all=await patientsLoad(); renderGrid(); }
-
-window.renderGrid=function(){
-  const q=document.getElementById('search').value.toLowerCase();
-  let list=[...all];
-  if(q) list=list.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
-  if(activeS!=='all') list=list.filter(p=>p.statut===activeS);
-
-  document.getElementById('count-label').textContent=`${list.length} patient${list.length!==1?'s':''} enregistré${list.length!==1?'s':''}`;
-  const g=document.getElementById('grid');
-  if(!list.length){ g.innerHTML='<div class="empty">Aucun dossier trouvé — commencez par en créer un.</div>'; return; }
-
-  g.innerHTML=list.map(p=>{
-    const av=p.photo?`<img class="avatar" src="${p.photo}" alt="">`:`<div class="avatar-ph">${(p.prenom[0]||'?')+(p.nom[0]||'')}</div>`;
-    const nb=(p.seances||[]).length;
+window.renderGrid = function(){
+  const q = document.getElementById('search').value.toLowerCase();
+  let list = [...all];
+  if(q) list = list.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
+  if(activeS!=='all') list = list.filter(p=>p.statut===activeS);
+  const lbl = document.getElementById('count-label');
+  lbl.textContent = `${list.length} dossier${list.length!==1?'s':''} — ${all.length} au total`;
+  const g = document.getElementById('grid');
+  if(!list.length){
+    g.innerHTML='<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond à cette recherche.</div>';
+    return;
+  }
+  g.innerHTML = list.map(p=>{
+    const initials = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+    const av = p.photo
+      ? `<img class="avatar" src="${p.photo}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`+`<div class="avatar-ph" style="display:none">${initials}</div>`
+      : `<div class="avatar-ph">${initials}</div>`;
+    const nb = (p.seances||[]).length;
     return `<a class="pcard fade-up" href="patient.html?id=${p.id}">
       <div class="pcard-head">${av}<div>
         <div class="pcard-name">${p.prenom} ${p.nom}</div>
@@ -184,46 +229,49 @@ window.renderGrid=function(){
       </div></div>
       ${p.diagnostic?`<div class="pcard-diag">${p.diagnostic}</div>`:''}
       <div class="pcard-foot">
-        <span class="badge ${SBADGE[p.statut]||'badge-suivi'}">${SLABEL[p.statut]||p.statut}</span>
+        <span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
         <span class="pcard-seances">${nb} séance${nb!==1?'s':''}</span>
       </div>
     </a>`;
   }).join('');
 };
 
-window.setStatut=function(el,s){
+window.setS = function(el,s){
   document.querySelectorAll('.fpill').forEach(b=>b.classList.remove('active'));
   el.classList.add('active'); activeS=s; renderGrid();
 };
-
-window.openModal=()=>{ document.getElementById('modal').classList.remove('hidden'); document.getElementById('f-nom').focus(); };
-window.closeModal=()=>{
+window.openModal  = ()=>{ document.getElementById('modal').classList.remove('hidden'); document.getElementById('f-nom').focus(); };
+window.closeModal = ()=>{
   document.getElementById('modal').classList.add('hidden');
   document.getElementById('merr').classList.add('hidden');
-  ['f-nom','f-prenom','f-age','f-origine','f-profession','f-diagnostic'].forEach(id=>document.getElementById(id).value='');
+  ['f-nom','f-prenom','f-age','f-origine','f-profession','f-diagnostic','f-photo'].forEach(id=>document.getElementById(id).value='');
   document.getElementById('f-sexe').value=''; document.getElementById('f-statut').value='suivi';
-  photoB64=''; document.getElementById('pi').style.display='none'; document.getElementById('pp').style.display='flex';
+  document.getElementById('pi').style.display='none'; document.getElementById('pp').style.display='flex';
 };
-
-window.loadPhoto=function(input){
-  const file=input.files[0]; if(!file)return;
-  const r=new FileReader(); r.onload=e=>{
-    photoB64=e.target.result;
-    document.getElementById('pi').src=photoB64; document.getElementById('pi').style.display='block'; document.getElementById('pp').style.display='none';
-  }; r.readAsDataURL(file);
+window.previewUrl = function(input, imgId, phId){
+  const url = input.value.trim();
+  const img = document.getElementById(imgId);
+  const ph  = document.getElementById(phId);
+  if(url){ img.src=url; img.style.display='block'; ph.style.display='none'; }
+  else   { img.style.display='none'; ph.style.display='flex'; }
 };
-
-window.createPatient=async function(){
+window.createPatient = async function(){
   const nom=document.getElementById('f-nom').value.trim();
   const prenom=document.getElementById('f-prenom').value.trim();
   if(!nom||!prenom){ document.getElementById('merr').classList.remove('hidden'); return; }
   const btn=document.getElementById('cbtn'); btn.textContent='Création…'; btn.disabled=true;
-  const p=await patientsCreate({ nom,prenom,age:document.getElementById('f-age').value,sexe:document.getElementById('f-sexe').value,
-    origine:document.getElementById('f-origine').value.trim(),profession:document.getElementById('f-profession').value.trim(),
-    statut:document.getElementById('f-statut').value,diagnostic:document.getElementById('f-diagnostic').value.trim(),photo:photoB64 });
+  const p = await patientsCreate({
+    nom, prenom,
+    age:        document.getElementById('f-age').value,
+    sexe:       document.getElementById('f-sexe').value,
+    origine:    document.getElementById('f-origine').value.trim(),
+    profession: document.getElementById('f-profession').value.trim(),
+    statut:     document.getElementById('f-statut').value,
+    diagnostic: document.getElementById('f-diagnostic').value.trim(),
+    photo:      document.getElementById('f-photo').value.trim()
+  });
   closeModal(); window.location.href='patient.html?id='+p.id;
 };
-
 loadAll();
 </script>
 </body>
