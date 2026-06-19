@@ -1200,18 +1200,17 @@ function renderSkelTags(){
   if(!wrap) return;
   const keys = Object.keys(skelSel);
   if(!keys.length){
-    wrap.innerHTML = '<span style="font-family:'EB Garamond',serif;font-size:.82rem;color:var(--parch4);font-style:italic">Cliquer sur le squelette</span>';
+    wrap.innerHTML = '<em style="color:var(--parch4);font-size:.82rem">Cliquer sur le squelette</em>';
     return;
   }
-  wrap.innerHTML = keys.map(id =>
-    `<span style="display:inline-flex;align-items:center;gap:3px;background:rgba(192,154,74,0.1);border:1px solid var(--gold-d);padding:2px 8px;font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--gold);margin:2px">
-      ${skelSel[id]}
-      <span style="cursor:pointer;color:var(--parch4);font-size:.65rem;margin-left:2px" onclick="window.skRemove('${id}')">✕</span>
-    </span>`
-  ).join('');
+  var s1 = 'display:inline-flex;align-items:center;gap:3px;background:rgba(192,154,74,0.1);border:1px solid var(--gold-d);padding:2px 8px;font-size:.72rem;text-transform:uppercase;color:var(--gold);margin:2px';
+  var s2 = 'cursor:pointer;color:var(--parch4);font-size:.65rem;margin-left:2px';
+  wrap.innerHTML = keys.map(function(id){
+    return '<span style="' + s1 + '">' + skelSel[id] + '<span style="' + s2 + '" onclick="window.skRemove(\'' + id + '\')">✕</span></span>';
+  }).join('');
 }
 window.skRemove = function(id){
-  const el = document.getElementById(id);
+  var el = document.getElementById(id);
   if(el) el.classList.remove('on');
   delete skelSel[id];
   renderSkelTags();
