@@ -3,39 +3,58 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fiche patient — Cabinet du Psychiatre</title>
+<title>Fiche patient — Dr. Abernathy Lucius</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-  .patient-header { display:flex; align-items:flex-start; gap:1.5rem; margin-bottom:1.5rem; flex-wrap:wrap; }
-  .patient-photo { width:100px; height:100px; border-radius:var(--radius-lg); object-fit:cover; border:2px solid var(--border2); flex-shrink:0; }
-  .patient-photo-placeholder { width:100px; height:100px; border-radius:var(--radius-lg); background:var(--bg3); border:2px solid var(--border); display:flex; align-items:center; justify-content:center; font-size:3rem; flex-shrink:0; }
-  .patient-info { flex:1; min-width:200px; }
-  .patient-fullname { font-size:1.6rem; color:var(--gold-light); letter-spacing:0.03em; }
-  .patient-details { display:flex; flex-wrap:wrap; gap:0.5rem 1.5rem; margin-top:0.5rem; }
-  .patient-detail { font-size:0.82rem; color:var(--text3); }
-  .patient-detail strong { color:var(--text2); }
-  .layout-2col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-  @media(max-width:700px){.layout-2col{grid-template-columns:1fr;}}
-  .seance-item { background:var(--bg3); border:1px solid var(--border); border-radius:var(--radius); padding:0.9rem 1rem; margin-bottom:8px; position:relative; }
-  .seance-date { font-size:0.75rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.08em; margin-bottom:0.35rem; }
-  .seance-humeur { font-size:0.72rem; color:var(--text3); float:right; font-style:italic; }
-  .seance-text { font-size:0.88rem; color:var(--text2); line-height:1.65; white-space:pre-wrap; }
-  .seance-del { position:absolute; top:8px; right:8px; background:transparent; border:none; color:var(--text3); cursor:pointer; font-size:0.8rem; padding:2px 6px; border-radius:var(--radius); transition:color .15s; }
-  .seance-del:hover { color:var(--red-light); }
-  .voice-btn { display:inline-flex; align-items:center; gap:6px; padding:0.4rem 0.9rem; border-radius:var(--radius); border:1px solid var(--border2); background:transparent; color:var(--text2); font-family:'Georgia',serif; font-size:0.82rem; cursor:pointer; transition:all .15s; }
-  .voice-btn:hover { border-color:var(--gold); color:var(--gold); }
-  .voice-btn.voice-active { border-color:var(--red-light); color:var(--red-light); background:rgba(196,48,48,0.08); animation:pulse 1.2s infinite; }
-  @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.65}}
-  .edit-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.65); z-index:200; display:flex; align-items:center; justify-content:center; padding:1rem; }
-  .edit-panel { background:var(--bg2); border:1px solid var(--border2); border-radius:var(--radius-xl); padding:1.75rem; width:100%; max-width:520px; max-height:90vh; overflow-y:auto; }
-  .edit-panel-title { font-size:1rem; color:var(--gold); margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; }
-  .saving { opacity:0.6; pointer-events:none; }
+.patient-banner {
+  background:var(--ink2); border-bottom:1px solid var(--border);
+  padding:1.25rem 1.5rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+}
+.patient-photo { width:90px; height:90px; border-radius:var(--r-lg); object-fit:cover; border:1px solid var(--border2); flex-shrink:0; }
+.patient-photo-ph {
+  width:90px; height:90px; border-radius:var(--r-lg); background:var(--ink3); border:1px solid var(--border);
+  display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif;
+  font-size:2rem; color:var(--parchment3); flex-shrink:0;
+}
+.patient-info { flex:1; min-width:180px; }
+.patient-fullname { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--parchment); letter-spacing:0.03em; margin-bottom:0.3rem; }
+.meta-pills { display:flex; flex-wrap:wrap; gap:0.5rem 1.25rem; margin-top:0.4rem; }
+.meta-pill { font-family:'Courier Prime',monospace; font-size:0.68rem; color:var(--parchment4); letter-spacing:0.06em; }
+.meta-pill strong { color:var(--parchment3); }
+
+.layout-2col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
+@media(max-width:640px){ .layout-2col{ grid-template-columns:1fr; } }
+
+.seance-item {
+  background:var(--ink3); border:1px solid var(--border); border-radius:var(--r);
+  padding:0.9rem 1rem 0.9rem 1rem; margin-bottom:8px; position:relative;
+  border-left:2px solid var(--gold-dark);
+  animation:fadeUp .3s ease both;
+}
+.seance-top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:0.4rem; flex-wrap:wrap; gap:0.5rem; }
+.seance-date { font-family:'Courier Prime',monospace; font-size:0.7rem; color:var(--gold); letter-spacing:0.08em; text-transform:uppercase; }
+.seance-humeur { font-family:'EB Garamond',serif; font-size:0.82rem; color:var(--parchment3); font-style:italic; }
+.seance-text { font-size:0.9rem; color:var(--parchment2); line-height:1.7; white-space:pre-wrap; font-family:'EB Garamond',serif; }
+.seance-del { position:absolute; top:8px; right:8px; background:transparent; border:none; color:var(--parchment4); cursor:pointer; font-size:0.75rem; padding:2px 6px; border-radius:var(--r); transition:color .15s; }
+.seance-del:hover { color:#c45050; }
+
+.edit-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:200; display:flex; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(2px); }
+.edit-panel {
+  background:var(--ink2); border:1px solid var(--border2); border-radius:var(--r-lg);
+  padding:1.75rem; width:100%; max-width:520px; max-height:92vh; overflow-y:auto; position:relative;
+}
+.edit-panel::before { content:''; position:absolute; inset:4px; border:1px solid var(--border); border-radius:calc(var(--r-lg) - 2px); pointer-events:none; }
+.edit-title { font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--gold-light); margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; font-style:italic; }
+
+.dossier-label { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem; }
+.dossier-line { flex:1; height:1px; background:var(--border); }
 </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <span class="navbar-brand">🎩 Cabinet du Dr.</span>
+  <span class="navbar-brand">Dr. Abernathy Lucius</span>
+  <div class="navbar-sep"></div>
   <div class="navbar-links">
     <a href="annuaire.html">Annuaire</a>
     <a href="lexique.html">Lexique</a>
@@ -46,50 +65,50 @@
   </div>
 </nav>
 
-<div class="container" id="main-content">
-  <p style="color:var(--text3);font-style:italic;margin-top:2rem;text-align:center">Chargement du dossier…</p>
+<div id="main-content">
+  <div class="container"><p class="text-muted italic mt-3" style="text-align:center">Consultation des archives…</p></div>
 </div>
 
-<!-- PANEL ÉDITION -->
+<!-- EDIT OVERLAY -->
 <div class="edit-overlay hidden" id="edit-overlay">
-  <div class="edit-panel">
-    <div class="edit-panel-title">
-      <span>✦ Modifier le dossier</span>
-      <button class="btn btn-sm" onclick="closeEdit()">✕</button>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
-      <div class="form-group"><label class="form-label">Nom</label><input class="form-control" id="e-nom"></div>
-      <div class="form-group"><label class="form-label">Prénom</label><input class="form-control" id="e-prenom"></div>
-      <div class="form-group"><label class="form-label">Âge</label><input class="form-control" id="e-age" type="number"></div>
-      <div class="form-group"><label class="form-label">Sexe</label>
-        <select class="form-control" id="e-sexe"><option value="">—</option><option value="M">Masculin</option><option value="F">Féminin</option></select>
-      </div>
-      <div class="form-group"><label class="form-label">Origine</label><input class="form-control" id="e-origine"></div>
-      <div class="form-group"><label class="form-label">Profession</label><input class="form-control" id="e-profession"></div>
-    </div>
-    <div class="form-group"><label class="form-label">Statut</label>
-      <select class="form-control" id="e-statut"><option value="suivi">En suivi</option><option value="stable">Stable</option><option value="grave">Grave</option></select>
-    </div>
-    <div class="form-group"><label class="form-label">Diagnostic</label><input class="form-control" id="e-diagnostic"></div>
-    <div class="form-group"><label class="form-label">Traitement en cours</label><input class="form-control" id="e-traitement"></div>
-    <div class="form-group">
-      <label class="form-label">Modifier le portrait</label>
-      <div style="display:flex;align-items:center;gap:1rem;margin-top:4px">
-        <img id="e-photo-preview" style="width:60px;height:60px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);display:none" alt="">
-        <div id="e-photo-placeholder" style="width:60px;height:60px;border-radius:50%;background:var(--bg3);border:1px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.5rem">🧑</div>
-        <div>
-          <input type="file" id="e-photo-file" accept="image/*" style="display:none" onchange="loadEditPhoto(this)">
-          <button class="btn btn-sm" onclick="document.getElementById('e-photo-file').click()">Changer le portrait</button>
-        </div>
-      </div>
-    </div>
-    <div style="display:flex;gap:8px;margin-top:0.5rem">
-      <button class="btn w-full" onclick="closeEdit()">Annuler</button>
-      <button class="btn btn-primary w-full" id="save-btn" onclick="saveEdit()">Enregistrer</button>
-    </div>
-    <hr class="divider" style="margin-top:1.5rem">
-    <button class="btn btn-danger w-full" onclick="deletePatient()">🗑 Supprimer ce dossier</button>
+<div class="edit-panel">
+  <div class="edit-title">
+    <span>Modifier le dossier</span>
+    <button class="btn btn-sm" onclick="closeEdit()">✕</button>
   </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+    <div class="form-group"><label class="form-label">Nom</label><input class="form-control" id="e-nom"></div>
+    <div class="form-group"><label class="form-label">Prénom</label><input class="form-control" id="e-prenom"></div>
+    <div class="form-group"><label class="form-label">Âge</label><input class="form-control" type="number" id="e-age"></div>
+    <div class="form-group"><label class="form-label">Sexe</label>
+      <select class="form-control" id="e-sexe"><option value="">—</option><option value="M">Masculin</option><option value="F">Féminin</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Origine</label><input class="form-control" id="e-origine"></div>
+    <div class="form-group"><label class="form-label">Profession</label><input class="form-control" id="e-profession"></div>
+  </div>
+  <div class="form-group"><label class="form-label">Statut</label>
+    <select class="form-control" id="e-statut"><option value="suivi">En suivi</option><option value="stable">Stable</option><option value="grave">Grave</option></select>
+  </div>
+  <div class="form-group"><label class="form-label">Diagnostic</label><input class="form-control" id="e-diagnostic"></div>
+  <div class="form-group"><label class="form-label">Traitement en cours</label><input class="form-control" id="e-traitement"></div>
+  <div class="form-group">
+    <label class="form-label">Portrait</label>
+    <div style="display:flex;align-items:center;gap:1rem;margin-top:4px">
+      <div id="ep-ph" style="width:56px;height:56px;border-radius:50%;background:var(--ink3);border:1px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--parchment4)">✦</div>
+      <img id="ep-img" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);display:none" alt="">
+      <div>
+        <input type="file" id="e-photo-f" accept="image/*" style="display:none" onchange="loadEPhoto(this)">
+        <button class="btn btn-sm" onclick="document.getElementById('e-photo-f').click()">Changer</button>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;margin-top:0.75rem">
+    <button class="btn w-full" onclick="closeEdit()">Annuler</button>
+    <button class="btn btn-gold w-full" id="save-btn" onclick="saveEdit()">Enregistrer</button>
+  </div>
+  <hr class="divider mt-3">
+  <button class="btn btn-danger w-full mt-1" onclick="deletePatient()">Supprimer ce dossier</button>
+</div>
 </div>
 
 <script src="js/auth.js"></script>
@@ -97,187 +116,148 @@
 <script type="module">
 import { patientsGetById, patientsUpdate, patientsDelete, patientsAddSeance, patientsDeleteSeance, formatDate } from './js/patients.js';
 
-const session   = authRequire();
-authInjectUser();
-document.getElementById('logout-btn').onclick = authLogout;
+const session=authRequire(); authInjectUser();
+document.getElementById('logout-btn').onclick=authLogout;
 
-const params    = new URLSearchParams(window.location.search);
-const patientId = params.get('id');
-let patient     = null;
-let editPhoto   = '';
+const pid=new URLSearchParams(window.location.search).get('id');
+let patient=null, ePhoto='';
 
-const STATUT_BADGE = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
-const STATUT_LABEL = { stable:'🟢 Stable', suivi:'🟡 En suivi', grave:'🔴 Grave' };
+const SB={ stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
+const SL={ stable:'Stable', suivi:'En suivi', grave:'Grave' };
 
-async function loadPatient() {
-  patient = await patientsGetById(patientId);
-  if (!patient) {
-    document.getElementById('main-content').innerHTML = '<div class="alert alert-error mt-2">Dossier introuvable. <a href="annuaire.html">Retour</a></div>';
-    return;
-  }
-  renderPatient();
-}
+async function load(){ patient=await patientsGetById(pid); if(!patient){ document.getElementById('main-content').innerHTML='<div class="container"><div class="alert alert-error mt-3">Dossier introuvable. <a href="annuaire.html">Retour</a></div></div>'; return; } render(); }
 
-function renderPatient() {
-  const p = patient;
-  const avatarHtml = p.photo
-    ? `<img class="patient-photo" src="${p.photo}" alt="Portrait">`
-    : `<div class="patient-photo-placeholder">🧑</div>`;
+function render(){
+  const p=patient;
+  const av=p.photo?`<img class="patient-photo" src="${p.photo}" alt="">`:`<div class="patient-photo-ph">${(p.prenom[0]||'')+(p.nom[0]||'')}</div>`;
+  const seancesHtml=(p.seances&&p.seances.length)?p.seances.map(s=>`
+    <div class="seance-item">
+      <button class="seance-del" onclick="window.delSeance('${s.id}')">✕</button>
+      <div class="seance-top">
+        <span class="seance-date">${formatDate(s.date)}</span>
+        ${s.humeur?`<span class="seance-humeur">${s.humeur}</span>`:''}
+      </div>
+      <div class="seance-text">${s.resume||'—'}</div>
+    </div>`).join(''):`<p class="text-muted italic" style="font-size:.88rem;padding:.5rem 0">Aucune séance enregistrée pour ce patient.</p>`;
 
-  const seancesHtml = (p.seances && p.seances.length)
-    ? p.seances.map(s => `
-        <div class="seance-item">
-          <button class="seance-del" onclick="window.delSeance('${s.id}')">✕</button>
-          <div class="seance-date">${formatDate(s.date)}${s.humeur?` <span class="seance-humeur">${s.humeur}</span>`:''}</div>
-          <div class="seance-text">${s.resume||'—'}</div>
-        </div>`).join('')
-    : '<p style="color:var(--text3);font-style:italic;font-size:0.85rem">Aucune séance enregistrée.</p>';
-
-  document.getElementById('main-content').innerHTML = `
-    <div class="flex-between mt-2 mb-2">
-      <a href="annuaire.html" class="btn btn-sm">← Annuaire</a>
-      <button class="btn btn-sm" onclick="window.openEdit()">✏️ Modifier</button>
+  document.getElementById('main-content').innerHTML=`
+    <div class="patient-banner fade-up">
+      ${av}
+      <div class="patient-info">
+        <div class="patient-fullname">${p.prenom} ${p.nom}</div>
+        <div style="margin-top:.3rem"><span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span></div>
+        <div class="meta-pills mt-1">
+          ${p.age?`<span class="meta-pill"><strong>Âge :</strong> ${p.age} ans</span>`:''}
+          ${p.sexe?`<span class="meta-pill"><strong>Sexe :</strong> ${p.sexe==='M'?'Masculin':'Féminin'}</span>`:''}
+          ${p.origine?`<span class="meta-pill"><strong>Origine :</strong> ${p.origine}</span>`:''}
+          ${p.profession?`<span class="meta-pill"><strong>Profession :</strong> ${p.profession}</span>`:''}
+        </div>
+      </div>
+      <div style="margin-left:auto;display:flex;gap:8px;flex-shrink:0">
+        <a href="annuaire.html" class="btn btn-sm">← Annuaire</a>
+        <button class="btn btn-sm" onclick="window.openEdit()">Modifier</button>
+      </div>
     </div>
-    <div class="card mb-2">
-      <div class="patient-header">
-        ${avatarHtml}
-        <div class="patient-info">
-          <div class="patient-fullname">${p.prenom} ${p.nom}</div>
-          <div style="margin-top:0.4rem"><span class="badge ${STATUT_BADGE[p.statut]||'badge-suivi'}">${STATUT_LABEL[p.statut]||p.statut}</span></div>
-          <div class="patient-details mt-1">
-            ${p.age?`<span class="patient-detail"><strong>Âge :</strong> ${p.age} ans</span>`:''}
-            ${p.sexe?`<span class="patient-detail"><strong>Sexe :</strong> ${p.sexe==='M'?'Masculin':'Féminin'}</span>`:''}
-            ${p.origine?`<span class="patient-detail"><strong>Origine :</strong> ${p.origine}</span>`:''}
-            ${p.profession?`<span class="patient-detail"><strong>Profession :</strong> ${p.profession}</span>`:''}
+
+    <div class="container">
+      <div class="layout-2col mt-2 mb-2">
+        <div class="card">
+          <div class="dossier-label"><span class="label">Diagnostic</span><div class="dossier-line"></div></div>
+          <p style="font-size:.95rem;color:var(--parchment);font-style:italic">${p.diagnostic||'<span style="color:var(--parchment4)">Non renseigné</span>'}</p>
+        </div>
+        <div class="card">
+          <div class="dossier-label"><span class="label">Traitement</span><div class="dossier-line"></div></div>
+          <p style="font-size:.95rem;color:var(--parchment);font-style:italic">${p.traitement||'<span style="color:var(--parchment4)">Aucun prescrit</span>'}</p>
+        </div>
+      </div>
+
+      <div class="card mb-2">
+        <div class="card-header">
+          <span class="card-title">Ajouter une séance</span>
+        </div>
+        <div class="layout-2col">
+          <div class="form-group">
+            <label class="form-label">Date</label>
+            <input class="form-control" type="date" id="s-date" value="${new Date().toISOString().split('T')[0]}">
+          </div>
+          <div class="form-group">
+            <label class="form-label">État observé</label>
+            <select class="form-control" id="s-humeur">
+              <option value="">— Observer —</option>
+              <option>Mélancolique</option><option>Anxieux</option><option>Agité</option>
+              <option>Apathique</option><option>Amélioré</option><option>Stable</option>
+              <option>Maniaque</option><option>Confus</option><option>Hostile</option>
+            </select>
           </div>
         </div>
-      </div>
-      <hr class="divider">
-      <div class="layout-2col">
-        <div><p class="form-label">Diagnostic</p><p style="color:var(--text);font-size:0.92rem;margin-top:4px">${p.diagnostic||'<em style="color:var(--text3)">Non renseigné</em>'}</p></div>
-        <div><p class="form-label">Traitement en cours</p><p style="color:var(--text);font-size:0.92rem;margin-top:4px">${p.traitement||'<em style="color:var(--text3)">Aucun</em>'}</p></div>
-      </div>
-    </div>
-
-    <div class="flex-between mb-2">
-      <h2>📋 Historique des séances</h2>
-      <span style="font-size:0.8rem;color:var(--text3)">${(p.seances||[]).length} séance(s)</span>
-    </div>
-
-    <div class="card mb-2">
-      <div class="card-header"><span class="card-title">✦ Ajouter une séance</span></div>
-      <div class="layout-2col">
-        <div class="form-group"><label class="form-label">Date</label>
-          <input class="form-control" type="date" id="s-date" value="${new Date().toISOString().split('T')[0]}">
+        <div class="form-group">
+          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+            <span>Résumé de séance</span>
+            <button class="voice-btn" id="voice-btn">🎙 Dicter</button>
+          </label>
+          <textarea class="form-control" id="s-resume" placeholder="Notez ici l'entretien, les observations cliniques, les décisions thérapeutiques…" style="min-height:110px"></textarea>
         </div>
-        <div class="form-group"><label class="form-label">Humeur / État</label>
-          <select class="form-control" id="s-humeur">
-            <option value="">— Observer —</option>
-            <option>😔 Mélancolique</option><option>😰 Anxieux</option>
-            <option>😠 Agité</option><option>😶 Apathique</option>
-            <option>🙂 Amélioré</option><option>😊 Stable</option>
-            <option>⚡ Maniaque</option><option>🌀 Confus</option>
-          </select>
-        </div>
+        <button class="btn btn-gold" id="add-btn" onclick="window.addSeance()">Enregistrer la séance</button>
       </div>
-      <div class="form-group">
-        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
-          <span>Résumé de séance</span>
-          <button class="voice-btn" id="voice-btn">🎙 Dicter</button>
-        </label>
-        <textarea class="form-control" id="s-resume" placeholder="Notez ici l'entretien, les observations…" style="min-height:120px"></textarea>
-      </div>
-      <button class="btn btn-primary" id="add-seance-btn" onclick="window.addSeance()">+ Enregistrer la séance</button>
-    </div>
 
-    <div id="seances-list">${seancesHtml}</div>
+      <div class="flex-between mb-1">
+        <h2>Historique des séances</h2>
+        <span class="label">${(p.seances||[]).length} séance${(p.seances||[]).length!==1?'s':''}</span>
+      </div>
+      <div id="seances-list">${seancesHtml}</div>
+    </div>
   `;
-
-  voiceInit('s-resume', 'voice-btn');
+  voiceInit('s-resume','voice-btn');
 }
 
-window.addSeance = async function() {
-  const resume = document.getElementById('s-resume').value.trim();
-  if (!resume) return;
-  const btn = document.getElementById('add-seance-btn');
-  btn.textContent = 'Enregistrement…'; btn.disabled = true;
-  await patientsAddSeance(patientId, {
-    resume,
-    date:   document.getElementById('s-date').value,
-    humeur: document.getElementById('s-humeur').value
-  });
-  patient = await patientsGetById(patientId);
-  renderPatient();
+window.addSeance=async function(){
+  const resume=document.getElementById('s-resume').value.trim(); if(!resume)return;
+  const btn=document.getElementById('add-btn'); btn.textContent='Enregistrement…'; btn.disabled=true;
+  await patientsAddSeance(pid,{ resume, date:document.getElementById('s-date').value, humeur:document.getElementById('s-humeur').value });
+  patient=await patientsGetById(pid); render();
 };
 
-window.delSeance = async function(seanceId) {
-  if (!confirm('Supprimer cette séance ?')) return;
-  await patientsDeleteSeance(patientId, seanceId);
-  patient = await patientsGetById(patientId);
-  renderPatient();
+window.delSeance=async function(sid){
+  if(!confirm('Supprimer cette séance ?'))return;
+  await patientsDeleteSeance(pid,sid); patient=await patientsGetById(pid); render();
 };
 
-window.openEdit = function() {
-  const p = patient;
-  document.getElementById('e-nom').value        = p.nom;
-  document.getElementById('e-prenom').value     = p.prenom;
-  document.getElementById('e-age').value        = p.age||'';
-  document.getElementById('e-sexe').value       = p.sexe||'';
-  document.getElementById('e-origine').value    = p.origine||'';
-  document.getElementById('e-profession').value = p.profession||'';
-  document.getElementById('e-statut').value     = p.statut||'suivi';
-  document.getElementById('e-diagnostic').value = p.diagnostic||'';
-  document.getElementById('e-traitement').value = p.traitement||'';
-  editPhoto = p.photo||'';
-  if (p.photo) {
-    document.getElementById('e-photo-preview').src = p.photo;
-    document.getElementById('e-photo-preview').style.display='block';
-    document.getElementById('e-photo-placeholder').style.display='none';
-  }
+window.openEdit=function(){
+  const p=patient;
+  ['nom','prenom','age','origine','profession','diagnostic','traitement'].forEach(k=>{ const el=document.getElementById('e-'+k); if(el)el.value=p[k]||''; });
+  document.getElementById('e-sexe').value=p.sexe||'';
+  document.getElementById('e-statut').value=p.statut||'suivi';
+  ePhoto=p.photo||'';
+  if(p.photo){ document.getElementById('ep-img').src=p.photo; document.getElementById('ep-img').style.display='block'; document.getElementById('ep-ph').style.display='none'; }
+  else { document.getElementById('ep-img').style.display='none'; document.getElementById('ep-ph').style.display='flex'; }
   document.getElementById('edit-overlay').classList.remove('hidden');
 };
+window.closeEdit=()=>document.getElementById('edit-overlay').classList.add('hidden');
 
-window.closeEdit = () => document.getElementById('edit-overlay').classList.add('hidden');
-
-window.loadEditPhoto = function(input) {
-  const file = input.files[0]; if (!file) return;
-  const reader = new FileReader();
-  reader.onload = e => {
-    editPhoto = e.target.result;
-    document.getElementById('e-photo-preview').src = editPhoto;
-    document.getElementById('e-photo-preview').style.display='block';
-    document.getElementById('e-photo-placeholder').style.display='none';
-  };
-  reader.readAsDataURL(file);
+window.loadEPhoto=function(input){
+  const file=input.files[0]; if(!file)return;
+  const r=new FileReader(); r.onload=e=>{
+    ePhoto=e.target.result;
+    document.getElementById('ep-img').src=ePhoto; document.getElementById('ep-img').style.display='block'; document.getElementById('ep-ph').style.display='none';
+  }; r.readAsDataURL(file);
 };
 
-window.saveEdit = async function() {
-  const btn = document.getElementById('save-btn');
-  btn.textContent='Enregistrement…'; btn.disabled=true;
-  await patientsUpdate(patientId, {
-    nom:        document.getElementById('e-nom').value.trim(),
-    prenom:     document.getElementById('e-prenom').value.trim(),
-    age:        document.getElementById('e-age').value,
-    sexe:       document.getElementById('e-sexe').value,
-    origine:    document.getElementById('e-origine').value.trim(),
-    profession: document.getElementById('e-profession').value.trim(),
-    statut:     document.getElementById('e-statut').value,
-    diagnostic: document.getElementById('e-diagnostic').value.trim(),
-    traitement: document.getElementById('e-traitement').value.trim(),
-    photo:      editPhoto
-  });
-  patient = await patientsGetById(patientId);
-  closeEdit();
-  renderPatient();
+window.saveEdit=async function(){
+  const btn=document.getElementById('save-btn'); btn.textContent='Enregistrement…'; btn.disabled=true;
+  const data={};
+  ['nom','prenom','age','origine','profession','diagnostic','traitement'].forEach(k=>{ const el=document.getElementById('e-'+k); if(el)data[k]=el.value.trim(); });
+  data.sexe=document.getElementById('e-sexe').value;
+  data.statut=document.getElementById('e-statut').value;
+  data.photo=ePhoto;
+  await patientsUpdate(pid,data); patient=await patientsGetById(pid); closeEdit(); render();
 };
 
-window.deletePatient = async function() {
-  if (!confirm(`Supprimer définitivement le dossier de ${patient.prenom} ${patient.nom} ?`)) return;
-  await patientsDelete(patientId);
-  window.location.href = 'annuaire.html';
+window.deletePatient=async function(){
+  if(!confirm(`Supprimer définitivement le dossier de ${patient.prenom} ${patient.nom} ?`))return;
+  await patientsDelete(pid); window.location.href='annuaire.html';
 };
 
-loadPatient();
+load();
 </script>
 </body>
 </html>
