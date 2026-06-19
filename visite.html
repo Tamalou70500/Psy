@@ -861,44 +861,103 @@ function generateCertificat(){
   `;
 
   // Texte brut
-  const txt = `Visite médicale du ${dtStr}
-
-CERTIFICAT MÉDICAL D'APTITUDE
-Cabinet du Dr. Abernathy Lucius · Aliéniste · ${data.lieu}
-
-Patient : ${fullname}${p.age?' · '+p.age+' ans':''}
-
-I. APPARENCE GÉNÉRALE
-Taille : ${data.taille||'—'} cm · Poids : ${data.poids||'—'} kg
-Posture : ${data.posture||'—'} · Aspect : ${data.aspectGlobal||'—'}
-${data.aspect?'Signes particuliers : '+data.aspect+'\n':''}${data.obsApparence?'Observations : '+data.obsApparence+'\n':''}
-II. ÉTAT PHYSIQUE
-Force musculaire : ${data.forceMusc} · Endurance : ${data.endurance}
-Coordination : ${data.coordination} · Réactivité : ${data.reactivite}
-${data.obsPhysique?'Observations : '+data.obsPhysique+'\n':''}
-III. CAPACITÉS SENSORIELLES
-Vue : ${data.vue} · Ouïe : ${data.ouie} · Odorat : ${data.odorat} · Toucher : ${data.toucher}
-${data.obsSens?'Observations : '+data.obsSens+'\n':''}
-IV. ÉTAT GÉNÉRAL DE SANTÉ
-Constitution : ${data.constitution} · Fatigue chronique : ${data.fatigue}
-Respiration : ${data.respiration} · Pouls : ${data.pouls}
-${data.obsSante?'Observations : '+data.obsSante+'\n':''}
-V. HABITUDES ET ANTÉCÉDENTS
-${data.regimevie?'Régime de vie : '+data.regimevie+'\n':''}${data.consommation?'Consommation : '+data.consommation+'\n':''}${data.antecedents?'Antécédents médicaux : '+data.antecedents+'\n':''}${data.antecfamiliaux?'Antécédents familiaux : '+data.antecfamiliaux+'\n':''}
-VI. MALADIES ET ALLERGIES
-Maladies actuelles : ${data.maladiesact} · Maladies passées : ${data.maladiespass}
-Allergies : ${data.allergies} · Traitements en cours : ${data.traitements}
-
-VII. CAPACITÉS INTELLECTUELLES
-Lecture : ${data.lecture} · Écriture : ${data.ecriture} · Calcul : ${data.calcul} · Raisonnement : ${data.comprehension}
-${data.obsIntel?'Observations : '+data.obsIntel+'\n':''}
-CONCLUSION
-À qui de droit, Je, soussigné, Dr. Abernathy Lucius, aliéniste exerçant à ${data.lieu}, certifie avoir procédé à l'examen physique et mental de ${fullname}.${data.poste?' Consultation requise pour évaluer l\'aptitude à exercer le métier de '+data.poste+'.':''}
-${isApte?`${fullname} profite d'une bonne condition physique générale et dispose des facultés nécessaires. Verdict : ${data.aptitude} ${data.poste?'à exercer le métier de '+data.poste+'.':'.'}`:
-`${fullname} ne présente pas les conditions requises. Verdict : ${data.aptitude}.`}
-${data.obsFinale?'Observations : '+data.obsFinale+'\n':''}
-Fait et délivré à ${data.lieu}, le ${dateOnly}.
-Dr. Abernathy Lucius — Aliéniste`;
+  const txt = [
+    `Visite médicale du ${dtStr}`,
+    ``,
+    `════════════════════════════════════════`,
+    `  CERTIFICAT MÉDICAL D'APTITUDE`,
+    `  Cabinet du Dr. Abernathy Lucius`,
+    `  Aliéniste · ${data.lieu}`,
+    `════════════════════════════════════════`,
+    ``,
+    `Patient : ${fullname}${p.age?' · '+p.age+' ans':''}`,
+    ``,
+    `────────────────────────────────────────`,
+    `  I. APPARENCE GÉNÉRALE`,
+    `────────────────────────────────────────`,
+    `Taille            : ${data.taille||'—'} cm`,
+    `Poids             : ${data.poids||'—'} kg`,
+    `Posture           : ${data.posture||'—'}`,
+    `Aspect général    : ${data.aspectGlobal||'—'}`,
+    data.aspect        ? `Signes particuliers : ${data.aspect}` : '',
+    data.obsApparence  ? `Observations        : ${data.obsApparence}` : '',
+    ``,
+    `────────────────────────────────────────`,
+    `  II. ÉTAT PHYSIQUE`,
+    `────────────────────────────────────────`,
+    `Force musculaire  : ${data.forceMusc||'—'}`,
+    `Endurance         : ${data.endurance||'—'}`,
+    `Coordination      : ${data.coordination||'—'}`,
+    `Réactivité        : ${data.reactivite||'—'}`,
+    data.obsPhysique   ? `Observations        : ${data.obsPhysique}` : '',
+    ``,
+    `────────────────────────────────────────`,
+    `  III. CAPACITÉS SENSORIELLES`,
+    `────────────────────────────────────────`,
+    `Vue               : ${data.vue||'—'}`,
+    `Ouïe              : ${data.ouie||'—'}`,
+    `Odorat            : ${data.odorat||'—'}`,
+    `Toucher           : ${data.toucher||'—'}`,
+    data.obsSens       ? `Observations        : ${data.obsSens}` : '',
+    ``,
+    `────────────────────────────────────────`,
+    `  IV. ÉTAT GÉNÉRAL DE SANTÉ`,
+    `────────────────────────────────────────`,
+    `Constitution      : ${data.constitution||'—'}`,
+    `Fatigue chronique : ${data.fatigue||'—'}`,
+    `Respiration       : ${data.respiration||'—'}`,
+    `Pouls             : ${data.pouls||'—'}`,
+    data.obsSante      ? `Observations        : ${data.obsSante}` : '',
+    ``,
+    `────────────────────────────────────────`,
+    `  V. HABITUDES & ANTÉCÉDENTS`,
+    `────────────────────────────────────────`,
+    data.regimevie     ? `Régime de vie       : ${data.regimevie}` : '',
+    data.consommation  ? `Consommation        : ${data.consommation}` : '',
+    data.antecedents   ? `Antécédents perso.  : ${data.antecedents}` : '',
+    data.antecfamiliaux? `Antécédents famil.  : ${data.antecfamiliaux}` : '',
+    ``,
+    `────────────────────────────────────────`,
+    `  VI. MALADIES & ALLERGIES`,
+    `────────────────────────────────────────`,
+    `Maladies actuelles : ${data.maladiesact||'Aucune'}`,
+    `Maladies passées   : ${data.maladiespass||'Aucune'}`,
+    `Allergies connues  : ${data.allergies||'Aucune'}`,
+    `Traitements cours  : ${data.traitements||'Aucun'}`,
+    ``,
+    `────────────────────────────────────────`,
+    `  VII. CAPACITÉS INTELLECTUELLES`,
+    `────────────────────────────────────────`,
+    `Lecture            : ${data.lecture||'—'}`,
+    `Écriture           : ${data.ecriture||'—'}`,
+    `Calcul             : ${data.calcul||'—'}`,
+    `Raisonnement       : ${data.comprehension||'—'}`,
+    data.obsIntel      ? `Observations        : ${data.obsIntel}` : '',
+    ``,
+    `════════════════════════════════════════`,
+    `  CONCLUSION`,
+    `════════════════════════════════════════`,
+    ``,
+    `À qui de droit,`,
+    ``,
+    `Je, soussigné, Dr. Abernathy Lucius, aliéniste`,
+    `exerçant à ${data.lieu}, certifie par la présente`,
+    `avoir procédé à l'examen physique et mental de`,
+    `${fullname}.`,
+    data.poste ? `Consultation requise pour : ${data.poste}` : '',
+    ``,
+    `Verdict : ${data.aptitude||'—'}`,
+    ``,
+    isApte
+      ? `${fullname} profite d'une bonne condition physique\ngénérale et dispose des facultés nécessaires à\nl'exercice de ${data.poste?'la profession de '+data.poste:'ses fonctions'}.`
+      : `${fullname} ne présente pas les conditions requises\npour l'exercice de ${data.poste?'la profession de '+data.poste:'ces fonctions'}.`,
+    data.obsFinale ? `\nObservations : ${data.obsFinale}` : '',
+    ``,
+    `Fait et délivré à ${data.lieu}, le ${dateOnly}.`,
+    ``,
+    `Dr. Abernathy Lucius`,
+    `Aliéniste · Cabinet de Sunset, Texas`,
+  ].filter(l => l !== '').join('\n');
 
   document.getElementById('copy-text').textContent = txt;
   window._certText = txt;
