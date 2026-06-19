@@ -3,51 +3,91 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Fiche patient — Dr. Abernathy Lucius</title>
+<title>Dossier patient — Cabinet du Dr. Abernathy Lucius</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-.patient-banner {
-  background:var(--ink2); border-bottom:1px solid var(--border);
-  padding:1.25rem 1.5rem; display:flex; align-items:center; gap:1.5rem; flex-wrap:wrap;
+.patient-band {
+  background: var(--ink2); border-bottom: 1px solid var(--bdr);
+  padding: 1.75rem 2rem;
+  display: flex; align-items: flex-start; gap: 1.75rem; flex-wrap: wrap;
 }
-.patient-photo { width:90px; height:90px; border-radius:var(--r-lg); object-fit:cover; border:1px solid var(--border2); flex-shrink:0; }
+.patient-photo {
+  width: 100px; height: 100px; object-fit: cover;
+  border: 1px solid var(--bdr2); flex-shrink: 0;
+  filter: sepia(12%) contrast(1.05) brightness(0.95);
+}
 .patient-photo-ph {
-  width:90px; height:90px; border-radius:var(--r-lg); background:var(--ink3); border:1px solid var(--border);
-  display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif;
-  font-size:2rem; color:var(--parchment3); flex-shrink:0;
+  width: 100px; height: 100px; flex-shrink: 0;
+  background: var(--ink4); border: 1px solid var(--bdr);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-size: 2rem;
+  color: var(--parch3); font-style: italic;
 }
-.patient-info { flex:1; min-width:180px; }
-.patient-fullname { font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--parchment); letter-spacing:0.03em; margin-bottom:0.3rem; }
-.meta-pills { display:flex; flex-wrap:wrap; gap:0.5rem 1.25rem; margin-top:0.4rem; }
-.meta-pill { font-family:'Courier Prime',monospace; font-size:0.68rem; color:var(--parchment4); letter-spacing:0.06em; }
-.meta-pill strong { color:var(--parchment3); }
-
-.layout-2col { display:grid; grid-template-columns:1fr 1fr; gap:1rem; }
-@media(max-width:640px){ .layout-2col{ grid-template-columns:1fr; } }
-
-.seance-item {
-  background:var(--ink3); border:1px solid var(--border); border-radius:var(--r);
-  padding:0.9rem 1rem 0.9rem 1rem; margin-bottom:8px; position:relative;
-  border-left:2px solid var(--gold-dark);
-  animation:fadeUp .3s ease both;
+.patient-info { flex: 1; min-width: 200px; }
+.patient-fullname {
+  font-family: 'Playfair Display', serif; font-size: 1.6rem;
+  color: var(--parch); letter-spacing: 0.01em; margin-bottom: 0.4rem;
 }
-.seance-top { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:0.4rem; flex-wrap:wrap; gap:0.5rem; }
-.seance-date { font-family:'Courier Prime',monospace; font-size:0.7rem; color:var(--gold); letter-spacing:0.08em; text-transform:uppercase; }
-.seance-humeur { font-family:'EB Garamond',serif; font-size:0.82rem; color:var(--parchment3); font-style:italic; }
-.seance-text { font-size:0.9rem; color:var(--parchment2); line-height:1.7; white-space:pre-wrap; font-family:'EB Garamond',serif; }
-.seance-del { position:absolute; top:8px; right:8px; background:transparent; border:none; color:var(--parchment4); cursor:pointer; font-size:0.75rem; padding:2px 6px; border-radius:var(--r); transition:color .15s; }
-.seance-del:hover { color:#c45050; }
+.meta-row { display: flex; flex-wrap: wrap; gap: 0.4rem 1.5rem; margin-top: 0.5rem; }
+.meta-item {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--parch4);
+}
+.meta-item strong { color: var(--parch3); }
+.patient-band-actions { margin-left: auto; display: flex; gap: 0.5rem; flex-shrink: 0; align-self: flex-start; }
 
-.edit-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.82); z-index:200; display:flex; align-items:center; justify-content:center; padding:1rem; backdrop-filter:blur(2px); }
+/* BODY */
+.content { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--bdr); margin: 1px; }
+.content-cell { background: var(--ink); padding: 1.5rem 2rem; }
+.content-cell.full { grid-column: 1/-1; }
+
+.cell-label {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 0.65rem; letter-spacing: 0.22em; text-transform: uppercase;
+  color: var(--gold-d); display: flex; align-items: center; gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+.cell-label::after { content: ''; flex: 1; height: 1px; background: var(--bdr); }
+.cell-value {
+  font-family: 'EB Garamond', serif;
+  font-size: 1rem; color: var(--parch); font-style: italic; line-height: 1.65;
+}
+.cell-empty { color: var(--parch4); font-style: italic; font-size: 0.9rem; }
+
+/* SEANCES */
+.seance-list { display: flex; flex-direction: column; gap: 1px; }
+.seance {
+  background: var(--ink2); padding: 1rem 1.25rem;
+  border-left: 2px solid var(--gold-d); position: relative;
+  animation: fadeUp .3s ease both;
+}
+.seance-top { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 0.5rem; flex-wrap: wrap; gap: 0.5rem; }
+.seance-date { font-family: 'Cormorant Garamond', serif; font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--gold); }
+.seance-humeur { font-family: 'EB Garamond', serif; font-size: 0.85rem; color: var(--parch3); font-style: italic; }
+.seance-text { font-family: 'EB Garamond', serif; font-size: 0.95rem; color: var(--parch2); line-height: 1.75; white-space: pre-wrap; }
+.seance-del { position: absolute; top: 0.6rem; right: 0.6rem; background: transparent; border: none; color: var(--parch4); cursor: pointer; font-size: 0.7rem; padding: 2px 5px; transition: color .15s; font-family: serif; }
+.seance-del:hover { color: #b05050; }
+
+/* FORM SEANCE */
+.seance-form { background: var(--ink2); border-top: 1px solid var(--bdr); padding: 1.5rem 2rem; }
+.seance-form-title { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-style: italic; color: var(--gold); margin-bottom: 1.25rem; display: flex; align-items: center; gap: 0.75rem; }
+.seance-form-title::after { content: ''; flex: 1; height: 1px; background: var(--bdr); }
+.seance-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-bottom: 0.75rem; }
+
+/* EDIT PANEL */
+.edit-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.88);
+  z-index: 200; display: flex; align-items: center; justify-content: center; padding: 1rem;
+  backdrop-filter: blur(6px);
+}
 .edit-panel {
-  background:var(--ink2); border:1px solid var(--border2); border-radius:var(--r-lg);
-  padding:1.75rem; width:100%; max-width:520px; max-height:92vh; overflow-y:auto; position:relative;
+  background: var(--ink2); border: 1px solid var(--bdr2);
+  padding: 2rem; width: 100%; max-width: 540px; max-height: 92vh; overflow-y: auto; position: relative;
 }
-.edit-panel::before { content:''; position:absolute; inset:4px; border:1px solid var(--border); border-radius:calc(var(--r-lg) - 2px); pointer-events:none; }
-.edit-title { font-family:'Playfair Display',serif; font-size:1.05rem; color:var(--gold-light); margin-bottom:1.25rem; display:flex; justify-content:space-between; align-items:center; font-style:italic; }
+.edit-panel::before { content: ''; position: absolute; inset: 6px; border: 1px solid rgba(192,154,74,0.06); pointer-events: none; }
+.edit-title { font-family: 'Playfair Display', serif; font-size: 1rem; font-style: italic; color: var(--gold-l); margin-bottom: 1.5rem; display: flex; justify-content: space-between; align-items: center; }
 
-.dossier-label { display:flex; align-items:center; gap:0.5rem; margin-bottom:0.75rem; }
-.dossier-line { flex:1; height:1px; background:var(--border); }
+@media(max-width:700px) { .content { grid-template-columns: 1fr; } .seance-form-grid { grid-template-columns: 1fr; } .patient-band { gap: 1rem; } }
 </style>
 </head>
 <body>
@@ -56,7 +96,7 @@
   <span class="navbar-brand">Dr. Abernathy Lucius</span>
   <div class="navbar-sep"></div>
   <div class="navbar-links">
-    <a href="annuaire.html">Annuaire</a>
+    <a href="annuaire.html">Dossiers</a>
     <a href="lexique.html">Lexique</a>
   </div>
   <div class="navbar-right">
@@ -65,11 +105,9 @@
   </div>
 </nav>
 
-<div id="main-content">
-  <div class="container"><p class="text-muted italic mt-3" style="text-align:center">Consultation des archives…</p></div>
-</div>
+<div id="main"></div>
 
-<!-- EDIT OVERLAY -->
+<!-- EDIT -->
 <div class="edit-overlay hidden" id="edit-overlay">
 <div class="edit-panel">
   <div class="edit-title">
@@ -86,28 +124,26 @@
     <div class="form-group"><label class="form-label">Origine</label><input class="form-control" id="e-origine"></div>
     <div class="form-group"><label class="form-label">Profession</label><input class="form-control" id="e-profession"></div>
   </div>
-  <div class="form-group"><label class="form-label">Statut</label>
+  <div class="form-group"><label class="form-label">Statut clinique</label>
     <select class="form-control" id="e-statut"><option value="suivi">En suivi</option><option value="stable">Stable</option><option value="grave">Grave</option></select>
   </div>
   <div class="form-group"><label class="form-label">Diagnostic</label><input class="form-control" id="e-diagnostic"></div>
-  <div class="form-group"><label class="form-label">Traitement en cours</label><input class="form-control" id="e-traitement"></div>
+  <div class="form-group"><label class="form-label">Traitement prescrit</label><input class="form-control" id="e-traitement"></div>
   <div class="form-group">
-    <label class="form-label">Portrait</label>
-    <div style="display:flex;align-items:center;gap:1rem;margin-top:4px">
-      <div id="ep-ph" style="width:56px;height:56px;border-radius:50%;background:var(--ink3);border:1px dashed var(--border2);display:flex;align-items:center;justify-content:center;font-size:1.3rem;color:var(--parchment4)">✦</div>
-      <img id="ep-img" style="width:56px;height:56px;border-radius:50%;object-fit:cover;border:1px solid var(--border2);display:none" alt="">
-      <div>
-        <input type="file" id="e-photo-f" accept="image/*" style="display:none" onchange="loadEPhoto(this)">
-        <button class="btn btn-sm" onclick="document.getElementById('e-photo-f').click()">Changer</button>
-      </div>
+    <label class="form-label">Portrait — URL de l'image</label>
+    <input class="form-control" id="e-photo" placeholder="https://cdn.discordapp.com/… ou imgur.com/…" oninput="previewEditUrl(this)">
+    <div style="display:flex;align-items:center;gap:0.75rem;margin-top:0.6rem">
+      <div id="ep-ph" style="width:52px;height:52px;background:var(--ink3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--parch4);font-style:italic">✦</div>
+      <img id="ep-img" style="width:52px;height:52px;object-fit:cover;border:1px solid var(--bdr2);display:none;filter:sepia(10%)" alt="">
+      <p style="font-family:'Cormorant Garamond',serif;font-size:0.68rem;color:var(--parch4);font-style:italic">Discord CDN, Imgur ou autre lien direct</p>
     </div>
   </div>
-  <div style="display:flex;gap:8px;margin-top:0.75rem">
+  <div style="display:flex;gap:8px;margin-top:1rem">
     <button class="btn w-full" onclick="closeEdit()">Annuler</button>
     <button class="btn btn-gold w-full" id="save-btn" onclick="saveEdit()">Enregistrer</button>
   </div>
   <hr class="divider mt-3">
-  <button class="btn btn-danger w-full mt-1" onclick="deletePatient()">Supprimer ce dossier</button>
+  <button class="btn btn-danger w-full mt-1" onclick="deletePatient()">Supprimer définitivement ce dossier</button>
 </div>
 </div>
 
@@ -116,147 +152,152 @@
 <script type="module">
 import { patientsGetById, patientsUpdate, patientsDelete, patientsAddSeance, patientsDeleteSeance, formatDate } from './js/patients.js';
 
-const session=authRequire(); authInjectUser();
-document.getElementById('logout-btn').onclick=authLogout;
+const session = authRequire(); authInjectUser();
+document.getElementById('logout-btn').onclick = authLogout;
 
-const pid=new URLSearchParams(window.location.search).get('id');
-let patient=null, ePhoto='';
+const pid = new URLSearchParams(window.location.search).get('id');
+let patient = null;
 
-const SB={ stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
-const SL={ stable:'Stable', suivi:'En suivi', grave:'Grave' };
+const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
+const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
 
-async function load(){ patient=await patientsGetById(pid); if(!patient){ document.getElementById('main-content').innerHTML='<div class="container"><div class="alert alert-error mt-3">Dossier introuvable. <a href="annuaire.html">Retour</a></div></div>'; return; } render(); }
+async function load(){
+  patient = await patientsGetById(pid);
+  if(!patient){ document.getElementById('main').innerHTML='<div class="container"><div class="alert alert-error mt-3">Dossier introuvable. <a href="annuaire.html">Retour</a></div></div>'; return; }
+  render();
+}
 
 function render(){
-  const p=patient;
-  const av=p.photo?`<img class="patient-photo" src="${p.photo}" alt="">`:`<div class="patient-photo-ph">${(p.prenom[0]||'')+(p.nom[0]||'')}</div>`;
-  const seancesHtml=(p.seances&&p.seances.length)?p.seances.map(s=>`
-    <div class="seance-item">
-      <button class="seance-del" onclick="window.delSeance('${s.id}')">✕</button>
-      <div class="seance-top">
-        <span class="seance-date">${formatDate(s.date)}</span>
-        ${s.humeur?`<span class="seance-humeur">${s.humeur}</span>`:''}
-      </div>
-      <div class="seance-text">${s.resume||'—'}</div>
-    </div>`).join(''):`<p class="text-muted italic" style="font-size:.88rem;padding:.5rem 0">Aucune séance enregistrée pour ce patient.</p>`;
+  const p = patient;
+  const initials = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+  const photoEl = p.photo
+    ? `<img class="patient-photo" src="${p.photo}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex'"><div class="patient-photo-ph" style="display:none">${initials}</div>`
+    : `<div class="patient-photo-ph">${initials}</div>`;
 
-  document.getElementById('main-content').innerHTML=`
-    <div class="patient-banner fade-up">
-      ${av}
+  const seancesHtml = (p.seances&&p.seances.length)
+    ? p.seances.map(s=>`
+      <div class="seance">
+        <button class="seance-del" onclick="window.delSeance('${s.id}')">✕</button>
+        <div class="seance-top">
+          <span class="seance-date">${formatDate(s.date)}</span>
+          ${s.humeur?`<span class="seance-humeur">${s.humeur}</span>`:''}
+        </div>
+        <div class="seance-text">${s.resume||'—'}</div>
+      </div>`).join('')
+    : `<div style="padding:1.5rem;font-family:'Cormorant Garamond',serif;font-size:0.88rem;color:var(--parch4);font-style:italic;text-align:center">Aucune séance enregistrée pour ce patient.</div>`;
+
+  document.getElementById('main').innerHTML=`
+    <div class="patient-band fade-up">
+      ${photoEl}
       <div class="patient-info">
         <div class="patient-fullname">${p.prenom} ${p.nom}</div>
-        <div style="margin-top:.3rem"><span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span></div>
-        <div class="meta-pills mt-1">
-          ${p.age?`<span class="meta-pill"><strong>Âge :</strong> ${p.age} ans</span>`:''}
-          ${p.sexe?`<span class="meta-pill"><strong>Sexe :</strong> ${p.sexe==='M'?'Masculin':'Féminin'}</span>`:''}
-          ${p.origine?`<span class="meta-pill"><strong>Origine :</strong> ${p.origine}</span>`:''}
-          ${p.profession?`<span class="meta-pill"><strong>Profession :</strong> ${p.profession}</span>`:''}
+        <span class="badge ${SB[p.statut]||'badge-suivi'}" style="margin-top:0.25rem">${SL[p.statut]||p.statut}</span>
+        <div class="meta-row mt-1">
+          ${p.age?`<span class="meta-item"><strong>Âge :</strong> ${p.age} ans</span>`:''}
+          ${p.sexe?`<span class="meta-item"><strong>Sexe :</strong> ${p.sexe==='M'?'Masculin':'Féminin'}</span>`:''}
+          ${p.origine?`<span class="meta-item"><strong>Origine :</strong> ${p.origine}</span>`:''}
+          ${p.profession?`<span class="meta-item"><strong>Profession :</strong> ${p.profession}</span>`:''}
         </div>
       </div>
-      <div style="margin-left:auto;display:flex;gap:8px;flex-shrink:0">
-        <a href="annuaire.html" class="btn btn-sm">← Annuaire</a>
-        <button class="btn btn-sm" onclick="window.openEdit()">Modifier</button>
+      <div class="patient-band-actions">
+        <a href="annuaire.html" class="btn btn-sm">← Dossiers</a>
+        <button class="btn btn-sm btn-gold" onclick="window.openEdit()">Modifier</button>
       </div>
     </div>
 
-    <div class="container">
-      <div class="layout-2col mt-2 mb-2">
-        <div class="card">
-          <div class="dossier-label"><span class="label">Diagnostic</span><div class="dossier-line"></div></div>
-          <p style="font-size:.95rem;color:var(--parchment);font-style:italic">${p.diagnostic||'<span style="color:var(--parchment4)">Non renseigné</span>'}</p>
-        </div>
-        <div class="card">
-          <div class="dossier-label"><span class="label">Traitement</span><div class="dossier-line"></div></div>
-          <p style="font-size:.95rem;color:var(--parchment);font-style:italic">${p.traitement||'<span style="color:var(--parchment4)">Aucun prescrit</span>'}</p>
-        </div>
+    <div class="content">
+      <div class="content-cell">
+        <div class="cell-label">Diagnostic</div>
+        <div class="cell-value">${p.diagnostic||'<span class="cell-empty">Non renseigné</span>'}</div>
       </div>
+      <div class="content-cell">
+        <div class="cell-label">Traitement prescrit</div>
+        <div class="cell-value">${p.traitement||'<span class="cell-empty">Aucun traitement</span>'}</div>
+      </div>
+      <div class="content-cell full">
+        <div class="cell-label">Historique — ${(p.seances||[]).length} séance${(p.seances||[]).length!==1?'s':''}</div>
+        <div class="seance-list">${seancesHtml}</div>
+      </div>
+    </div>
 
-      <div class="card mb-2">
-        <div class="card-header">
-          <span class="card-title">Ajouter une séance</span>
-        </div>
-        <div class="layout-2col">
-          <div class="form-group">
-            <label class="form-label">Date</label>
-            <input class="form-control" type="date" id="s-date" value="${new Date().toISOString().split('T')[0]}">
-          </div>
-          <div class="form-group">
-            <label class="form-label">État observé</label>
-            <select class="form-control" id="s-humeur">
-              <option value="">— Observer —</option>
-              <option>Mélancolique</option><option>Anxieux</option><option>Agité</option>
-              <option>Apathique</option><option>Amélioré</option><option>Stable</option>
-              <option>Maniaque</option><option>Confus</option><option>Hostile</option>
-            </select>
-          </div>
+    <div class="seance-form">
+      <div class="seance-form-title">Ajouter une séance</div>
+      <div class="seance-form-grid">
+        <div class="form-group">
+          <label class="form-label">Date</label>
+          <input class="form-control" type="date" id="s-date" value="${new Date().toISOString().split('T')[0]}">
         </div>
         <div class="form-group">
-          <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
-            <span>Résumé de séance</span>
-            <button class="voice-btn" id="voice-btn">🎙 Dicter</button>
-          </label>
-          <textarea class="form-control" id="s-resume" placeholder="Notez ici l'entretien, les observations cliniques, les décisions thérapeutiques…" style="min-height:110px"></textarea>
+          <label class="form-label">État clinique observé</label>
+          <select class="form-control" id="s-humeur">
+            <option value="">— Observation —</option>
+            <option>Mélancolique</option><option>Anxieux</option><option>Agité</option>
+            <option>Apathique</option><option>En amélioration</option><option>Stable</option>
+            <option>Maniaque</option><option>Confus</option><option>Hostile</option><option>Délirant</option>
+          </select>
         </div>
-        <button class="btn btn-gold" id="add-btn" onclick="window.addSeance()">Enregistrer la séance</button>
       </div>
-
-      <div class="flex-between mb-1">
-        <h2>Historique des séances</h2>
-        <span class="label">${(p.seances||[]).length} séance${(p.seances||[]).length!==1?'s':''}</span>
+      <div class="form-group">
+        <label class="form-label" style="display:flex;align-items:center;justify-content:space-between">
+          <span>Notes de séance</span>
+          <button class="voice-btn" id="voice-btn">🎙 Dicter</button>
+        </label>
+        <textarea class="form-control" id="s-resume" placeholder="Observations cliniques, propos du patient, décisions thérapeutiques…" style="min-height:120px"></textarea>
       </div>
-      <div id="seances-list">${seancesHtml}</div>
+      <button class="btn btn-gold" id="add-btn" onclick="window.addSeance()">Enregistrer la séance</button>
     </div>
   `;
   voiceInit('s-resume','voice-btn');
 }
 
-window.addSeance=async function(){
-  const resume=document.getElementById('s-resume').value.trim(); if(!resume)return;
+window.addSeance = async function(){
+  const resume = document.getElementById('s-resume').value.trim(); if(!resume)return;
   const btn=document.getElementById('add-btn'); btn.textContent='Enregistrement…'; btn.disabled=true;
   await patientsAddSeance(pid,{ resume, date:document.getElementById('s-date').value, humeur:document.getElementById('s-humeur').value });
-  patient=await patientsGetById(pid); render();
+  patient = await patientsGetById(pid); render();
 };
-
-window.delSeance=async function(sid){
+window.delSeance = async function(sid){
   if(!confirm('Supprimer cette séance ?'))return;
   await patientsDeleteSeance(pid,sid); patient=await patientsGetById(pid); render();
 };
-
-window.openEdit=function(){
+window.openEdit = function(){
   const p=patient;
-  ['nom','prenom','age','origine','profession','diagnostic','traitement'].forEach(k=>{ const el=document.getElementById('e-'+k); if(el)el.value=p[k]||''; });
+  ['nom','prenom','age','origine','profession','diagnostic','traitement','photo'].forEach(k=>{
+    const el=document.getElementById('e-'+k); if(el) el.value=p[k]||'';
+  });
   document.getElementById('e-sexe').value=p.sexe||'';
   document.getElementById('e-statut').value=p.statut||'suivi';
-  ePhoto=p.photo||'';
-  if(p.photo){ document.getElementById('ep-img').src=p.photo; document.getElementById('ep-img').style.display='block'; document.getElementById('ep-ph').style.display='none'; }
-  else { document.getElementById('ep-img').style.display='none'; document.getElementById('ep-ph').style.display='flex'; }
+  if(p.photo){
+    document.getElementById('ep-img').src=p.photo;
+    document.getElementById('ep-img').style.display='block';
+    document.getElementById('ep-ph').style.display='none';
+  } else {
+    document.getElementById('ep-img').style.display='none';
+    document.getElementById('ep-ph').style.display='flex';
+  }
   document.getElementById('edit-overlay').classList.remove('hidden');
 };
-window.closeEdit=()=>document.getElementById('edit-overlay').classList.add('hidden');
-
-window.loadEPhoto=function(input){
-  const file=input.files[0]; if(!file)return;
-  const r=new FileReader(); r.onload=e=>{
-    ePhoto=e.target.result;
-    document.getElementById('ep-img').src=ePhoto; document.getElementById('ep-img').style.display='block'; document.getElementById('ep-ph').style.display='none';
-  }; r.readAsDataURL(file);
+window.closeEdit  = ()=>document.getElementById('edit-overlay').classList.add('hidden');
+window.previewEditUrl = function(input){
+  const url=input.value.trim();
+  const img=document.getElementById('ep-img'); const ph=document.getElementById('ep-ph');
+  if(url){img.src=url;img.style.display='block';ph.style.display='none';}
+  else{img.style.display='none';ph.style.display='flex';}
 };
-
-window.saveEdit=async function(){
+window.saveEdit = async function(){
   const btn=document.getElementById('save-btn'); btn.textContent='Enregistrement…'; btn.disabled=true;
   const data={};
-  ['nom','prenom','age','origine','profession','diagnostic','traitement'].forEach(k=>{ const el=document.getElementById('e-'+k); if(el)data[k]=el.value.trim(); });
+  ['nom','prenom','age','origine','profession','diagnostic','traitement','photo'].forEach(k=>{
+    const el=document.getElementById('e-'+k); if(el) data[k]=el.value.trim();
+  });
   data.sexe=document.getElementById('e-sexe').value;
   data.statut=document.getElementById('e-statut').value;
-  data.photo=ePhoto;
   await patientsUpdate(pid,data); patient=await patientsGetById(pid); closeEdit(); render();
 };
-
-window.deletePatient=async function(){
+window.deletePatient = async function(){
   if(!confirm(`Supprimer définitivement le dossier de ${patient.prenom} ${patient.nom} ?`))return;
   await patientsDelete(pid); window.location.href='annuaire.html';
 };
-
 load();
 </script>
 </body>
