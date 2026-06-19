@@ -1150,8 +1150,8 @@ const session = authRequire(); authInjectUser();
 document.getElementById('logout-btn').onclick = authLogout;
 
 window.choiceMode = null;
-let selectedPatient = null;
-let allPatients = [];
+window.selectedPatient = null;
+window.allPatients = [];
 
 // Init date
 const now = new Date();
@@ -1160,7 +1160,7 @@ document.getElementById('exam-datetime').value =
   `${now.getFullYear()}-${pad(now.getMonth()+1)}-${pad(now.getDate())}T${pad(now.getHours())}:${pad(now.getMinutes())}`;
 
 // Charger patients
-patientsLoad().then(list => { allPatients = list; });
+patientsLoad().then(list => { window.allPatients = list; });
 
 /* ── NAVIGATION ── */
 // ── SQUELETTE CLIQUABLE ──
@@ -1236,26 +1236,26 @@ window.goStep2 = function(){
   const err = document.getElementById('step1-error');
   if(!window.visitType){ window.visitType='aptitude'; }
   if(!window.choiceMode){ err.classList.remove('hidden'); return; }
-  if(window.choiceMode==='existing' && !selectedPatient){ err.classList.remove('hidden'); return; }
+  if(window.choiceMode==='existing' && !window.selectedPatient){ err.classList.remove('hidden'); return; }
   if(window.choiceMode==='new'){
     const nom=document.getElementById('np-nom').value.trim();
     const prenom=document.getElementById('np-prenom').value.trim();
     if(!nom||!prenom){ err.classList.remove('hidden'); return; }
-    selectedPatient = { id:null, nom, prenom, age:document.getElementById('np-age').value, profession:document.getElementById('np-profession').value.trim() };
+    window.selectedPatient = { id:null, nom, prenom, age:document.getElementById('np-age').value, profession:document.getElementById('np-profession').value.trim() };
   }
   err.classList.add('hidden');
   // Remplir header étape 2
-  const initials = (selectedPatient.prenom?.[0]||'')+(selectedPatient.nom?.[0]||'');
-  document.getElementById('exam-patient-name').textContent = `${selectedPatient.prenom} ${selectedPatient.nom}`;
-  document.getElementById('exam-patient-meta').textContent = `${selectedPatient.age?selectedPatient.age+' ans · ':''}${selectedPatient.profession||'Profession non renseignée'}`;
+  const initials = (window.selectedPatient.prenom?.[0]||'')+(window.selectedPatient.nom?.[0]||'');
+  document.getElementById('exam-patient-name').textContent = `${window.selectedPatient.prenom} ${window.selectedPatient.nom}`;
+  document.getElementById('exam-patient-meta').textContent = `${window.selectedPatient.age?window.selectedPatient.age+' ans · ':''}${window.selectedPatient.profession||'Profession non renseignée'}`;
   const av = document.getElementById('exam-patient-avatar');
-  if(selectedPatient.photo){ av.innerHTML=`<img src="${selectedPatient.photo}" style="width:40px;height:40px;border-radius:50%;object-fit:cover" alt="">`; }
+  if(window.selectedPatient.photo){ av.innerHTML=`<img src="${window.selectedPatient.photo}" style="width:40px;height:40px;border-radius:50%;object-fit:cover" alt="">`; }
   else { av.textContent=initials; }
-  if(selectedPatient.profession) document.getElementById('e-poste').value = selectedPatient.profession;
+  if(window.selectedPatient.profession) document.getElementById('e-poste').value = window.selectedPatient.profession;
   if(window.visitType === 'urgence'){
     // Remplir header urgence
-    document.getElementById('urg-patient-name').textContent = `${selectedPatient.prenom} ${selectedPatient.nom}`;
-    document.getElementById('urg-patient-meta').textContent = `${selectedPatient.age?selectedPatient.age+' ans · ':''}${selectedPatient.profession||''}`;
+    document.getElementById('urg-patient-name').textContent = `${window.selectedPatient.prenom} ${window.selectedPatient.nom}`;
+    document.getElementById('urg-patient-meta').textContent = `${window.selectedPatient.age?window.selectedPatient.age+' ans · ':''}${window.selectedPatient.profession||''}`;
     const urgDt = document.getElementById('urg-datetime');
     if(urgDt) urgDt.value = document.getElementById('exam-datetime').value;
     setStepUrgence(2);
@@ -1298,7 +1298,7 @@ function setStep(n){
 window.searchPatients = function(q){
   const res = document.getElementById('patient-results');
   if(!q){ res.style.display='none'; return; }
-  const matches = allPatients.filter(p=>(p.nom+p.prenom).toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  const matches = window.allPatients.filter(p=>(p.nom+p.prenom).toLowerCase().includes(q.toLowerCase())).slice(0,8);
   if(!matches.length){ res.style.display='none'; return; }
   res.innerHTML = matches.map(p=>{
     const av = p.photo
@@ -1314,7 +1314,7 @@ window.searchPatients = function(q){
 
 window.selectPatient = async function(id){
   const p = await patientsGetById(id);
-  selectedPatient = p;
+  window.selectedPatient = p;
   document.getElementById('patient-results').style.display='none';
   document.getElementById('patient-search-input').value = `${p.prenom} ${p.nom}`;
   const disp = document.getElementById('selected-patient-display');
@@ -1327,7 +1327,7 @@ window.selectPatient = async function(id){
 };
 
 window.clearPatient = function(){
-  selectedPatient=null;
+  window.selectedPatient=null;
   document.getElementById('patient-search-input').value='';
   document.getElementById('selected-patient-display').classList.remove('show');
 };
@@ -1372,7 +1372,7 @@ function formatDT(dtval){
 }
 
 function generateCertificat(){
-  const p = selectedPatient;
+  const p = window.selectedPatient;
   const fullname = `${p.prenom} ${p.nom}`;
   const dt = document.getElementById('exam-datetime').value;
   const dtStr = formatDT(dt);
@@ -1627,7 +1627,7 @@ window.saveToPatient = async function(){
 };
 
 window.generateCertificatUrgence = function(){
-  const p = selectedPatient;
+  const p = window.selectedPatient;
   const fullname = `${p.prenom} ${p.nom}`;
   const dt = document.getElementById('urg-datetime').value;
   const dtStr = formatDT(dt);
@@ -1759,7 +1759,7 @@ window.generateCertificatUrgence = function(){
 };
 
 window.restart = function(){
-  selectedPatient=null; choiceMode=null;
+  window.selectedPatient=null; window.choiceMode=null;
   document.getElementById('choice-existing').classList.remove('selected');
   document.getElementById('choice-new').classList.remove('selected');
   document.getElementById('panel-existing').classList.add('hidden');
