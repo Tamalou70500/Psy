@@ -3,252 +3,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lexique — Cabinet du Psychiatre</title>
+<title>Lexique — Dr. Abernathy Lucius</title>
 <link rel="stylesheet" href="css/style.css">
 <style>
-  .entry {
-    background: var(--bg2);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-lg);
-    overflow: hidden;
-    transition: border-color .15s;
-    margin-bottom: 8px;
-  }
-  .entry:hover { border-color: var(--border2); }
-  .entry.open  { border-color: var(--gold); }
+.entry { background:var(--ink2); border:1px solid var(--border); border-radius:var(--r-lg); margin-bottom:8px; overflow:hidden; transition:border-color .2s; }
+.entry:hover { border-color:var(--border2); }
+.entry.open { border-color:var(--gold); }
 
-  .entry-header {
-    padding: 0.9rem 1.25rem;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    user-select: none;
-  }
-  .entry-icon { font-size: 1.1rem; flex-shrink: 0; }
-  .entry-term { font-size: 1rem; color: var(--gold-light); }
-  .entry-chevron { margin-left: auto; color: var(--text3); font-size: 0.8rem; transition: transform .2s; }
-  .entry.open .entry-chevron { transform: rotate(180deg); }
+.entry-head {
+  padding:.85rem 1.1rem; cursor:pointer; display:flex; align-items:center; gap:.75rem; user-select:none;
+}
+.entry-term { font-family:'Playfair Display',serif; font-size:.98rem; color:var(--parchment); font-style:italic; flex:1; }
+.entry-cat { font-family:'Courier Prime',monospace; font-size:.65rem; padding:2px 9px; border-radius:20px; letter-spacing:.06em; text-transform:uppercase; white-space:nowrap; border:1px solid transparent; }
+.cat-diag  { background:rgba(30,60,100,.15); color:#6a90c0; border-color:rgba(74,128,184,.25); }
+.cat-cond  { background:rgba(100,20,20,.15);  color:#c06060; border-color:rgba(168,32,32,.25); }
+.cat-treat { background:rgba(30,70,30,.15);   color:#60a060; border-color:rgba(74,154,74,.25); }
+.cat-med   { background:rgba(60,20,80,.15);   color:#9060c0; border-color:rgba(122,80,168,.25); }
+.cat-phrase{ background:rgba(100,70,10,.15);  color:#c09030; border-color:rgba(184,132,58,.25); }
+.entry-chev { color:var(--parchment4); font-size:.7rem; transition:transform .25s; margin-left:.25rem; flex-shrink:0; }
+.entry.open .entry-chev { transform:rotate(180deg); }
 
-  .entry-body { display: none; border-top: 1px solid var(--border); padding: 1rem 1.25rem; }
-  .entry.open .entry-body { display: block; }
+.entry-body { display:none; border-top:1px solid var(--border); padding:.9rem 1.1rem; }
+.entry.open .entry-body { display:block; }
+.entry-def { font-size:.9rem; color:var(--parchment2); line-height:1.75; margin-bottom:.65rem; font-family:'EB Garamond',serif; }
 
-  .entry-def { font-size: 0.9rem; color: var(--text); line-height: 1.7; margin-bottom: 0.75rem; }
+.rp-block {
+  background:var(--ink3); border-left:2px solid var(--gold-dark); padding:.7rem 1rem;
+  margin-bottom:.5rem;
+}
+.rp-label { font-family:'Courier Prime',monospace; font-size:.62rem; color:var(--gold); letter-spacing:.12em; text-transform:uppercase; margin-bottom:.35rem; }
+.rp-text { font-family:'EB Garamond',serif; font-size:.9rem; color:var(--parchment); line-height:1.65; font-style:italic; }
+.copy-btn {
+  float:right; margin:-2px 0 0 8px;
+  background:transparent; border:1px solid var(--border); color:var(--parchment4);
+  padding:2px 9px; border-radius:var(--r); font-family:'Courier Prime',monospace; font-size:.65rem; cursor:pointer; transition:all .15s;
+}
+.copy-btn:hover { border-color:var(--gold); color:var(--gold); }
+.copy-btn.ok { color:#70bf70; border-color:rgba(74,154,74,.5); }
+.epoch { font-family:'Courier Prime',monospace; font-size:.7rem; color:var(--parchment4); margin-top:.5rem; padding-top:.5rem; border-top:1px solid var(--border); }
 
-  .rp-block {
-    background: var(--bg3);
-    border-left: 3px solid var(--gold);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    padding: 0.75rem 1rem;
-    margin-bottom: 0.5rem;
-  }
-  .rp-label { font-size: 0.7rem; letter-spacing: 0.1em; color: var(--gold); text-transform: uppercase; margin-bottom: 0.4rem; }
-  .rp-text  { font-size: 0.88rem; color: var(--text); line-height: 1.65; font-style: italic; }
+.add-section { background:var(--ink2); border:1px dashed var(--border2); border-radius:var(--r-lg); padding:1.25rem 1.5rem; margin-top:1.5rem; }
+.add-title { font-family:'Playfair Display',serif; font-size:.95rem; color:var(--gold); margin-bottom:1rem; font-style:italic; }
 
-  .epoch-note { font-size: 0.78rem; color: var(--text3); font-style: italic; margin-top: 0.5rem; padding-top: 0.5rem; border-top: 1px solid var(--border); }
-
-  .copy-btn {
-    background: transparent; border: 1px solid var(--border); color: var(--text3);
-    padding: 3px 10px; border-radius: var(--radius); font-size: 0.75rem; cursor: pointer;
-    float: right; margin-top: -4px; font-family: 'Georgia', serif; transition: all .15s;
-  }
-  .copy-btn:hover { border-color: var(--gold); color: var(--gold); }
-  .copy-btn.copied { color: var(--green-light); border-color: var(--green-light); }
-
-  .add-section {
-    background: var(--bg2);
-    border: 1px dashed var(--border2);
-    border-radius: var(--radius-lg);
-    padding: 1.25rem;
-    margin-top: 1.5rem;
-  }
-  .add-title { font-size: 0.9rem; color: var(--gold); margin-bottom: 1rem; letter-spacing: 0.05em; }
-  .no-result { text-align: center; padding: 3rem 1rem; color: var(--text3); font-style: italic; }
-
-  .cat-pill { font-size: 0.7rem; padding: 2px 8px; border-radius: 20px; font-family: 'Georgia', serif; letter-spacing: 0.05em; white-space: nowrap; }
-  .cat-diag   { background: rgba(74,128,184,0.15); color: #4a80b8; border: 1px solid rgba(74,128,184,0.3); }
-  .cat-treat  { background: rgba(74,154,85,0.15);  color: #4a9a55; border: 1px solid rgba(74,154,85,0.3); }
-  .cat-phrase { background: rgba(200,120,32,0.15); color: #c87820; border: 1px solid rgba(200,120,32,0.3); }
-  .cat-cond   { background: rgba(196,48,48,0.15);  color: #c43030; border: 1px solid rgba(196,48,48,0.3); }
-  .cat-med    { background: rgba(122,80,168,0.15); color: #7a50a8; border: 1px solid rgba(122,80,168,0.3); }
-
-  .filters { display: flex; flex-wrap: wrap; gap: 6px; }
-  .filter-btn {
-    padding: 4px 12px; border-radius: 20px; border: 1px solid var(--border);
-    background: transparent; color: var(--text3); font-size: 0.8rem; font-family: 'Georgia', serif;
-    cursor: pointer; transition: all .15s; letter-spacing: 0.03em;
-  }
-  .filter-btn:hover { border-color: var(--border2); color: var(--text2); }
-  .filter-btn.active { border-color: var(--gold); color: var(--gold); background: rgba(200,164,90,0.08); }
+.filters { display:flex; gap:5px; flex-wrap:wrap; }
+.fpill { padding:3px 12px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--parchment4); font-family:'Courier Prime',monospace; font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; transition:all .15s; }
+.fpill:hover { border-color:var(--border2); color:var(--parchment2); }
+.fpill.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+.no-result { text-align:center; padding:3rem 1rem; color:var(--parchment4); font-style:italic; font-family:'EB Garamond',serif; }
 </style>
 </head>
 <body>
 
 <nav class="navbar">
-  <span class="navbar-brand">🎩 Cabinet du Dr.</span>
+  <span class="navbar-brand">Dr. Abernathy Lucius</span>
+  <div class="navbar-sep"></div>
   <div class="navbar-links">
     <a href="annuaire.html">Annuaire</a>
     <a href="lexique.html" class="active">Lexique</a>
   </div>
   <div class="navbar-right">
     <span class="navbar-user" id="navbar-user"></span>
-    <button class="btn btn-sm" onclick="authLogout()">Quitter</button>
+    <button class="btn btn-sm" id="logout-btn">Quitter</button>
   </div>
 </nav>
 
 <div class="container">
-
   <div class="flex-between mt-2 mb-2">
-    <div>
-      <h2>Lexique aliéniste</h2>
-      <p class="mt-1">Terminologie médicale · West Elizabeth 1899</p>
-    </div>
+    <div><h2>Lexique aliéniste</h2><p class="mt-1">Terminologie médicale · West Elizabeth 1899</p></div>
   </div>
 
   <div class="card mb-2">
-    <div style="display:flex;flex-direction:column;gap:0.75rem">
-      <input class="form-control" type="text" id="search" placeholder="🔍  Rechercher un terme, symptôme, traitement…" oninput="renderAll()">
+    <div style="display:flex;flex-direction:column;gap:.75rem">
+      <input class="form-control" id="search" placeholder="Rechercher un terme, symptôme, traitement…" oninput="renderAll()">
       <div class="filters">
-        <button class="filter-btn active" onclick="setFilter(this,'all')">Tous</button>
-        <button class="filter-btn" onclick="setFilter(this,'diag')">🔬 Diagnostic</button>
-        <button class="filter-btn" onclick="setFilter(this,'cond')">🩺 Condition</button>
-        <button class="filter-btn" onclick="setFilter(this,'treat')">💊 Traitement</button>
-        <button class="filter-btn" onclick="setFilter(this,'med')">⚗️ Médicament</button>
-        <button class="filter-btn" onclick="setFilter(this,'phrase')">💬 Phrase RP</button>
+        <button class="fpill active" onclick="setF(this,'all')">Tous</button>
+        <button class="fpill" onclick="setF(this,'diag')">Diagnostic</button>
+        <button class="fpill" onclick="setF(this,'cond')">Condition</button>
+        <button class="fpill" onclick="setF(this,'treat')">Traitement</button>
+        <button class="fpill" onclick="setF(this,'med')">Médicament</button>
+        <button class="fpill" onclick="setF(this,'phrase')">Phrase RP</button>
       </div>
     </div>
   </div>
 
   <div class="flex-between mb-1">
-    <span id="count-label" style="font-size:0.8rem;color:var(--text3);font-style:italic"></span>
+    <span id="count" class="label"></span>
   </div>
 
   <div id="entries"></div>
 
   <div class="add-section">
-    <div class="add-title">✦ Ajouter une entrée personnalisée</div>
+    <div class="add-title">Ajouter une entrée personnalisée</div>
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px">
       <input class="form-control" id="new-term" placeholder="Terme médical">
       <select class="form-control" id="new-cat">
-        <option value="diag">Diagnostic</option>
-        <option value="cond">Condition</option>
-        <option value="treat">Traitement</option>
-        <option value="med">Médicament</option>
-        <option value="phrase">Phrase RP</option>
+        <option value="diag">Diagnostic</option><option value="cond">Condition</option>
+        <option value="treat">Traitement</option><option value="med">Médicament</option><option value="phrase">Phrase RP</option>
       </select>
     </div>
-    <textarea class="form-control mb-1" id="new-def" placeholder="Définition médicale…" style="min-height:70px"></textarea>
-    <textarea class="form-control mb-1" id="new-rp" placeholder="Phrase RP suggérée…" style="min-height:70px"></textarea>
-    <input class="form-control mb-1" id="new-epoch" placeholder="Note d'époque (optionnel)">
-    <button class="btn btn-primary" onclick="addEntry()">+ Ajouter au lexique</button>
+    <textarea class="form-control mb-1" id="new-def" placeholder="Définition médicale…" style="min-height:65px"></textarea>
+    <textarea class="form-control mb-1" id="new-rp" placeholder="Phrase RP suggérée…" style="min-height:65px"></textarea>
+    <input class="form-control mb-1" id="new-epoch" placeholder="Note historique (optionnel)">
+    <button class="btn btn-gold mt-1" onclick="addEntry()">Ajouter au lexique</button>
   </div>
-
 </div>
 
 <script src="js/auth.js"></script>
 <script>
-const session = authRequire();
-authInjectUser();
+const session=authRequire(); authInjectUser();
+document.getElementById('logout-btn').onclick=authLogout;
 
-const DEFAULT_DATA = [
-  { term:"Mélancolie", cat:"diag", icon:"😔", def:"Trouble profond de l'humeur caractérisé par un abattement persistant, des pensées sombres et un retrait social. Considérée à l'époque comme un excès de 'bile noire'.", rp:"« Votre état, mon ami, s'apparente à ce que nous appelons la mélancolie — une affliction de l'âme plus que du corps. Je vois dans vos yeux cette lourdeur que rien ne semble alléger. »", epoch:"Terme hérité de la médecine antique, encore largement utilisé en 1899." },
-  { term:"Hystérie", cat:"diag", icon:"😱", def:"Réaction émotionnelle excessive, crises convulsives sans cause organique identifiable. Diagnostiquée presque exclusivement chez les femmes à l'époque victorienne.", rp:"« Ces symptômes — spasmes, cris sans maîtrise — sont caractéristiques d'une hystérie nerveuse. Ce n'est pas une faiblesse morale, mais un désordre des nerfs. »", epoch:"Très répandu fin XIXe. Charcot en avait fait sa spécialité à Paris." },
-  { term:"Neurasthénie", cat:"cond", icon:"😩", def:"Épuisement nerveux chronique : fatigue profonde, maux de tête, insomnies, incapacité à accomplir les tâches quotidiennes. Maladie 'à la mode' chez les hommes cultivés.", rp:"« Vous souffrez de neurasthénie — vos nerfs sont épuisés comme un cheval monté sans relâche. Votre capital nerveux est à sec. Il vous faut du calme et du silence. »", epoch:"Terme inventé par George Beard en 1869." },
-  { term:"Aliénation mentale", cat:"diag", icon:"🌀", def:"Terme générique désignant toute forme de folie grave. L'aliéné est celui dont la raison est 'séparée' de lui-même.", rp:"« Ce que vous me décrivez dépasse le simple trouble nerveux. Je dois envisager une forme d'aliénation mentale — un état où votre esprit ne vous appartient plus tout à fait. »", epoch:"L'aliéniste est l'ancêtre du psychiatre." },
-  { term:"Manie", cat:"diag", icon:"⚡", def:"Excitation extrême de l'esprit : agitation, idées en cascade, sentiment de toute-puissance, insomnie et comportements impulsifs.", rp:"« Cet excès d'énergie, ces idées qui se bousculent, cette certitude d'être invincible — ce sont les signes d'un accès maniaque. Votre esprit tourne à une vitesse qu'il ne peut soutenir. »", epoch:"" },
-  { term:"Délire de persécution", cat:"diag", icon:"👁️", def:"Conviction irrationnelle d'être suivi, espionné ou comploté contre par des individus ou des forces obscures.", rp:"« Votre certitude que l'on cherche à vous nuire sans raison valable — c'est votre esprit qui forge ces menaces. Nous appelons cela un délire de persécution. »", epoch:"Décrit par Lasègue dès 1852." },
-  { term:"Démence précoce", cat:"diag", icon:"🌫️", def:"Désintégration progressive de la personnalité chez un sujet jeune avec repli, hallucinations et discours incohérent. Décrite par Kraepelin.", rp:"« Ce retrait du monde, ces voix que vous entendez, ressemble à ce que le Dr Kraepelin appelle la démence précoce. C'est grave, mais vous n'êtes pas sans recours. »", epoch:"Kraepelin publie sa description en 1896. Ce que nous appelons aujourd'hui schizophrénie." },
-  { term:"Névrose", cat:"cond", icon:"🌪️", def:"Trouble psychique fonctionnel sans lésion organique : anxiété, phobies, obsessions ou symptômes physiques inexpliqués.", rp:"« Vous n'êtes pas fou. Vous souffrez d'une névrose — vos nerfs réagissent de façon excessive. C'est traitable. La première étape est de nommer ce dont vous souffrez. »", epoch:"" },
-  { term:"Idée fixe", cat:"cond", icon:"📌", def:"Pensée envahissante qui s'impose malgré la volonté du sujet. Peut engendrer des comportements compulsifs.", rp:"« Cette pensée qui revient sans cesse, que vous ne pouvez chasser — c'est une idée fixe. Votre raison sait qu'elle est irrationnelle, mais votre esprit ne peut s'en défaire. »", epoch:"Janet étudie les idées fixes dans 'L'Automatisme psychologique' (1889)." },
-  { term:"Traumatisme de guerre", cat:"cond", icon:"💥", def:"Séquelles psychologiques d'une expérience de combat : cauchemars, reviviscences, hypervigilance. Appelé 'cœur du soldat' à l'époque.", rp:"« Ces nuits sans sommeil, ces images de combat qui surgissent en plein jour — votre esprit essaie de digérer ce que vos yeux ont vu. Ce n'est pas de la lâcheté. »", epoch:"Appelé 'soldier's heart' ou 'nostalgie'. 'Shell shock' n'apparaît qu'en 1915." },
-  { term:"Amnésie hystérique", cat:"diag", icon:"🌁", def:"Perte de mémoire sans cause organique, déclenchée par un choc émotionnel. Le sujet peut oublier son identité ou des pans entiers de sa vie.", rp:"« Ne forcez pas votre mémoire. Ce que vous ne vous rappellez pas est protégé par votre esprit lui-même. Nous allons l'approcher doucement. »", epoch:"" },
-  { term:"Laudanum", cat:"med", icon:"⚗️", def:"Teinture d'opium dans de l'alcool. Calme douleurs, angoisses et insomnies. Vendu librement en pharmacie à l'époque.", rp:"« Quelques gouttes de laudanum dans votre whisky ce soir — pas plus de dix. Cela calmera vos nerfs, mais gardez la bouteille sous clé. »", epoch:"Remède quasi universel au XIXe siècle." },
-  { term:"Bromure de potassium", cat:"med", icon:"🧪", def:"Sel sédatif et anticonvulsivant. Principal traitement de l'épilepsie et de l'agitation nerveuse à la fin du XIXe.", rp:"« Je vous prescris du bromure de potassium. Une cuillère à café dans de l'eau, matin et soir. Cela ralentira votre esprit sans vous plonger dans le sommeil. »", epoch:"Introduit en médecine en 1857." },
-  { term:"Cure de repos", cat:"treat", icon:"🛏️", def:"Alitement complet, alimentation contrôlée, massages, isolement social. Popularisé par le Dr Weir Mitchell.", rp:"« Ma recommandation : une cure de repos de trois semaines minimum. Pas de cheval, pas de saloon. Votre chambre, vos repas, le silence. »", epoch:"La 'rest cure' du Dr Mitchell (1877) très en vogue." },
-  { term:"Hydrothérapie", cat:"treat", icon:"💧", def:"Traitement par l'eau froide ou chaude : douches, bains prolongés, enveloppements. Censé apaiser les nerfs irrités.", rp:"« Je vous prescris des bains froids quotidiens, dix minutes le matin au réveil. Si vous avez accès à une rivière propre, c'est encore mieux. »", epoch:"Très populaire dans les asiles et sanatoriums." },
-  { term:"Hypnose", cat:"treat", icon:"🌀", def:"État modifié de conscience par suggestion pour accéder aux souvenirs refoulés. Rendue célèbre par Charcot et Bernheim.", rp:"« Le Dr Charcot, à Paris, a fait de l'hypnose un outil de guérison. Je peux vous plonger dans cet état de demi-sommeil où votre esprit parle librement. »", epoch:"Freud utilisait l'hypnose avant de développer la psychanalyse." },
-  { term:"Association libre", cat:"treat", icon:"🗣️", def:"Méthode : laisser le patient parler sans censure pour révéler des conflits inconscients. Méthode naissante de Freud vers 1899.", rp:"« Fermez les yeux, et dites-moi simplement ce qui vous passe par l'esprit — sans filtre. Rien de ce que vous direz ne me choquera. »", epoch:"Les 'Études sur l'hystérie' paraissent en 1895." },
-  { term:"Internement volontaire", cat:"treat", icon:"🏥", def:"Admission dans un sanatorium pour soins prolongés en environnement contrôlé.", rp:"« Votre état nécessite plus que mon cabinet. Le sanatorium de Saint-Denis est sérieux. Ce n'est pas une prison — vous pouvez en repartir quand votre état le permettra. »", epoch:"Les sanatoriums privés se distinguaient des asiles publics souvent inhumains." },
-  { term:"Phrase d'ouverture", cat:"phrase", icon:"💬", def:"Formule pour débuter l'entretien psychiatrique et mettre le patient en confiance.", rp:"« Regardez-moi dans les yeux, s'il vous plaît. Voilà. Je ne suis pas là pour vous juger — je suis là pour comprendre. Prenez votre temps et commencez où vous le souhaitez. »", epoch:"" },
-  { term:"Annonce du diagnostic", cat:"phrase", icon:"💬", def:"Moment clé où le médecin nomme la condition du patient avec clarté et empathie.", rp:"« Après vous avoir écouté, j'ai formé mon opinion. Ce que vous traversez a un nom — car ce qui a un nom peut être compris, et ce qui peut être compris peut être traité. »", epoch:"" },
-  { term:"Refus de traitement", cat:"phrase", icon:"💬", def:"Le patient refuse les soins. Le médecin insiste avec diplomatie.", rp:"« Je ne peux pas vous forcer. Mais si votre cheval avait la jambe brisée, le laisseriez-vous sans soins parce qu'il regimbe ? Votre esprit mérite le même égard. »", epoch:"" }
+const DATA=[
+  {term:"Mélancolie",cat:"diag",def:"Trouble profond de l'humeur : abattement persistant, pensées sombres, retrait social. Considérée à l'époque comme un excès de bile noire.",rp:"« Votre état, mon ami, s'apparente à ce que nous appelons la mélancolie — une affliction de l'âme plus que du corps. Je vois dans vos yeux cette lourdeur que rien ne semble alléger. »",epoch:"Terme hérité de la médecine antique, encore courant en 1899."},
+  {term:"Hystérie",cat:"diag",def:"Réaction émotionnelle excessive, crises convulsives sans cause organique. Diagnostiquée presque exclusivement chez les femmes à l'époque victorienne.",rp:"« Ces symptômes que vous décrivez — spasmes, cris sans maîtrise, perte de vos sens — sont caractéristiques d'une hystérie nerveuse. Ce n'est pas une faiblesse morale, mais un désordre des nerfs. Je puis vous aider. »",epoch:"Charcot en avait fait sa spécialité à la Salpêtrière de Paris."},
+  {term:"Neurasthénie",cat:"cond",def:"Épuisement nerveux chronique : fatigue profonde, maux de tête, insomnies. Maladie à la mode chez les hommes cultivés de l'époque.",rp:"« Vous souffrez de neurasthénie — vos nerfs sont épuisés comme un cheval monté sans relâche. Votre capital nerveux est à sec. Il vous faut du calme, de l'air frais, et surtout du silence. »",epoch:"Terme inventé par le Dr George Beard en 1869."},
+  {term:"Aliénation mentale",cat:"diag",def:"Terme générique désignant toute forme de folie grave. L'aliéné est celui dont la raison est séparée de lui-même.",rp:"« Ce que vous me décrivez dépasse le simple trouble nerveux. Je dois envisager une forme d'aliénation mentale — un état où votre esprit ne vous appartient plus tout à fait. Ce n'est pas une condamnation. »",epoch:"L'aliéniste est l'ancêtre du psychiatre."},
+  {term:"Manie",cat:"diag",def:"Excitation extrême de l'esprit : agitation, idées en cascade, sentiment de toute-puissance, insomnie et comportements impulsifs.",rp:"« Cet excès d'énergie, ces idées qui se bousculent, cette certitude d'être invincible — ce sont les signes d'un accès maniaque. Votre esprit tourne à une vitesse qu'il ne peut soutenir longtemps. »",epoch:""},
+  {term:"Délire de persécution",cat:"diag",def:"Conviction irrationnelle d'être suivi, espionné ou comploté contre par des individus ou forces obscures.",rp:"« Votre certitude que l'on cherche à vous nuire sans raison valable — c'est votre esprit qui forge ces menaces, non la réalité. Nous appelons cela un délire de persécution. Ce que vous ressentez est réel ; les menaces, non. »",epoch:"Décrit par Lasègue dès 1852."},
+  {term:"Démence précoce",cat:"diag",def:"Désintégration progressive de la personnalité chez un sujet jeune : retrait, hallucinations, discours incohérent.",rp:"« Ce retrait du monde, ces voix que vous entendez, cette façon qu'ont vos pensées de se dissoudre — cela ressemble à ce que le Dr Kraepelin appelle la démence précoce. C'est grave, mais vous n'êtes pas sans recours. »",epoch:"Kraepelin publie sa description en 1896. Ce que l'on nomme aujourd'hui schizophrénie."},
+  {term:"Névrose",cat:"cond",def:"Trouble psychique fonctionnel sans lésion organique : anxiété, phobies, obsessions, symptômes physiques inexpliqués.",rp:"« Vous n'êtes pas fou, entendez-moi bien. Vous souffrez d'une névrose — vos nerfs réagissent de façon excessive. C'est traitable. La première étape est de nommer ce dont vous souffrez. »",epoch:""},
+  {term:"Idée fixe",cat:"cond",def:"Pensée envahissante qui s'impose malgré la volonté du sujet. Peut engendrer des comportements compulsifs.",rp:"« Cette pensée qui revient sans cesse, que vous ne pouvez chasser — c'est une idée fixe. Votre raison sait qu'elle est irrationnelle, mais votre esprit ne peut s'en défaire. C'est là que j'interviens. »",epoch:"Janet étudie les idées fixes dans L'Automatisme psychologique (1889)."},
+  {term:"Traumatisme de guerre",cat:"cond",def:"Séquelles psychologiques de combat : cauchemars, reviviscences, hypervigilance. Appelé cœur du soldat à l'époque.",rp:"« Ces nuits sans sommeil, ces images de bataille qui surgissent en plein jour — votre esprit essaie de digérer ce que vos yeux ont vu. Ce n'est pas de la lâcheté. C'est une blessure, comme les autres. »",epoch:"Appelé soldier's heart ou nostalgie. Shell shock n'apparaît qu'en 1915."},
+  {term:"Amnésie hystérique",cat:"diag",def:"Perte de mémoire sans cause organique, déclenchée par un choc émotionnel. Le sujet peut oublier son identité.",rp:"« Ne forcez pas votre mémoire — ce serait contre-productif. Ce que vous ne vous rappellez pas est protégé par votre esprit lui-même. Nous allons l'approcher doucement, par la parole. »",epoch:""},
+  {term:"Laudanum",cat:"med",def:"Teinture d'opium dans de l'alcool. Calme douleurs, angoisses et insomnies. Vendu librement en pharmacie.",rp:"« Je vous prescris quelques gouttes de laudanum ce soir — pas plus de dix. Cela calmera vos nerfs. Mais gardez la bouteille sous clé : cette substance apprivoise l'esprit mais enchaîne le corps si on la laisse faire. »",epoch:"Remède quasi universel au XIXe siècle."},
+  {term:"Bromure de potassium",cat:"med",def:"Sel sédatif et anticonvulsivant. Principal traitement de l'épilepsie et de l'agitation nerveuse.",rp:"« Je vous prescris du bromure de potassium — une cuillère à café dans de l'eau, matin et soir. Cela ralentira votre esprit sans vous plonger dans le sommeil. Ne dépassez pas la dose. »",epoch:"Introduit en médecine en 1857."},
+  {term:"Cure de repos",cat:"treat",def:"Alitement complet, alimentation contrôlée, massages, isolement social. Popularisé par le Dr Weir Mitchell.",rp:"« Ma recommandation est formelle : une cure de repos de trois semaines. Pas de cheval, pas de saloon, pas d'agitation. Votre chambre, vos repas, le silence. Votre cerveau a besoin de se reconstruire. »",epoch:"La rest cure du Dr Mitchell (1877) très répandue dans les milieux aisés."},
+  {term:"Hydrothérapie",cat:"treat",def:"Traitement par l'eau froide ou chaude : bains prolongés, douches, enveloppements humides. Censé apaiser les nerfs irrités.",rp:"« Je vous prescris des bains froids quotidiens, dix minutes au réveil. L'eau froide contracte les vaisseaux et apaise les nerfs. Si vous avez accès à une rivière propre, c'est encore mieux. »",epoch:"Très populaire dans les asiles et sanatoriums de l'époque."},
+  {term:"Hypnose",cat:"treat",def:"État modifié de conscience induit par suggestion, pour accéder aux souvenirs refoulés. Rendue célèbre par Charcot.",rp:"« Le Dr Charcot, à Paris, a fait de l'hypnose un outil de guérison. Je peux vous plonger dans cet état de demi-sommeil où votre esprit parle librement. Vous aurez le contrôle à tout moment. »",epoch:"Freud utilisait l'hypnose avant de développer la psychanalyse."},
+  {term:"Association libre",cat:"treat",def:"Laisser le patient parler sans censure de tout ce qui lui vient à l'esprit. Méthode naissante de Freud vers 1899.",rp:"« Fermez les yeux, et dites-moi simplement ce qui vous passe par l'esprit — sans filtre, sans jugement. Rien de ce que vous direz ne me choquera. Je suis là pour comprendre, non pour juger. »",epoch:"Les Études sur l'hystérie paraissent en 1895."},
+  {term:"Phrase d'ouverture",cat:"phrase",def:"Formule pour débuter l'entretien et mettre le patient en confiance.",rp:"« Regardez-moi dans les yeux, s'il vous plaît. Voilà. Je ne suis pas là pour vous juger. Je suis là pour comprendre. Prenez votre temps et commencez où vous le souhaitez. »",epoch:""},
+  {term:"Annonce du diagnostic",cat:"phrase",def:"Moment clé où le médecin nomme la condition du patient avec clarté et empathie.",rp:"« Après vous avoir écouté, j'ai formé mon opinion. Ce que vous traversez a un nom — car ce qui a un nom peut être compris, et ce qui peut être compris peut être traité. Voici ce que j'observe… »",epoch:""},
+  {term:"Refus de traitement",cat:"phrase",def:"Le patient refuse les soins. Le médecin insiste avec diplomatie.",rp:"« Je ne peux pas vous forcer, c'est vrai. Mais si votre cheval avait la jambe brisée, le laisseriez-vous sans soins parce qu'il regimbe ? Votre esprit mérite le même égard que votre corps. »",epoch:""},
 ];
 
-const CAT_LABELS = { diag:'Diagnostic', cond:'Condition', treat:'Traitement', med:'Médicament', phrase:'Phrase RP' };
-const CAT_CSS    = { diag:'cat-diag', cond:'cat-cond', treat:'cat-treat', med:'cat-med', phrase:'cat-phrase' };
+const CL={ diag:'cat-diag',cond:'cat-cond',treat:'cat-treat',med:'cat-med',phrase:'cat-phrase' };
+const CN={ diag:'Diagnostic',cond:'Condition',treat:'Traitement',med:'Médicament',phrase:'Phrase RP' };
 
-let activeCat  = 'all';
-let customData = [];
+let cat='all', custom=[];
+try{ const r=localStorage.getItem('redm_lex'); if(r)custom=JSON.parse(r); }catch(e){}
 
-function loadCustom() {
-  try { const r = localStorage.getItem('redm_lexique'); if (r) customData = JSON.parse(r); } catch(e) {}
-}
-function saveCustom() {
-  try { localStorage.setItem('redm_lexique', JSON.stringify(customData)); } catch(e) {}
-}
-function allData() { return [...DEFAULT_DATA, ...customData]; }
+function all(){ return [...DATA,...custom]; }
 
-function renderAll() {
-  const q = document.getElementById('search').value.toLowerCase();
-  let data = allData();
-  if (activeCat !== 'all') data = data.filter(d => d.cat === activeCat);
-  if (q) data = data.filter(d => d.term.toLowerCase().includes(q) || d.def.toLowerCase().includes(q) || (d.rp||'').toLowerCase().includes(q));
-
-  document.getElementById('count-label').textContent = `${data.length} entrée${data.length!==1?'s':''} trouvée${data.length!==1?'s':''}`;
-
-  const c = document.getElementById('entries');
-  if (!data.length) { c.innerHTML = '<div class="no-result">Aucun terme — ajoutez-le ci-dessous ✦</div>'; return; }
-
-  c.innerHTML = '';
-  data.forEach(d => {
-    const el = document.createElement('div');
-    el.className = 'entry';
-    el.innerHTML = `
-      <div class="entry-header" onclick="this.parentElement.classList.toggle('open')">
-        <span class="entry-icon">${d.icon||'📋'}</span>
-        <span class="entry-term">${d.term}</span>
-        <span class="cat-pill ${CAT_CSS[d.cat]||'cat-diag'}">${CAT_LABELS[d.cat]||d.cat}</span>
-        <span class="entry-chevron">▼</span>
-      </div>
-      <div class="entry-body">
-        <p class="entry-def">${d.def}</p>
-        ${d.rp ? `<div class="rp-block">
-          <div class="rp-label">✦ Phrase de jeu</div>
-          <button class="copy-btn" onclick="copyRP(this,'${d.rp.replace(/'/g,"\\'")}')">Copier</button>
-          <p class="rp-text">${d.rp}</p>
-        </div>` : ''}
-        ${d.epoch ? `<p class="epoch-note">📜 Note : ${d.epoch}</p>` : ''}
-      </div>`;
+function renderAll(){
+  const q=document.getElementById('search').value.toLowerCase();
+  let d=all();
+  if(cat!=='all') d=d.filter(x=>x.cat===cat);
+  if(q) d=d.filter(x=>(x.term+x.def+(x.rp||'')).toLowerCase().includes(q));
+  document.getElementById('count').textContent=`${d.length} entrée${d.length!==1?'s':''}`;
+  const c=document.getElementById('entries');
+  if(!d.length){ c.innerHTML='<div class="no-result">Aucun terme — ajoutez-le ci-dessous</div>'; return; }
+  c.innerHTML='';
+  d.forEach(e=>{
+    const el=document.createElement('div');
+    el.className='entry fade-up';
+    const rp=e.rp?(e.rp+'').replace(/'/g,"\\'"):'';
+    el.innerHTML=`<div class="entry-head" onclick="this.parentElement.classList.toggle('open')">
+      <span class="entry-term">${e.term}</span>
+      <span class="entry-cat ${CL[e.cat]||'cat-diag'}">${CN[e.cat]||e.cat}</span>
+      <span class="entry-chev">▼</span>
+    </div>
+    <div class="entry-body">
+      <p class="entry-def">${e.def}</p>
+      ${e.rp?`<div class="rp-block">
+        <div class="rp-label">Phrase de jeu</div>
+        <button class="copy-btn" onclick="copyRP(this,'${rp}')">Copier</button>
+        <p class="rp-text">${e.rp}</p>
+      </div>`:''}
+      ${e.epoch?`<div class="epoch">Note historique : ${e.epoch}</div>`:''}
+    </div>`;
     c.appendChild(el);
   });
 }
 
-function setFilter(el, cat) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  activeCat = cat;
+function setF(el,c){ document.querySelectorAll('.fpill').forEach(b=>b.classList.remove('active')); el.classList.add('active'); cat=c; renderAll(); }
+
+function copyRP(btn,text){
+  navigator.clipboard.writeText(text).then(()=>{ btn.textContent='Copié'; btn.classList.add('ok'); setTimeout(()=>{ btn.textContent='Copier'; btn.classList.remove('ok'); },2000); });
+}
+
+function addEntry(){
+  const term=document.getElementById('new-term').value.trim();
+  const def=document.getElementById('new-def').value.trim();
+  if(!term||!def){ alert('Terme et définition requis.'); return; }
+  custom.push({ term,cat:document.getElementById('new-cat').value,def,rp:document.getElementById('new-rp').value.trim(),epoch:document.getElementById('new-epoch').value.trim() });
+  try{ localStorage.setItem('redm_lex',JSON.stringify(custom)); }catch(e){}
+  ['new-term','new-def','new-rp','new-epoch'].forEach(id=>document.getElementById(id).value='');
   renderAll();
 }
 
-function copyRP(btn, text) {
-  navigator.clipboard.writeText(text).then(() => {
-    btn.textContent = '✓ Copié !';
-    btn.classList.add('copied');
-    setTimeout(() => { btn.textContent = 'Copier'; btn.classList.remove('copied'); }, 2000);
-  });
-}
-
-function addEntry() {
-  const term = document.getElementById('new-term').value.trim();
-  const def  = document.getElementById('new-def').value.trim();
-  if (!term || !def) { alert('Remplissez au minimum le terme et la définition.'); return; }
-  customData.push({ term, cat: document.getElementById('new-cat').value, icon:'📝', def, rp: document.getElementById('new-rp').value.trim(), epoch: document.getElementById('new-epoch').value.trim() });
-  saveCustom();
-  ['new-term','new-def','new-rp','new-epoch'].forEach(id => document.getElementById(id).value = '');
-  renderAll();
-}
-
-loadCustom();
 renderAll();
 </script>
 </body>
