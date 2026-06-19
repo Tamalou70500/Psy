@@ -1,69 +1,392 @@
-/* ═══════════════════════════════════════════
-   voice.js — Dictée vocale (Web Speech API)
-   Compatible Opera / Chrome / Edge
-═══════════════════════════════════════════ */
-
-let recognition   = null;
-let voiceActive   = false;
-let voiceTarget   = null;  // textarea cible
-
-/* ─── Initialiser la reconnaissance ──────── */
-function voiceInit(targetId, btnId) {
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  if (!SpeechRecognition) {
-    const btn = document.getElementById(btnId);
-    if (btn) { btn.disabled = true; btn.title = "Dictée vocale non supportée par ce navigateur"; }
-    return false;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Annuaire — Cabinet du Psychiatre</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  .patient-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 12px;
+    margin-top: 1rem;
   }
 
-  voiceTarget = document.getElementById(targetId);
-  const btn   = document.getElementById(btnId);
+  .patient-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 1rem 1.1rem;
+    cursor: pointer;
+    transition: border-color .15s, transform .15s;
+    text-decoration: none;
+    display: block;
+  }
+  .patient-card:hover { border-color: var(--gold); transform: translateY(-1px); text-decoration: none; }
 
-  recognition                 = new SpeechRecognition();
-  recognition.lang            = "fr-FR";
-  recognition.continuous      = true;
-  recognition.interimResults  = true;
+  .patient-card-head {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.6rem;
+  }
 
-  let finalTranscript = "";
+  .patient-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border2);
+    flex-shrink: 0;
+  }
+  .patient-avatar-placeholder {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+  }
 
-  recognition.onstart = () => {
-    voiceActive = true;
-    if (btn) { btn.classList.add("voice-active"); btn.textContent = "⏹ Arrêter la dictée"; }
-  };
+  .patient-name { font-size: 1rem; color: var(--gold-light); }
+  .patient-meta { font-size: 0.78rem; color: var(--text3); margin-top: 1px; }
 
-  recognition.onend = () => {
-    voiceActive = false;
-    if (btn) { btn.classList.remove("voice-active"); btn.textContent = "🎙 Dicter"; }
-    finalTranscript = "";
-  };
+  .patient-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 0.6rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border);
+    font-size: 0.78rem;
+    color: var(--text3);
+  }
 
-  recognition.onerror = (e) => {
-    voiceActive = false;
-    if (btn) { btn.classList.remove("voice-active"); btn.textContent = "🎙 Dicter"; }
-    if (e.error === "no-speech") return;
-    console.warn("Erreur dictée vocale :", e.error);
-  };
+  .no-patients {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--text3);
+    font-style: italic;
+  }
 
-  recognition.onresult = (e) => {
-    let interim = "";
-    for (let i = e.resultIndex; i < e.results.length; i++) {
-      const t = e.results[i][0].transcript;
-      if (e.results[i].isFinal) finalTranscript += t + " ";
-      else interim = t;
-    }
-    if (voiceTarget) {
-      voiceTarget.value = finalTranscript + interim;
-      voiceTarget.scrollTop = voiceTarget.scrollHeight;
-    }
-  };
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .modal {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-xl);
+    padding: 1.75rem;
+    width: 100%;
+    max-width: 480px;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+  .modal-title {
+    font-size: 1.1rem;
+    color: var(--gold);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
 
-  if (btn) btn.addEventListener("click", voiceToggle);
-  return true;
+  .form-row-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; }
+
+  .photo-preview-wrap {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 0.4rem;
+  }
+  .photo-preview {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--border2);
+    display: none;
+  }
+  .photo-placeholder {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    background: var(--bg3);
+    border: 1px dashed var(--border2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+  }
+
+  .filters-bar {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 0.5rem;
+  }
+  .filter-pill {
+    padding: 3px 12px;
+    border-radius: 20px;
+    border: 1px solid var(--border);
+    background: transparent;
+    color: var(--text3);
+    font-family: 'Georgia', serif;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .filter-pill:hover { border-color: var(--border2); color: var(--text2); }
+  .filter-pill.active { border-color: var(--gold); color: var(--gold); background: rgba(200,164,90,0.08); }
+</style>
+</head>
+<body>
+
+<nav class="navbar">
+  <span class="navbar-brand">🎩 Cabinet du Dr.</span>
+  <div class="navbar-links">
+    <a href="annuaire.html" class="active">Annuaire</a>
+    <a href="lexique.html">Lexique</a>
+  </div>
+  <div class="navbar-right">
+    <span class="navbar-user" id="navbar-user"></span>
+    <button class="btn btn-sm" onclick="authLogout()">Quitter</button>
+  </div>
+</nav>
+
+<div class="container-wide">
+
+  <div class="flex-between mt-2 mb-2">
+    <div>
+      <h2>Annuaire des patients</h2>
+      <p id="count-label" class="mt-1"></p>
+    </div>
+    <button class="btn btn-primary" onclick="openModal()">+ Nouveau patient</button>
+  </div>
+
+  <div class="card mb-2">
+    <div class="flex-center gap-2" style="flex-wrap:wrap;">
+      <div style="flex:1;min-width:200px;position:relative;">
+        <input class="form-control" type="text" id="search" placeholder="🔍  Rechercher nom, prénom, diagnostic…" oninput="renderGrid()">
+      </div>
+      <div class="filters-bar">
+        <button class="filter-pill active" data-s="all"     onclick="setStatut(this,'all')">Tous</button>
+        <button class="filter-pill"        data-s="stable"  onclick="setStatut(this,'stable')">🟢 Stable</button>
+        <button class="filter-pill"        data-s="suivi"   onclick="setStatut(this,'suivi')">🟡 En suivi</button>
+        <button class="filter-pill"        data-s="grave"   onclick="setStatut(this,'grave')">🔴 Grave</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="patient-grid" id="grid"></div>
+
+</div>
+
+<!-- MODAL NOUVEAU PATIENT -->
+<div class="modal-overlay hidden" id="modal">
+  <div class="modal">
+    <div class="modal-title">
+      <span>✦ Nouveau dossier patient</span>
+      <button class="btn btn-sm" onclick="closeModal()">✕</button>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label class="form-label">Nom *</label>
+        <input class="form-control" id="f-nom" placeholder="ex: Dalton">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Prénom *</label>
+        <input class="form-control" id="f-prenom" placeholder="ex: Jack">
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label class="form-label">Âge</label>
+        <input class="form-control" id="f-age" type="number" placeholder="35">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Sexe</label>
+        <select class="form-control" id="f-sexe">
+          <option value="">—</option>
+          <option value="M">Masculin</option>
+          <option value="F">Féminin</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-row-2">
+      <div class="form-group">
+        <label class="form-label">Origine / Ville</label>
+        <input class="form-control" id="f-origine" placeholder="ex: Blackwater">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Profession</label>
+        <input class="form-control" id="f-profession" placeholder="ex: Éleveur">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Statut</label>
+      <select class="form-control" id="f-statut">
+        <option value="suivi">En suivi</option>
+        <option value="stable">Stable</option>
+        <option value="grave">Grave</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Diagnostic initial</label>
+      <input class="form-control" id="f-diagnostic" placeholder="ex: Mélancolie, Neurasthénie…">
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Portrait / Photo RP</label>
+      <div class="photo-preview-wrap">
+        <div class="photo-placeholder" id="photo-placeholder">🧑</div>
+        <img class="photo-preview" id="photo-preview" alt="Portrait">
+        <div>
+          <input type="file" id="f-photo" accept="image/*" style="display:none" onchange="loadPhoto(this)">
+          <button class="btn btn-sm" onclick="document.getElementById('f-photo').click()">Choisir une image</button>
+          <p style="font-size:0.75rem;color:var(--text3);margin-top:4px;">Portrait de personnage RP</p>
+        </div>
+      </div>
+    </div>
+
+    <div id="modal-error" class="alert alert-error hidden">Veuillez remplir au moins le nom et le prénom.</div>
+
+    <div style="display:flex;gap:8px;margin-top:0.5rem;">
+      <button class="btn w-full" onclick="closeModal()">Annuler</button>
+      <button class="btn btn-primary w-full" onclick="createPatient()">Créer le dossier</button>
+    </div>
+  </div>
+</div>
+
+<script src="js/auth.js"></script>
+<script src="js/patients.js"></script>
+<script>
+const session = authRequire();
+authInjectUser();
+
+let activeStatut = 'all';
+let photoBase64  = '';
+
+function setStatut(el, s) {
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  activeStatut = s;
+  renderGrid();
 }
 
-/* ─── Démarrer / Arrêter ─────────────────── */
-function voiceToggle() {
-  if (!recognition) return;
-  if (voiceActive) recognition.stop();
-  else             recognition.start();
+function renderGrid() {
+  const q   = document.getElementById('search').value.trim();
+  let list  = q ? patientsSearch(q) : patientsLoad();
+  if (activeStatut !== 'all') list = list.filter(p => p.statut === activeStatut);
+
+  const label = document.getElementById('count-label');
+  label.textContent = `${list.length} patient${list.length !== 1 ? 's' : ''} dans l'annuaire`;
+
+  const grid = document.getElementById('grid');
+  if (!list.length) {
+    grid.innerHTML = '<div class="no-patients" style="grid-column:1/-1">Aucun patient trouvé — commencez par en créer un.</div>';
+    return;
+  }
+
+  const STATUT_BADGE = { stable: 'badge-stable', suivi: 'badge-suivi', grave: 'badge-grave' };
+  const STATUT_LABEL = { stable: '🟢 Stable', suivi: '🟡 En suivi', grave: '🔴 Grave' };
+
+  grid.innerHTML = list.map(p => {
+    const avatarHtml = p.photo
+      ? `<img class="patient-avatar" src="${p.photo}" alt="Portrait">`
+      : `<div class="patient-avatar-placeholder">🧑</div>`;
+    const nbSeances = (p.seances || []).length;
+    const lastSeen  = p.updatedAt ? formatDate(p.updatedAt) : '—';
+    return `
+      <a class="patient-card" href="patient.html?id=${p.id}">
+        <div class="patient-card-head">
+          ${avatarHtml}
+          <div>
+            <div class="patient-name">${p.prenom} ${p.nom}</div>
+            <div class="patient-meta">${p.age ? p.age + ' ans · ' : ''}${p.origine || '—'}</div>
+          </div>
+        </div>
+        ${p.diagnostic ? `<p style="font-size:0.8rem;color:var(--text3);font-style:italic;margin-bottom:0.4rem">${p.diagnostic}</p>` : ''}
+        <div class="patient-card-footer">
+          <span class="badge ${STATUT_BADGE[p.statut] || 'badge-suivi'}">${STATUT_LABEL[p.statut] || p.statut}</span>
+          <span>${nbSeances} séance${nbSeances !== 1 ? 's' : ''}</span>
+        </div>
+      </a>
+    `;
+  }).join('');
 }
+
+function openModal() {
+  document.getElementById('modal').classList.remove('hidden');
+  document.getElementById('f-nom').focus();
+}
+function closeModal() {
+  document.getElementById('modal').classList.add('hidden');
+  document.getElementById('modal-error').classList.add('hidden');
+  ['f-nom','f-prenom','f-age','f-origine','f-profession','f-diagnostic'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-sexe').value = '';
+  document.getElementById('f-statut').value = 'suivi';
+  photoBase64 = '';
+  document.getElementById('photo-preview').style.display = 'none';
+  document.getElementById('photo-placeholder').style.display = 'flex';
+}
+
+function loadPhoto(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    photoBase64 = e.target.result;
+    document.getElementById('photo-preview').src = photoBase64;
+    document.getElementById('photo-preview').style.display = 'block';
+    document.getElementById('photo-placeholder').style.display = 'none';
+  };
+  reader.readAsDataURL(file);
+}
+
+function createPatient() {
+  const nom    = document.getElementById('f-nom').value.trim();
+  const prenom = document.getElementById('f-prenom').value.trim();
+  if (!nom || !prenom) {
+    document.getElementById('modal-error').classList.remove('hidden');
+    return;
+  }
+  const p = patientsCreate({
+    nom, prenom,
+    age:        document.getElementById('f-age').value,
+    sexe:       document.getElementById('f-sexe').value,
+    origine:    document.getElementById('f-origine').value.trim(),
+    profession: document.getElementById('f-profession').value.trim(),
+    statut:     document.getElementById('f-statut').value,
+    diagnostic: document.getElementById('f-diagnostic').value.trim(),
+    photo:      photoBase64
+  });
+  closeModal();
+  renderGrid();
+  window.location.href = 'patient.html?id=' + p.id;
+}
+
+renderGrid();
+</script>
+</body>
+</html>
