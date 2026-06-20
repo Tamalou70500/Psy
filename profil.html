@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Profil — Cabinet du Dr. Abernathy Lucius</title>
+<link rel="stylesheet" href="css/style.css">
+<script>
+(function(){
+  var t = localStorage.getItem('psy_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+  var f = localStorage.getItem('psy_font') || 'victorien';
+  document.documentElement.setAttribute('data-font', f);
+  window.setTheme = function(t){ document.documentElement.setAttribute('data-theme', t); localStorage.setItem('psy_theme', t); renderPrefsPanel(); };
+  window.setFont  = function(f){ document.documentElement.setAttribute('data-font', f);  localStorage.setItem('psy_font', f);  renderPrefsPanel(); };
+})();
+</script>
+<style>
+.profil-layout { display:grid; grid-template-columns:320px 1fr; gap:1px; background:var(--bdr); min-height:calc(100vh - 54px); }
+.profil-sidebar { background:var(--ink2); padding:2rem 1.5rem; }
+.profil-main    { background:var(--ink);  padding:2rem 2.5rem; }
+
+/* Avatar */
+.avatar-wrap { text-align:center; margin-bottom:1.75rem; }
+.avatar-img { width:100px; height:100px; border-radius:50%; object-fit:cover; border:2px solid var(--bdr2); filter:sepia(10%); display:block; margin:0 auto .75rem; }
+.avatar-ph { width:100px; height:100px; border-radius:50%; background:var(--ink3); border:2px solid var(--bdr); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:2rem; color:var(--parch3); margin:0 auto .75rem; }
+.medecin-name { font-family:'Playfair Display',serif; font-size:1.2rem; color:var(--parch); font-style:italic; }
+.medecin-role { font-family:'Cormorant Garamond',serif; font-size:0.68rem; letter-spacing:0.14em; text-transform:uppercase; color:var(--parch4); margin-top:3px; }
+.medecin-cabinet { font-family:'EB Garamond',serif; font-size:0.88rem; color:var(--gold); margin-top:4px; font-style:italic; }
+
+/* Badges */
+.badges-section { margin-top:1.5rem; }
+.badges-title { font-family:'Cormorant Garamond',serif; font-size:0.65rem; letter-spacing:0.2em; text-transform:uppercase; color:var(--parch3); margin-bottom:.75rem; display:flex; align-items:center; gap:.5rem; }
+.badges-title::after { content:''; flex:1; height:1px; background:var(--bdr); }
+.badge-item { display:flex; align-items:center; gap:.6rem; padding:.5rem .6rem; border:1px solid var(--bdr); margin-bottom:4px; font-family:'EB Garamond',serif; font-size:.88rem; color:var(--parch2); }
+.badge-icon { font-size:1rem; flex-shrink:0; }
+.badge-date { font-family:'Cormorant Garamond',serif; font-size:.62rem; color:var(--parch4); margin-left:auto; }
+.no-badge { font-family:'EB Garamond',serif; font-size:.85rem; color:var(--parch4); font-style:italic; }
+
+/* Formulaire profil */
+.section-head { font-family:'Playfair Display',serif; font-size:1rem; color:var(--gold-l); font-style:italic; margin-bottom:1.25rem; display:flex; align-items:center; gap:.75rem; }
+.section-head::after { content:''; flex:1; height:1px; background:var(--bdr); }
+.form-grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:.75rem; margin-bottom:.75rem; }
+.cabinet-opts { display:flex; gap:6px; flex-wrap:wrap; margin-top:.35rem; }
+.cabinet-btn { font-family:'Cormorant Garamond',serif; font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; padding:.3rem .9rem; border:1px solid var(--bdr); background:transparent; color:var(--parch3); cursor:pointer; transition:all .15s; }
+.cabinet-btn:hover { border-color:var(--bdr2); color:var(--parch2); }
+.cabinet-btn.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
+
+/* Panneau préfs */
+.prefs-panel { background:var(--ink2); border:1px solid var(--bdr); padding:1.5rem; margin-bottom:1.5rem; }
+.theme-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin-bottom:1rem; }
+.theme-swatch { padding:.75rem .5rem; border:2px solid transparent; cursor:pointer; text-align:center; transition:border-color .15s; }
+.theme-swatch:hover { border-color:var(--bdr2); }
+.theme-swatch.active { border-color:var(--gold); }
+.theme-swatch-preview { height:32px; border-radius:2px; margin-bottom:.4rem; border:1px solid rgba(0,0,0,.1); }
+.theme-swatch-name { font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; color:var(--parch3); }
+
+.font-grid { display:flex; flex-direction:column; gap:6px; }
+.font-opt { padding:.65rem 1rem; border:1px solid var(--bdr); cursor:pointer; transition:all .15s; display:flex; align-items:center; gap:1rem; }
+.font-opt:hover { border-color:var(--bdr2); }
+.font-opt.active { border-color:var(--gold); background:var(--gold-dim); }
+.font-preview { font-size:1rem; color:var(--parch); flex:1; }
+.font-label { font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; color:var(--parch3); }
+
+@media(max-width:768px){ .profil-layout{grid-template-columns:1fr} .form-grid-2{grid-template-columns:1fr} }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <span class="navbar-brand">Dr. Abernathy Lucius</span>
+  <div class="navbar-sep"></div>
+  <div class="navbar-links">
+    <a href="annuaire.html">Dossiers</a>
+    <a href="lexique.html">Lexique</a>
+    <a href="visite.html">Visite</a>
+    <a href="cours.html">Cours</a>
+    <a href="examen.html">Examens</a>
+  </div>
+  <div class="navbar-right">
+    <a href="profil.html" class="btn btn-sm btn-gold">Mon profil</a>
+    <button class="btn btn-sm" id="logout-btn">Quitter</button>
+  </div>
+</nav>
+
+<div class="profil-layout">
+  <!-- SIDEBAR -->
+  <aside class="profil-sidebar">
+    <div class="avatar-wrap" id="avatar-wrap">
+      <div class="avatar-ph">?</div>
+      <div class="medecin-name">Chargement…</div>
+    </div>
+    <div class="badges-section">
+      <div class="badges-title">Mes badges</div>
+      <div id="badges-list"><span class="no-badge">Aucun badge encore — passez vos examens !</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="profil-main">
+    <!-- PROFIL -->
+    <div class="section-head">Informations du cabinet</div>
+    <div class="form-grid-2">
+      <div class="form-group"><label class="form-label">Prénom</label><input class="form-control" id="p-prenom" placeholder="Abernathy"></div>
+      <div class="form-group"><label class="form-label">Nom</label><input class="form-control" id="p-nom" placeholder="Lucius"></div>
+    </div>
+    <div class="form-grid-2">
+      <div class="form-group"><label class="form-label">Âge</label><input class="form-control" type="number" id="p-age" placeholder="42"></div>
+      <div class="form-group"><label class="form-label">Email</label><input class="form-control" id="p-email" disabled style="opacity:.5"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Photo de personnage (URL Discord / Imgur)</label>
+      <input class="form-control" id="p-photo" placeholder="https://cdn.discordapp.com/…" oninput="previewPhoto(this)">
+      <div style="display:flex;align-items:center;gap:1rem;margin-top:.6rem">
+        <div id="p-photo-ph" style="width:52px;height:52px;border-radius:50%;background:var(--ink3);border:1px dashed var(--bdr2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.2rem;color:var(--parch4)">✦</div>
+        <img id="p-photo-preview" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--bdr2);display:none;filter:sepia(10%)" alt="">
+        <span style="font-family:'Cormorant Garamond',serif;font-size:.72rem;color:var(--parch4);font-style:italic">Lien direct vers l'image</span>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Cabinet de</label>
+      <div class="cabinet-opts" id="cabinet-opts">
+        <button class="cabinet-btn" onclick="setCabinet(this,'Sunset')">Sunset</button>
+        <button class="cabinet-btn" onclick="setCabinet(this,'Strawberry')">Strawberry</button>
+        <button class="cabinet-btn" onclick="setCabinet(this,'Blackwater')">Blackwater</button>
+        <button class="cabinet-btn" onclick="setCabinet(this,'Armadillo')">Armadillo</button>
+        <button class="cabinet-btn" onclick="setCabinet(this,'Valentine')">Valentine</button>
+        <button class="cabinet-btn" onclick="setCabinet(this,'Rhodes')">Rhodes</button>
+      </div>
+    </div>
+    <button class="btn btn-gold" onclick="saveProfile()" id="save-btn" style="margin-top:.5rem">Enregistrer le profil</button>
+    <div id="save-msg" style="display:none;margin-top:.5rem;font-family:'EB Garamond',serif;font-size:.88rem;color:#6abf6a;font-style:italic">✓ Profil sauvegardé.</div>
+
+    <hr class="divider mt-3">
+
+    <!-- PRÉFÉRENCES -->
+    <div class="section-head mt-3">Personnalisation de l'interface</div>
+    <div class="prefs-panel">
+      <div class="label mb-1">Thème de couleur</div>
+      <div class="theme-grid" id="theme-grid"></div>
+      <div class="label mb-1" style="margin-top:1rem">Style de police</div>
+      <div class="font-grid" id="font-grid"></div>
+    </div>
+
+    <!-- PROGRESSION -->
+    <div class="section-head mt-3">Progression médicale</div>
+    <div id="progression-wrap"></div>
+  </main>
+</div>
+
+<script type="module" src="js/auth-firebase.js"></script>
+<script type="module" src="js/patients.js"></script>
+<script>
+var THEMES = [
+  { id:'dark',      name:'Sombre',    bg:'#070503', accent:'#B8843A' },
+  { id:'parchment', name:'Parchemin', bg:'#F5EDD8', accent:'#8B6914' },
+  { id:'day',       name:'Jour',      bg:'#F8FAFC', accent:'#2563A8' },
+  { id:'cabinet',   name:'Cabinet',   bg:'#F0F5F0', accent:'#2D6A4F' },
+  { id:'midnight',  name:'Minuit',    bg:'#0A0F1E', accent:'#C8A84A' },
+  { id:'autumn',    name:'Automne',   bg:'#2A1A0A', accent:'#D4762A' },
+  { id:'gazette',   name:'Gazette',   bg:'#E8E4DC', accent:'#8B1A1A' },
+  { id:'prairie',   name:'Prairie',   bg:'#0A1A0F', accent:'#7AB870' },
+  { id:'urgence',   name:'Urgence',   bg:'#0A0505', accent:'#C83030' },
+];
+var FONTS = [
+  { id:'victorien', name:'Victorien',    preview:'Cabinet du Dr. Lucius',  css:"'Playfair Display', 'EB Garamond', serif" },
+  { id:'medical',   name:'Médical',      preview:'Cabinet du Dr. Lucius',  css:"'Libre Baskerville', 'Source Serif Pro', serif" },
+  { id:'sansserif', name:'Sans-serif',   preview:'Cabinet du Dr. Lucius',  css:"'Raleway', 'Lato', sans-serif" },
+  { id:'presse',    name:'Presse 1904',  preview:'Cabinet du Dr. Lucius',  css:"'Abril Fatface', 'Libre Baskerville', serif" },
+  { id:'manuscrit', name:'Manuscrit',    preview:'Cabinet du Dr. Lucius',  css:"'Cinzel', 'Crimson Text', serif" },
+  { id:'technique', name:'Technique',    preview:'Cabinet du Dr. Lucius',  css:"'Josefin Sans', 'IBM Plex Mono', monospace" },
+  { id:'doux',      name:'Doux',         preview:'Cabinet du Dr. Lucius',  css:"'Cormorant Garamond', 'Nunito', sans-serif" },
+];
+
+var EXAMEN_LABELS = {
+  e1:'Niveau 1 — Fondements', e2:'Niveau 2 — Praticien',
+  e3:'Niveau 3 — Spécialiste', e4:'Niveau Expert — Aliéniste',
+  s1:'Spé. Chirurgie', s2:'Spé. Aliénisme', s3:'Spé. Pharmacologie',
+  s4:'Spé. Épidémiologie', s5:'Spé. Médecine légale'
+};
+
+var currentCabinet = 'Sunset';
+var profile = null;
+
+function renderPrefsPanel(){
+  var curTheme = localStorage.getItem('psy_theme') || 'dark';
+  var curFont  = localStorage.getItem('psy_font')  || 'victorien';
+  var tg = document.getElementById('theme-grid');
+  var fg = document.getElementById('font-grid');
+  if(!tg || !fg) return;
+
+  tg.innerHTML = THEMES.map(function(t){
+    return '<div class="theme-swatch '+(t.id===curTheme?'active':'')+'" onclick="setTheme(\''+t.id+'\')">'
+      + '<div class="theme-swatch-preview" style="background:'+t.bg+';border-bottom:3px solid '+t.accent+'"></div>'
+      + '<div class="theme-swatch-name">'+t.name+'</div></div>';
+  }).join('');
+
+  fg.innerHTML = FONTS.map(function(f){
+    return '<div class="font-opt '+(f.id===curFont?'active':'')+'" onclick="setFont(\''+f.id+'\')">'
+      + '<div class="font-preview" style="font-family:'+f.css+'">'+f.preview+'</div>'
+      + '<div class="font-label">'+f.name+'</div></div>';
+  }).join('');
+}
+
+// Attendre Firebase
+var waitFb = setInterval(function(){
+  if(!window._fbOnReady) return;
+  clearInterval(waitFb);
+  window._fbOnReady(function(user){
+    if(!user){ window.location.href = 'login.html'; return; }
+    document.getElementById('logout-btn').onclick = function(){ window._fbSignOut(); };
+    window._fbGetProfile().then(function(p){
+      profile = p;
+      if(p) populateForm(p);
+      renderPrefsPanel();
+    });
+  });
+}, 100);
+
+function populateForm(p){
+  document.getElementById('p-prenom').value = p.prenom || '';
+  document.getElementById('p-nom').value    = p.nom    || '';
+  document.getElementById('p-age').value    = p.age    || '';
+  document.getElementById('p-email').value  = p.email  || '';
+  document.getElementById('p-photo').value  = p.photo  || '';
+  currentCabinet = p.cabinet || 'Sunset';
+  if(p.photo){ document.getElementById('p-photo-preview').src = p.photo; document.getElementById('p-photo-preview').style.display='block'; document.getElementById('p-photo-ph').style.display='none'; }
+
+  // Cabinet actif
+  document.querySelectorAll('.cabinet-btn').forEach(function(b){
+    b.classList.toggle('active', b.textContent.trim() === currentCabinet);
+  });
+
+  // Sidebar
+  var avEl = document.getElementById('avatar-wrap');
+  var avHtml = p.photo
+    ? '<img class="avatar-img" src="'+p.photo+'" alt="" onerror="this.style.display=\'none\';this.nextSibling.style.display=\'flex\'">'
+      + '<div class="avatar-ph" style="display:none">'+(p.prenom?.[0]||'')+(p.nom?.[0]||'')+'</div>'
+    : '<div class="avatar-ph">'+(p.prenom?.[0]||'?')+(p.nom?.[0]||'')+'</div>';
+  avEl.innerHTML = avHtml
+    + '<div class="medecin-name">'+(p.prenom||'')+' '+(p.nom||'')+'</div>'
+    + '<div class="medecin-role">'+(p.role==='admin'?'Administrateur':'Médecin')+'</div>'
+    + '<div class="medecin-cabinet">Cabinet de '+(p.cabinet||'Sunset')+'</div>';
+
+  // Badges
+  var bl = document.getElementById('badges-list');
+  if(p.badges && p.badges.length){
+    bl.innerHTML = p.badges.map(function(b){
+      return '<div class="badge-item"><span class="badge-icon">'+b.icon+'</span><span>'+b.label+'</span>'
+        + '<span class="badge-date">'+(b.date?new Date(b.date).toLocaleDateString('fr-FR'):'')+'</span></div>';
+    }).join('');
+  } else {
+    bl.innerHTML = '<span class="no-badge">Aucun badge — passez vos examens !</span>';
+  }
+
+  // Progression
+  var pw = document.getElementById('progression-wrap');
+  var examens = p.examens || {};
+  var html = '<div style="display:flex;flex-direction:column;gap:6px">';
+  Object.entries(EXAMEN_LABELS).forEach(function(e){
+    var id = e[0]; var label = e[1];
+    var res = examens[id];
+    html += '<div style="display:flex;align-items:center;gap:1rem;padding:.5rem .75rem;background:var(--ink2);border:1px solid var(--bdr)">'
+      + '<span style="font-family:\'EB Garamond\',serif;font-size:.9rem;color:var(--parch2);flex:1">'+label+'</span>'
+      + (res ? '<span style="font-family:\'Courier Prime\',monospace;font-size:.72rem;color:'+(res.passed?'#6abf6a':'#c07070')+'">'+res.pct+'% — '+(res.passed?'Validé':'Échoué')+'</span>' : '<span style="font-family:\'Cormorant Garamond\',serif;font-size:.68rem;color:var(--parch4);letter-spacing:.08em;text-transform:uppercase">Non passé</span>')
+      + '</div>';
+  });
+  pw.innerHTML = html + '</div>';
+}
+
+function previewPhoto(input){
+  var url = input.value.trim();
+  var img = document.getElementById('p-photo-preview'); var ph = document.getElementById('p-photo-ph');
+  if(url){ img.src=url; img.style.display='block'; ph.style.display='none'; }
+  else   { img.style.display='none'; ph.style.display='flex'; }
+}
+function setCabinet(btn, val){
+  currentCabinet = val;
+  document.querySelectorAll('.cabinet-btn').forEach(function(b){ b.classList.remove('active'); });
+  btn.classList.add('active');
+}
+function saveProfile(){
+  var btn = document.getElementById('save-btn');
+  btn.textContent = 'Enregistrement…'; btn.disabled = true;
+  window._fbUpdateProfile({
+    prenom:  document.getElementById('p-prenom').value.trim(),
+    nom:     document.getElementById('p-nom').value.trim(),
+    age:     document.getElementById('p-age').value,
+    photo:   document.getElementById('p-photo').value.trim(),
+    cabinet: currentCabinet,
+  }).then(function(){
+    btn.textContent = 'Enregistrer le profil'; btn.disabled = false;
+    document.getElementById('save-msg').style.display = 'block';
+    setTimeout(function(){ document.getElementById('save-msg').style.display='none'; }, 3000);
+    window._fbGetProfile().then(function(p){ if(p) populateForm(p); });
+  });
+}
+</script>
+</body>
+</html>
