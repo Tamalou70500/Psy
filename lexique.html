@@ -184,11 +184,7 @@
     });
   };
   
-  document.addEventListener('DOMContentLoaded', function(){
-    var current = localStorage.getItem('psy_theme') || 'dark';
-    document.querySelectorAll('.theme-btn').forEach(function(b){
-      b.classList.toggle('active', b.dataset.theme === current);
-    });
+  
   });
 })();
 </script>
@@ -242,7 +238,7 @@
 <div class="stat-bar"><span class="label" id="count-label">—</span></div>
 <div class="entries" id="entries"></div>
 
-<script src="js/auth.js"></script>
+
 <script>
 const session = authRequire(); authInjectUser();
 document.getElementById('logout-btn').onclick = authLogout;
@@ -936,6 +932,21 @@ function cpAll(btn,text){
 }
 
 buildSubFilters(); render();
+</script>
+
+<script type="module" src="js/auth-firebase.js"></script>
+<script src="js/guard.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var t = localStorage.getItem('psy_theme') || 'dark';
+  var f = localStorage.getItem('psy_font')  || 'victorien';
+  document.documentElement.setAttribute('data-theme', t);
+  document.documentElement.setAttribute('data-font', f);
+  document.querySelectorAll('.theme-btn').forEach(function(b){
+    b.classList.toggle('active', b.dataset.theme === t);
+  });
+  guardPage({ minGrade: 'stagiaire' });
+});
 </script>
 </body>
 </html>
