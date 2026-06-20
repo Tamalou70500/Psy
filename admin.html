@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Administration — Cabinet du Dr. Abernathy Lucius</title>
+<link rel="stylesheet" href="css/style.css">
+<script>
+(function(){
+  var t = localStorage.getItem('psy_theme') || 'dark';
+  document.documentElement.setAttribute('data-theme', t);
+})();
+</script>
+<style>
+.admin-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(300px,1fr)); gap:1px; background:var(--bdr); margin:1rem 0; }
+.admin-card { background:var(--ink2); padding:1.25rem 1.5rem; }
+.stat-num { font-family:'Playfair Display',serif; font-size:2.5rem; color:var(--gold-l); font-weight:700; line-height:1; margin-bottom:.25rem; }
+.stat-label { font-family:'Cormorant Garamond',serif; font-size:.72rem; letter-spacing:.14em; text-transform:uppercase; color:var(--parch3); }
+.medecin-row { display:flex; align-items:center; gap:1rem; padding:.75rem 1rem; background:var(--ink2); border-bottom:1px solid var(--bdr); }
+.medecin-row:last-child { border-bottom:none; }
+.med-avatar { width:36px; height:36px; border-radius:50%; object-fit:cover; border:1px solid var(--bdr2); flex-shrink:0; }
+.med-avatar-ph { width:36px; height:36px; border-radius:50%; background:var(--ink3); border:1px solid var(--bdr); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:.8rem; color:var(--parch3); flex-shrink:0; }
+.med-info { flex:1; }
+.med-name { font-family:'EB Garamond',serif; font-size:.95rem; color:var(--parch); }
+.med-meta { font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.08em; text-transform:uppercase; color:var(--parch4); }
+.role-select { font-family:'Cormorant Garamond',serif; font-size:.72rem; background:var(--ink3); border:1px solid var(--bdr); color:var(--parch); padding:.25rem .5rem; cursor:pointer; }
+.patient-row { display:flex; align-items:center; gap:1rem; padding:.75rem 1rem; background:var(--ink2); border-bottom:1px solid var(--bdr); }
+.patient-row:last-child { border-bottom:none; }
+.del-btn { background:transparent; border:1px solid rgba(154,24,24,.35); color:#b05050; font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; padding:.25rem .7rem; cursor:pointer; transition:all .15s; }
+.del-btn:hover { background:rgba(154,24,24,.12); border-color:var(--wax-l); color:#d07070; }
+.access-denied { text-align:center; padding:4rem 1rem; }
+.access-denied h2 { color:#c07070; margin-bottom:1rem; }
+</style>
+</head>
+<body>
+<nav class="navbar">
+  <span class="navbar-brand">Dr. Abernathy Lucius</span>
+  <div class="navbar-sep"></div>
+  <div class="navbar-links">
+    <a href="annuaire.html">Dossiers</a>
+    <a href="lexique.html">Lexique</a>
+    <a href="visite.html">Visite</a>
+    <a href="cours.html">Cours</a>
+    <a href="examen.html">Examens</a>
+  </div>
+  <div class="navbar-right">
+    <a href="profil.html" class="btn btn-sm btn-gold">Mon profil</a>
+    <button class="btn btn-sm" id="logout-btn">Quitter</button>
+  </div>
+</nav>
+
+<div class="container-wide" id="main-content">
+  <p class="text-muted italic mt-3" style="text-align:center">Vérification des droits d'administration…</p>
+</div>
+
+<script type="module" src="js/auth-firebase.js"></script>
+<script type="module">
+import { getFirestore, collection, getDocs, doc, deleteDoc, updateDoc, query, orderBy } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-firestore.js";
+
+var waitFb = setInterval(async function(){
+  if(!window._fbOnReady) return;
+  clearInterval(waitFb);
+
+  window._fbOnReady(async function(user){
+    if(!user){ window.location.href = 'login.html'; return; }
+    document.getElementById('logout-btn').onclick = function(){ window._fbSignOut(); };
+
+    var profile = await window._fbGetProfile();
+
+    if(!profile || profile.role !== 'admin'){
+      document.getElementById('main-content').innerHTML = `
+        <div class="access-denied">
+          <h2>⛔ Accès refusé</h2>
+          <p class="text-muted">Cette page est réservée à l'administrateur du cabinet.</p>
+          <a href="annuaire.html" class="btn mt-2">← Retour</a>
+        </div>`;
+      return;
+    }
+
+    // Admin confirmé — charger les données
+    var db = window._fbDb;
+    var medecinsSnap = await getDocs(collection(db, 'medecins'));
+    var patientsSnap = await getDocs(collection(db, 'patients'));
+    var medecins = medecinsSnap.docs.map(d => ({id:d.id,...d.data()}));
+    var patients = patientsSnap.docs.map(d => ({id:d.id,...d.data()}));
+
+    window._adminMedecins = medecins;
+    window._adminPatients = patients;
+    window._adminDb       = db;
+
+    renderAdmin(medecins, patients);
+  });
+}, 100);
+
+function renderAdmin(medecins, patients){
+  var html = `
+    <div class="flex-between mt-2 mb-2">
+      <h2>Administration du cabinet</h2>
+      <span class="badge badge-gold">Admin</span>
+    </div>
+
+    <div class="admin-grid mb-3">
+      <div class="admin-card"><div class="stat-num">${medecins.length}</div><div class="stat-label">Médecins enregistrés</div></div>
+      <div class="admin-card"><div class="stat-num">${patients.length}</div><div class="stat-label">Dossiers patients</div></div>
+      <div class="admin-card"><div class="stat-num">${medecins.filter(m=>m.role==='admin').length}</div><div class="stat-label">Administrateurs</div></div>
+      <div class="admin-card"><div class="stat-num">${patients.reduce((a,p)=>a+(p.seances?.length||0),0)}</div><div class="stat-label">Séances enregistrées</div></div>
+    </div>
+
+    <h3 style="margin-bottom:1rem;font-size:1rem">Médecins (${medecins.length})</h3>
+    <div class="card mb-3">
+      ${medecins.map(m => {
+        var av = m.photo
+          ? `<img class="med-avatar" src="${m.photo}" alt="" onerror="this.style.display='none';this.nextSibling.style.display='flex'">`
+            + `<div class="med-avatar-ph" style="display:none">${(m.prenom?.[0]||'')+(m.nom?.[0]||'')}</div>`
+          : `<div class="med-avatar-ph">${(m.prenom?.[0]||'?')+(m.nom?.[0]||'')}</div>`;
+        return `<div class="medecin-row">
+          ${av}
+          <div class="med-info">
+            <div class="med-name">${m.prenom||''} ${m.nom||''}</div>
+            <div class="med-meta">${m.email||''} · Cabinet de ${m.cabinet||'—'}</div>
+          </div>
+          <select class="role-select" onchange="changeRole('${m.id}',this.value)">
+            <option value="docteur" ${m.role==='docteur'?'selected':''}>Docteur</option>
+            <option value="personnel" ${m.role==='personnel'?'selected':''}>Personnel</option>
+            <option value="admin" ${m.role==='admin'?'selected':''}>Admin</option>
+          </select>
+        </div>`;
+      }).join('')}
+    </div>
+
+    <h3 style="margin-bottom:1rem;font-size:1rem">Dossiers patients (${patients.length})</h3>
+    <div class="card mb-3">
+      ${patients.length ? patients.map(p => `
+        <div class="patient-row">
+          <div style="flex:1;font-family:'EB Garamond',serif;font-size:.95rem;color:var(--parch)">${p.prenom||'—'} ${p.nom||''}</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:.68rem;letter-spacing:.08em;text-transform:uppercase;color:var(--parch4);margin-right:1rem">${p.diagnostic||'—'}</div>
+          <span class="badge badge-${p.statut||'suivi'}" style="margin-right:1rem">${p.statut||'suivi'}</span>
+          <button class="del-btn" onclick="deletePatient('${p.id}','${p.prenom} ${p.nom}')">Supprimer</button>
+        </div>`).join('') : '<p class="text-muted italic" style="padding:1rem">Aucun patient enregistré.</p>'}
+    </div>
+  `;
+  document.getElementById('main-content').innerHTML = html;
+}
+
+window.changeRole = async function(uid, role){
+  await updateDoc(doc(window._adminDb, 'medecins', uid), { role });
+};
+
+window.deletePatient = async function(id, name){
+  if(!confirm(`Supprimer définitivement le dossier de ${name} ?`)) return;
+  await deleteDoc(doc(window._adminDb, 'patients', id));
+  window._adminPatients = window._adminPatients.filter(p => p.id !== id);
+  renderAdmin(window._adminMedecins, window._adminPatients);
+};
+</script>
+</body>
+</html>
