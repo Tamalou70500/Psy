@@ -1,5 +1,5 @@
 /* ═══════════════════════════════════════════════════════════
-   auth-firebase.js — Auth Google + Profils + Grades
+   auth-firebase.js — Auth Google + Profils + Grades — v3
 ═══════════════════════════════════════════════════════════ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import {
