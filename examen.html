@@ -214,6 +214,7 @@
       <button class="theme-btn theme-btn-day"       data-theme="day"       onclick="setTheme('day')"       title="Jour"></button>
     </div>
     <span class="navbar-user" id="navbar-user"></span>
+    <a href="profil.html" class="btn btn-sm btn-gold">Mon profil</a>
     <button class="btn btn-sm" id="logout-btn">Quitter</button>
   </div>
 </nav>
@@ -254,15 +255,65 @@
   </div>
 </div>
 
-<script src="js/auth.js"></script>
+<script type="module" src="js/auth-firebase.js"></script>
 <script>
-const session = authRequire(); authInjectUser();
-document.getElementById('logout-btn').onclick = authLogout;
+// Auth Firebase
+var waitFbExam = setInterval(function(){
+  if(!window._fbOnReady) return;
+  clearInterval(waitFbExam);
+  window._fbOnReady(function(user){
+    if(!user){ window.location.href='login.html'; return; }
+    document.getElementById('logout-btn').onclick = function(){ window._fbSignOut(); };
+    window._fbGetProfile().then(function(p){
+      if(p){
+        var nb = document.getElementById('navbar-user');
+        if(nb) nb.textContent = (p.prenom||'') + ' ' + (p.nom||'');
+        // Charger scores Firebase
+        if(p.examens){
+          Object.entries(p.examens).forEach(function(e){
+            var stored = JSON.parse(localStorage.getItem('psy_exam_scores')||'{}');
+            if(!stored[e[0]] || e[1].pct > (stored[e[0]]?.pct||0)){
+              stored[e[0]] = e[1];
+              localStorage.setItem('psy_exam_scores', JSON.stringify(stored));
+            }
+          });
+        }
+      }
+    });
+  });
+}, 100);
+
 document.addEventListener('DOMContentLoaded', function(){
   var t = localStorage.getItem('psy_theme') || 'dark';
   document.querySelectorAll('.theme-btn').forEach(function(b){ b.classList.toggle('active', b.dataset.theme === t); });
   renderAccueil();
 });
+
+// Rotation des questions théoriques (hors cas cliniques)
+function shuffleQuestions(questions){
+  // Séparer théorie et cas cliniques
+  var theorie = [];
+  var cas = [];
+  var currentPartie = '';
+  questions.forEach(function(q){
+    if(q.partie) currentPartie = q.partie;
+    var qWithPartie = Object.assign({}, q);
+    if(q.type === 'cas' || (currentPartie && currentPartie.includes('Mise en situation'))){
+      cas.push(qWithPartie);
+    } else {
+      theorie.push(qWithPartie);
+    }
+  });
+  // Mélanger la théorie
+  for(var i = theorie.length-1; i > 0; i--){
+    var j = Math.floor(Math.random()*(i+1));
+    var tmp = theorie[i]; theorie[i] = theorie[j]; theorie[j] = tmp;
+  }
+  // Remettre les titres de parties
+  if(theorie.length > 0) theorie[0].partie = 'Partie I — Théorie';
+  if(cas.length > 0) cas[0].partie = 'Partie II — Mise en situation';
+  return theorie.concat(cas);
+}
 
 /* ══════════════════════════════════════════════════════════
    DONNÉES DES EXAMENS
@@ -566,7 +617,7 @@ function renderAccueil(){
 function startExamen(id){
   var exam = EXAMENS.find(function(e){ return e.id === id; });
   if(!exam) return;
-  examState = { examId: id, questions: exam.questions, current: 0, answers: [], errors: [], score: 0 };
+  examState = { examId: id, questions: shuffleQuestions(exam.questions.slice()), current: 0, answers: [], errors: [], score: 0 };
   document.getElementById('exam-running-title').textContent = exam.title;
   show('view-exam');
   renderQuestion();
@@ -683,12 +734,16 @@ function showResult(){
   else if(pct >= 80){ mention = 'Reçu avec satisfaction'; mentionColor = 'color:#4a9a4a'; }
   else { mention = 'Reçu — mention passable'; mentionColor = 'color:#6abf6a'; }
 
-  // Sauvegarder
+  // Sauvegarder localement
   var scores = JSON.parse(localStorage.getItem('psy_exam_scores')||'{}');
   var prev = scores[examState.examId];
   if(!prev || pct > prev.pct){
-    scores[examState.examId] = { pct: pct, passed: passed, date: new Date().toLocaleDateString('fr-FR') };
+    scores[examState.examId] = { pct: pct, passed: passed, mention: mention, date: new Date().toLocaleDateString('fr-FR') };
     localStorage.setItem('psy_exam_scores', JSON.stringify(scores));
+  }
+  // Sauvegarder sur Firebase
+  if(window._fbSaveExam){
+    window._fbSaveExam(examState.examId, pct, passed, mention);
   }
 
   // Diplôme
