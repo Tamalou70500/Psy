@@ -279,7 +279,10 @@ document.addEventListener('DOMContentLoaded', function(){
   document.querySelectorAll('.theme-btn').forEach(function(b){
     b.classList.toggle('active', b.dataset.theme === t);
   });
-  guardPage({ minGrade: 'stagiaire' });
+  guardPage({ minGrade: 'stagiaire', onReady: function(p){
+    if(p) populateForm(p);
+    renderPrefsPanel();
+  }});
 });
 </script>
 </body>
