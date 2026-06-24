@@ -82,6 +82,16 @@
 .error-correct { font-family:'Cormorant Garamond',serif; font-size:.68rem; letter-spacing:.06em; color:#6abf6a; }
 
 @media(max-width:640px){ .exam-wrap{padding:1rem} .result-details{gap:1rem} }
+
+/* ── SECTION CERTIFICATIONS ── */
+.exam-certif-sep { grid-column:1/-1; padding:1.5rem 0 .75rem; margin-top:.5rem; }
+.exam-certif-title { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--parch); font-style:italic; margin-bottom:.25rem; }
+.exam-certif-sub { font-family:'Cormorant Garamond',serif; font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--parch4); }
+.exam-certif-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:1px; background:var(--bdr); }
+.exam-certif-card { background:var(--ink2); padding:1rem 1.25rem; cursor:pointer; transition:background .2s; position:relative; }
+.exam-certif-card:hover:not(.locked) { background:var(--ink3); }
+.exam-certif-card.locked { opacity:.45; cursor:not-allowed; }
+.exam-certif-card.passed { border-left:3px solid #9a3ab8; }
 </style>
 </head>
 <body>
@@ -612,6 +622,50 @@ function renderAccueil(){
       + '<div class="exam-meta">'+e.meta.map(function(m){return '<span>'+m+'</span>';}).join('')+'</div>'
       + '</div>';
   }).join('');
+
+  // Section certifications de spécialisation
+  var scores=JSON.parse(localStorage.getItem('psy_exam_scores')||'{}');
+  var niv4done = scores['e4'] && scores['e4'].passed;
+  
+  grid.innerHTML += '<div class="exam-certif-sep">'
+    + '<div class="exam-certif-title">⭐ Certifications de spécialisation</div>'
+    + '<div class="exam-certif-sub">'+(niv4done
+        ? 'Niveau 4 validé — choisissez votre spécialisation'
+        : '🔒 Requiert la validation du Niveau 4')+'</div>'
+    + '</div>';
+
+  var SPE_CERTS = [
+    {id:'s1',icon:'🔪',title:'Chirurgien certifié',      disponible:true},
+    {id:'s2',icon:'🧠',title:'Aliéniste certifié',        disponible:true},
+    {id:'s3',icon:'⚖️',title:'Médecin légiste certifié', disponible:true},
+    {id:'s4',icon:'💊',title:'Pharmacologue certifié',    disponible:true},
+    {id:'s5',icon:'🏥',title:'Accoucheur certifié',        disponible:false},
+    {id:'s6',icon:'🦷',title:'Chirurgien-dentiste',        disponible:false},
+    {id:'s7',icon:'👁️',title:'Ophtalmologue certifié',   disponible:false},
+    {id:'s8',icon:'👂',title:'ORL certifié',               disponible:false},
+    {id:'s9',icon:'🧬',title:'Dermatologue certifié',      disponible:false},
+    {id:'s10',icon:'👶',title:'Pédiatre certifié',         disponible:false},
+    {id:'s11',icon:'☢️',title:'Radiologue certifié',       disponible:false},
+    {id:'s12',icon:'❤️',title:'Chirurgien cardiaque',      disponible:false},
+  ];
+
+  var certHtml = '<div class="exam-certif-grid">';
+  certHtml += SPE_CERTS.map(function(s){
+    var myScore = scores[s.id];
+    var passed = myScore && myScore.passed;
+    var locked = !niv4done || !s.disponible;
+    var wip = !s.disponible;
+    return '<div class="exam-certif-card'+(locked?' locked':'')+(passed?' passed':'')+'"'
+      +(locked?'':' onclick="window.location.href=\'examen-spe.html\'"')+'>'
+      +(passed?'<div class="spe-score-badge">'+myScore.pct+'%</div>':'')
+      +(wip?'<div class="lock-icon">🚧</div>':(locked?'<div class="lock-icon">🔒</div>':''))
+      +'<div style="font-size:1.4rem;margin-bottom:.4rem">'+s.icon+'</div>'
+      +'<div style="font-family:'Playfair Display',serif;font-size:.88rem;color:var(--parch);font-style:italic">'+s.title+'</div>'
+      +(wip?'<div style="font-family:'Cormorant Garamond',serif;font-size:.6rem;color:var(--parch4);text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem">En préparation</div>':'')
+      +'</div>';
+  }).join('');
+  certHtml += '</div>';
+  grid.innerHTML += certHtml;
 }
 
 /* ══ DÉMARRER ════════════════════════════════════════════════ */
