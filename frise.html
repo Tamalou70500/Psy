@@ -206,7 +206,7 @@ var COLS = {
 };
 var YEAR_MIN = 1793;
 var YEAR_MAX = 1907;
-var PX_PER_YEAR = 28;   /* espace entre années */
+var PX_PER_YEAR = 36;   /* espace entre années */
 var PAD_H = 80;         /* padding gauche/droit */
 var AXIS_OFFSET = 0;    /* décalage de l'axe depuis le centre = 0 (centré) */
 var SLOT_H = 100;       /* hauteur d'un slot haut ou bas */
@@ -270,23 +270,42 @@ function render(){
     return currentFilter === 'all' || e.type === currentFilter;
   });
 
-  /* Assigner top/bot — alternance globale, mais grouper par année */
+  /* Assigner top/bot — anti-collision intelligente */
   var byYear = {};
   visible.forEach(function(e){
     if(!byYear[e.y]) byYear[e.y] = [];
     byYear[e.y].push(e);
   });
 
-  var globalIdx = 0;
-  visible.forEach(function(e){
+  /* Trier par année puis assigner côtés en évitant collisions */
+  /* Deux événements dans un rayon de 3 ans doivent être côtés opposés */
+  var assignments = {};  /* idx → {side, stack} */
+  var lastTop = -999, lastBot = -999;  /* dernière année utilisée de chaque côté */
+
+  visible.forEach(function(e, globalIdx){
     var yearEvts = byYear[e.y];
     var posInYear = yearEvts.indexOf(e);
-    var side = (globalIdx % 2 === 0) ? 'top' : 'bot';
-    var stackOff = posInYear * 22;  /* si plusieurs evt même année */
+    var side;
+
+    if(posInYear > 0){
+      /* Même année : alterner */
+      var prevInYear = assignments[visible.indexOf(yearEvts[posInYear-1])];
+      side = prevInYear && prevInYear.side === 'top' ? 'bot' : 'top';
+    } else {
+      /* Choisir le côté le moins récemment utilisé dans un rayon de 4 ans */
+      var topDist = e.y - lastTop;
+      var botDist = e.y - lastBot;
+      if(topDist >= botDist){ side = 'top'; }
+      else { side = 'bot'; }
+    }
+
+    if(side === 'top') lastTop = e.y; else lastBot = e.y;
+
+    var stackOff = posInYear * 25;
+    assignments[globalIdx] = {side: side, stack: stackOff};
     e._side = side;
     e._stack = stackOff;
     e._idx = globalIdx;
-    globalIdx++;
   });
 
   /* ── Dessiner chaque événement ── */
@@ -295,7 +314,7 @@ function render(){
     var x = yearToX(e.y);
     var side = e._side;
     var stackOff = e._stack || 0;
-    var lineLen = 55 + stackOff;
+    var lineLen = 70 + stackOff;
     var dotY = axisY;
     var lineY1 = side === 'top' ? axisY - 6 : axisY + 6;
     var lineY2 = side === 'top' ? axisY - lineLen : axisY + lineLen;
