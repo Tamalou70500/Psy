@@ -395,6 +395,45 @@ var SPE_SIMPLE = [
 .exam-certif-card:hover:not(.locked) { background:var(--ink3); }
 .exam-certif-card.locked { opacity:.45; cursor:not-allowed; }
 .exam-certif-card.passed { border-left:3px solid #9a3ab8; }
+
+/* ── EXAMENS RÉORGANISÉS ── */
+.exam-section-title {
+  font-family: 'Playfair Display', serif; font-size: 1.1rem;
+  color: var(--parch); font-style: italic; font-weight: 400;
+  margin: 1.5rem 0 .3rem;
+}
+.exam-section-sub {
+  font-family: 'Cormorant Garamond', serif; font-size: .68rem;
+  letter-spacing: .1em; text-transform: uppercase; color: var(--parch4);
+  margin-bottom: 1rem;
+}
+.exam-section-divider {
+  height: 1px; background: var(--bdr); margin: 2rem 0 1.5rem;
+}
+.exam-tronc-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(240px,1fr));
+  gap: 1px; background: var(--bdr); margin-bottom: 1rem;
+}
+.exam-certif-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(150px,1fr));
+  gap: 1px; background: var(--bdr);
+}
+.exam-certif-card {
+  background: var(--ink2); padding: 1.1rem; text-align: center;
+  position: relative; transition: background .15s;
+}
+.exam-certif-card:hover:not(.locked) { background: var(--ink3); }
+.exam-certif-card.locked { opacity: .45; cursor: not-allowed; }
+.exam-certif-card.passed { border-top: 2px solid #9a3ab8; }
+.certif-title {
+  font-family: 'EB Garamond', serif; font-size: .88rem;
+  color: var(--parch); font-style: italic; line-height: 1.35;
+}
+.certif-wip {
+  font-family: 'Cormorant Garamond', serif; font-size: .58rem;
+  letter-spacing: .08em; text-transform: uppercase; color: var(--parch4);
+  margin-top: .3rem;
+}
 </style>
 </head>
 <body>
@@ -908,80 +947,93 @@ function renderAccueil(){
   var scores = JSON.parse(localStorage.getItem('psy_exam_scores')||'{}');
   var grid = document.getElementById('exam-grid');
   var COLS = {1:'#4a9a4a',2:'#c89820',3:'#4a80b8',4:'#9a3ab8'};
-  grid.innerHTML = EXAMENS.map(function(e,idx){
+
+  /* ── TRONC COMMUN ── */
+  var tronc = '<div class="exam-section-title">📋 Tronc commun — Formation de base</div>'
+    + '<div class="exam-section-sub">Progression obligatoire — chaque niveau débloque le suivant</div>'
+    + '<div class="exam-tronc-grid">';
+
+  tronc += EXAMENS.map(function(e,idx){
     var prevPassed = idx===0 || (scores['e'+idx] && scores['e'+idx].passed);
     var myScore = scores[e.id];
     var locked = !prevPassed;
     var passed = myScore && myScore.passed;
     var col = COLS[e.level]||'#c89820';
-    return '<div class="exam-card '+(locked?'locked':'')+(passed?' passed':'')+'"'
-      + (locked?'':' onclick="startExamen(\''+e.id+'\')"')+'>'
-      + (passed?'<div class="exam-score-badge">'+myScore.pct+'%</div>':'')
-      + (locked?'<div class="lock-icon">🔒</div>':'')
-      + '<div class="exam-level-tag"><span class="level-badge lv'+e.level+'" style="background:'+col+';color:#fff;width:22px;height:22px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:.75rem">'+e.level+'</span>'
-      + '<span style="font-family:Cormorant Garamond,serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--parch3)">Niveau '+e.level+'</span></div>'
-      + '<div class="exam-title">'+e.title+'</div>'
-      + '<div class="exam-desc">'+e.subtitle+'</div>'
-      + '<div class="exam-meta">'+e.meta.map(function(m){return '<span>'+m+'</span>';}).join('')+'</div>'
-      + '</div>';
+        return '<div class="exam-card '+(locked?'locked':'')+(passed?' passed':'')+'" data-examid="'+e.id+'"'+(locked?'':' style="cursor:pointer"')+'>'
+      +(passed?'<div class="exam-score-badge">'+myScore.pct+'%</div>':'')
+      +(locked?'<div class="lock-icon">🔒</div>':'')
+      +'<div class="exam-level-tag">'
+        +'<span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border-radius:50%;background:'+col+';color:#fff;font-size:.75rem">'+e.level+'</span>'
+        +'<span style="font-family:Cormorant Garamond,serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--parch3)"> Niveau '+e.level+'</span>'
+      +'</div>'
+      +'<div class="exam-title">'+e.title+'</div>'
+      +'<div class="exam-desc">'+e.subtitle+'</div>'
+      +'<div class="exam-meta">'+e.meta.map(function(m){return '<span>'+m+'</span>';}).join('')+'</div>'+'</div>';
   }).join('');
+  tronc += '</div>';
 
-  // Section certifications de spécialisation
-  var scores=JSON.parse(localStorage.getItem('psy_exam_scores')||'{}');
+  /* ── CERTIFICATIONS ── */
   var niv4done = scores['e4'] && scores['e4'].passed;
-  
-  grid.innerHTML += '<div class="exam-certif-sep">'
-    + '<div class="exam-certif-title">⭐ Certifications de spécialisation</div>'
-    + '<div class="exam-certif-sub">'+(niv4done
+  var certif = '<div class="exam-section-divider"></div>'
+    + '<div class="exam-section-title">⭐ Certifications de spécialisation</div>'
+    + '<div class="exam-section-sub">'+(niv4done
         ? 'Niveau 4 validé — choisissez votre spécialisation'
-        : '🔒 Requiert la validation du Niveau 4')+'</div>'
-    + '</div>';
+        : '🔒 Requiert la validation du Niveau 4')
+    + '</div>'
+    + '<div class="exam-certif-grid">';
 
   var SPE_CERTS = [
-    {id:'s1',icon:'🔪',title:'Chirurgien certifié',      disponible:true},
-    {id:'s2',icon:'🧠',title:'Aliéniste certifié',        disponible:true},
-    {id:'s3',icon:'⚖️',title:'Médecin légiste certifié', disponible:true},
-    {id:'s4',icon:'💊',title:'Pharmacologue certifié',    disponible:true},
-    {id:'s5',icon:'🏥',title:'Accoucheur certifié',        disponible:false},
-    {id:'s6',icon:'🦷',title:'Chirurgien-dentiste',        disponible:false},
-    {id:'s7',icon:'👁️',title:'Ophtalmologue certifié',   disponible:false},
-    {id:'s8',icon:'👂',title:'ORL certifié',               disponible:false},
-    {id:'s9',icon:'🧬',title:'Dermatologue certifié',      disponible:false},
-    {id:'s10',icon:'👶',title:'Pédiatre certifié',         disponible:false},
-    {id:'s11',icon:'☢️',title:'Radiologue certifié',       disponible:false},
-    {id:'s12',icon:'❤️',title:'Chirurgien cardiaque',      disponible:false},
+    {id:'s1', icon:'🔪', title:'Chirurgien certifié',        disponible:true},
+    {id:'s2', icon:'🧠', title:'Aliéniste certifié',          disponible:true},
+    {id:'s3', icon:'⚖️', title:'Médecin légiste certifié',   disponible:true},
+    {id:'s4', icon:'💊', title:'Pharmacologue certifié',      disponible:true},
+    {id:'s5', icon:'🏥', title:'Accoucheur certifié',          disponible:false},
+    {id:'s6', icon:'🦷', title:'Chirurgien-dentiste certifié', disponible:false},
+    {id:'s7', icon:'👁️', title:'Ophtalmologue certifié',     disponible:false},
+    {id:'s8', icon:'👂', title:'ORL certifié',                 disponible:false},
+    {id:'s9', icon:'🧬', title:'Dermatologue certifié',        disponible:false},
+    {id:'s10',icon:'👶', title:'Pédiatre certifié',            disponible:false},
+    {id:'s11',icon:'☢️', title:'Radiologue certifié',          disponible:false},
+    {id:'s12',icon:'❤️', title:'Chirurgien cardiaque',         disponible:false},
   ];
 
-  var certHtml = '<div class="exam-certif-grid">';
-  certHtml += SPE_CERTS.map(function(s){
+  certif += SPE_CERTS.map(function(s){
     var myScore = scores[s.id];
     var passed = myScore && myScore.passed;
     var locked = !niv4done || !s.disponible;
     var wip = !s.disponible;
-    var canStart = !locked && s.disponible;
+    var canStart = !locked;
     return '<div class="exam-certif-card'+(locked?' locked':'')+(passed?' passed':'')+'"'
       +' data-speid="'+s.id+'"'
-      +(canStart ? ' style="cursor:pointer"' : '')+'>'
+      +(canStart?' style="cursor:pointer"':'')+'>'
       +(passed?'<div class="spe-score-badge">'+myScore.pct+'%</div>':'')
-      +(wip?'<div class="lock-icon">🚧</div>':(locked?'<div class="lock-icon">🔒</div>':''))
-      +'<div style="font-size:1.4rem;margin-bottom:.4rem">'+s.icon+'</div>'
-      +'<div style="font-family:Playfair Display,serif;font-size:.88rem;color:var(--parch);font-style:italic">'+s.title+'</div>'
-      +(wip?'<div style="font-family:Cormorant Garamond,serif;font-size:.6rem;color:var(--parch4);text-transform:uppercase;letter-spacing:.08em;margin-top:.3rem">En pr&eacute;paration</div>':'')
+      +(wip?'<div class="lock-icon" style="font-size:.8rem">🚧</div>':(locked?'<div class="lock-icon">🔒</div>':''))
+      +'<div style="font-size:1.5rem;margin-bottom:.4rem">'+s.icon+'</div>'
+      +'<div class="certif-title">'+s.title+'</div>'
+      +(wip?'<div class="certif-wip">En pr&eacute;paration</div>':'')
       +'</div>';
   }).join('');
-  certHtml += '</div>';
-  grid.innerHTML += certHtml;
-  // Event delegation pour les certifs
+
+  certif += '</div>';
+
+  grid.innerHTML = tronc + certif;
+
+  // Event delegation pour tronc + certifs
   setTimeout(function(){
     var g = document.getElementById('exam-grid');
     if(g) g.addEventListener('click', function(e){
-      var card = e.target.closest('[data-speid]');
-      if(card && !card.classList.contains('locked')){
-        startSpeExamen(card.dataset.speid);
+      var tronc = e.target.closest('[data-examid]');
+      if(tronc && !tronc.classList.contains('locked')){
+        startExamen(tronc.dataset.examid); return;
+      }
+      var spe = e.target.closest('[data-speid]');
+      if(spe && !spe.classList.contains('locked')){
+        startSpeExamen(spe.dataset.speid);
       }
     });
   }, 100);
 }
+
 
 /* ══ DÉMARRER ════════════════════════════════════════════════ */
 function startExamen(id){
