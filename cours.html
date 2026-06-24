@@ -61,8 +61,14 @@
   display: flex; align-items: center; gap: 0.6rem;
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase;
-  color: var(--parch4);
+  color: var(--parch4); cursor: pointer; user-select: none;
+  transition: color .15s;
 }
+.level-header:hover { color: var(--parch2); }
+.level-chev { margin-left: auto; font-size: .6rem; transition: transform .25s; }
+.level-group.collapsed .level-chev { transform: rotate(-90deg); }
+.level-group.collapsed .cours-link { display: none; }
+.level-group.collapsed .cours-link.active { display: flex; }
 .level-badge {
   width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center;
@@ -408,25 +414,25 @@
   </div>
 
   <div class="level-group">
-    <div class="level-header"><span class="level-badge lv1">1</span>Niveau Fondements</div>
+    <div class="level-header" onclick="toggleLevel(this)"><span class="level-badge lv1">1</span>Niveau Fondements<span class="level-chev">▼</span></div>
     <div class="cours-link" onclick="showCours('c1')" id="link-c1">Hygiène & prévention</div>
     <div class="cours-link" onclick="showCours('c2')" id="link-c2">Anatomie humaine</div>
   </div>
 
   <div class="level-group">
-    <div class="level-header"><span class="level-badge lv2">2</span>Niveau Praticien</div>
+    <div class="level-header" onclick="toggleLevel(this)"><span class="level-badge lv2">2</span>Niveau Praticien<span class="level-chev">▼</span></div>
     <div class="cours-link" onclick="showCours('c3')" id="link-c3">Antisepsie & Lister</div>
     <div class="cours-link" onclick="showCours('c4')" id="link-c4">Chirurgie de campagne</div>
   </div>
 
   <div class="level-group">
-    <div class="level-header"><span class="level-badge lv3">3</span>Niveau Spécialiste</div>
+    <div class="level-header" onclick="toggleLevel(this)"><span class="level-badge lv3">3</span>Niveau Spécialiste<span class="level-chev">▼</span></div>
     <div class="cours-link" onclick="showCours('c5')" id="link-c5">Maladies infectieuses</div>
     <div class="cours-link" onclick="showCours('c6')" id="link-c6">Pharmacologie avancée</div>
   </div>
 
   <div class="level-group">
-    <div class="level-header"><span class="level-badge lv4">★</span>Niveau Expert</div>
+    <div class="level-header" onclick="toggleLevel(this)"><span class="level-badge lv4">★</span>Niveau Expert<span class="level-chev">▼</span></div>
     <div class="cours-link" onclick="showCours('c7')" id="link-c7">Neurologie & Psychiatrie</div>
     <div class="cours-link" onclick="showCours('c8')" id="link-c8">L'Aliénisme & Freud</div>
   </div>
@@ -802,6 +808,11 @@ function markRead(id){
 
 /* ══ AFFICHAGE DES COURS ══════════════════════════════════ */
 var currentCours = null;
+
+function toggleLevel(header){
+  var group = header.parentElement;
+  group.classList.toggle('collapsed');
+}
 
 function showCours(id){
   var c = COURS[id];
