@@ -350,6 +350,17 @@
   font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.2em;
   text-transform:uppercase; color:var(--gold); font-style:normal;
 }
+
+/* ── ACCORDÉON SPÉCIALISATIONS ── */
+.spe-accord-item { border:1px solid var(--bdr); margin-bottom:1px; background:var(--ink2); }
+.spe-accord-header { display:flex; align-items:center; gap:1rem; padding:1rem 1.25rem; cursor:pointer; transition:background .15s; }
+.spe-accord-header:hover { background:var(--ink3); }
+.spe-accord-icon { font-size:1.5rem; flex-shrink:0; }
+.spe-accord-info { flex:1; }
+.spe-accord-title { font-family:'Playfair Display',serif; font-size:1rem; color:var(--parch); font-style:italic; }
+.spe-accord-lieu { font-family:'Cormorant Garamond',serif; font-size:.62rem; letter-spacing:.1em; text-transform:uppercase; color:var(--parch4); margin-top:.15rem; }
+.spe-accord-chev { color:var(--parch4); font-size:.7rem; transition:transform .25s; flex-shrink:0; }
+.spe-accord-body { padding:1.25rem 1.5rem; border-top:1px solid var(--bdr); background:var(--ink); }
 </style>
 </head>
 <body>
@@ -833,6 +844,16 @@ function showCours(id){
   <div id="deonto-content"></div>
 </div>
 
+<!-- MODE SPÉCIALISATIONS -->
+<div id="mode-specialisations" class="hidden">
+  <div class="container" style="max-width:900px;padding:2rem 1.5rem">
+    <p style="font-family:'EB Garamond',serif;font-size:.95rem;color:var(--parch3);font-style:italic;margin-bottom:1.5rem">
+      Après validation du Niveau 4, choisissez votre spécialisation. Chaque spécialité comprend 4 cours approfondis.
+    </p>
+    <div id="spe-accordion"></div>
+  </div>
+</div>
+
 <script type="module" src="js/auth-firebase.js"></script>
 <script src="js/guard.js" defer></script>
 
@@ -841,7 +862,7 @@ function showCours(id){
 function setMode(el, mode){
   document.querySelectorAll('.mode-tab').forEach(function(t){ t.classList.remove('active'); });
   el.classList.add('active');
-  ['theorie','pratique','deonto'].forEach(function(m){
+  ['theorie','pratique','deonto','specialisations'].forEach(function(m){
     var el2 = document.getElementById('mode-'+m);
     if(el2) el2.classList.toggle('hidden', m !== mode);
   });
@@ -1144,6 +1165,65 @@ window.addEventListener('load', function(){
   var wait = setInterval(function(){
     if(window._fbGetProfile){ clearInterval(wait); window._fbGetProfile().then(function(p){ window._currentProfile=p; }); }
   }, 100);
+});
+
+
+/* ── ACCORDÉON SPÉCIALISATIONS ── */
+var SPE_LIST = [
+  {id:'chirurgie',      icon:'🔪', title:'Chirurgie avancée',              lieu:'Texas & Louisiane'},
+  {id:'alienisme',      icon:'🧠', title:'Aliénisme & Psychanalyse',        lieu:'Texas & Louisiane'},
+  {id:'legiste',        icon:'⚖️', title:'Médecine légale',                lieu:'Texas & Louisiane'},
+  {id:'pharmacologie',  icon:'💊', title:'Pharmacologie & Toxicologie',     lieu:'Texas & Louisiane'},
+  {id:'obstetrique',    icon:'🏥', title:'Obstétrique & Gynécologie',       lieu:'Texas & Louisiane'},
+  {id:'dentisterie',    icon:'🦷', title:'Dentisterie chirurgicale',         lieu:'Texas & Louisiane'},
+  {id:'ophtalmologie',  icon:'👁️', title:'Ophtalmologie',                  lieu:'Saint-Denis recommandé'},
+  {id:'orl',            icon:'👂', title:'Oto-Rhino-Laryngologie',           lieu:'Saint-Denis recommandé'},
+  {id:'dermatologie',   icon:'🧬', title:'Dermatologie & Syphiligraphie',    lieu:'Saint-Denis recommandé'},
+  {id:'pediatrie',      icon:'👶', title:'Pédiatrie',                       lieu:'Saint-Denis recommandé'},
+  {id:'radiologie',     icon:'☢️', title:'Radiologie',                      lieu:'Saint-Denis uniquement'},
+  {id:'cardiochirurgie',icon:'❤️', title:'Chirurgie vasculaire & Cardiaque', lieu:'Saint-Denis · Statut Pionnier'},
+];
+
+function renderSpeAccordion(){
+  var el = document.getElementById('spe-accordion');
+  if(!el) return;
+  el.innerHTML = SPE_LIST.map(function(s){
+    return '<div class="spe-accord-item">'
+      +'<div class="spe-accord-header" onclick="toggleSpeAccord(this,\''+s.id+'\',\'specialites.html\')">'
+      +'<span class="spe-accord-icon">'+s.icon+'</span>'
+      +'<div class="spe-accord-info">'
+      +'<div class="spe-accord-title">'+s.title+'</div>'
+      +'<div class="spe-accord-lieu">'+s.lieu+'</div>'
+      +'</div>'
+      +'<span class="spe-accord-chev">▼</span>'
+      +'</div>'
+      +'<div class="spe-accord-body hidden" id="sab-'+s.id+'">'
+      +'</div>'
+      +'</div>';
+  }).join('');
+}
+
+function toggleSpeAccord(header, id, href){
+  var body = document.getElementById('sab-'+id);
+  var chev = header.querySelector('.spe-accord-chev');
+  var open = !body.classList.contains('hidden');
+  if(open){ body.classList.add('hidden'); chev.style.transform=''; return; }
+  body.classList.remove('hidden');
+  chev.style.transform = 'rotate(180deg)';
+  if(body.dataset.loaded) return;
+  body.dataset.loaded = '1';
+  body.innerHTML = '<div style="padding:.75rem 0;text-align:center">'
+    +'<a href="specialites.html" onclick="sessionStorage.setItem(\'openSpe\',\''+id+'\')"'
+    +' class="btn btn-gold">Voir les 4 cours de cette spécialisation →</a></div>';
+}
+
+document.addEventListener('DOMContentLoaded', function(){
+  renderSpeAccordion();
+  // Si on revient depuis specialites.html, ouvrir le bon onglet
+  if(window.location.hash === '#specialisations'){
+    var tab = document.querySelector('.mode-tab:last-child');
+    if(tab) tab.click();
+  }
 });
 
 </script>
