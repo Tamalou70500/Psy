@@ -56,7 +56,7 @@
 .spe-card-title { font-family:'Playfair Display',serif; font-size:1rem; color:var(--parch); font-style:italic; margin-bottom:.3rem; }
 .spe-card-desc { font-family:'EB Garamond',serif; font-size:.85rem; color:var(--parch3); line-height:1.5; margin-bottom:.75rem; }
 .spe-card-loc { font-family:'Cormorant Garamond',serif; font-size:.6rem; letter-spacing:.1em; text-transform:uppercase; color:var(--parch4); }
-.spe-card.unavailable { opacity:.5; cursor:not-allowed; }
+.spe-card.unavailable { opacity:.4; cursor:not-allowed; }
 
 @media(max-width:768px){ .spe-layout{grid-template-columns:1fr} .spe-sidebar{display:none} .spe-content{padding:1.5rem} }
 </style>
@@ -447,7 +447,354 @@ Magnus Huss (1849) est le premier à décrire l'alcoolisme comme une maladie chr
 <div class="fact-box"><div class="fact-box-title">Ce que le médecin NE DOIT PAS faire</div>Prescrire de l'héroïne pour traiter la morphinomanie (erreur de Bayer, 1898 — l'héroïne est encore plus addictive). Prescrire de la morphine pour traiter l'alcoolisme. Ces substitutions aggravent toujours la situation.</div>
 </div>`},
     ]
+  },,
+
+  obstetrique: {
+    icon:'🏥', title:'Obstétrique & Gynécologie', lieu:'Texas & Louisiane',
+    subtitle:'Accoucher au Texas en 1904, c'est souvent une affaire de vie ou de mort. Mortalité maternelle : 5 à 10%. L'accoucheur formé réduit ce chiffre de moitié.',
+    cours:[
+      { num:1, title:'Anatomie et physiologie de la grossesse', content:`<div class="csi-text">
+<strong>Signes de grossesse en 1904</strong><br><br>
+<div class="fact-box"><div class="fact-box-title">Mortalité maternelle en 1904</div>Au Texas rural : 8 à 12 pour 1000 accouchements. Causes : hémorragie du post-partum (40%), infection puerpérale (30%), pré-éclampsie (15%). Un accoucheur formé peut réduire ces chiffres de 50%.</div>
+• <strong>Aménorrhée</strong> — premier signe<br>
+• <strong>Signe de Hegar</strong> (ramollissement de l'isthme utérin à 6-8 semaines) — signe précoce fiable<br>
+• <strong>Nausées matinales</strong> — semaines 6 à 12<br>
+• <strong>Utérus palpable à l'abdomen</strong> à partir de 12 semaines<br>
+• <strong>Bruits du cœur fœtal</strong> au stéthoscope à 20 semaines (120-160 bpm)<br>
+• <strong>Mouvements fœtaux</strong> ressentis par la mère à 18-20 semaines<br><br>
+<strong>Surveillance de la grossesse :</strong><br>
+• Mesurer la hauteur utérine (correspond approximativement au terme en semaines)<br>
+• Ausculter les bruits du cœur fœtal<br>
+• Vérifier la présentation fœtale dès 32 semaines (manœuvres de Léopold)<br>
+• Surveiller la tension artérielle — hypertension = risque d'éclampsie</div>` },
+      { num:2, title:'Accouchement normal — protocole complet', content:`<div class="csi-text">
+<strong>Les trois phases du travail</strong><br><br>
+<strong>Phase 1 — Travail :</strong> Contractions régulières toutes les 5 min au début, puis toutes les 2-3 min. Dilatation 0 à 10 cm. Durée : 12h primipare, 6-8h multipare.<br><br>
+<strong>Phase 2 — Expulsion :</strong> Col complètement dilaté. Pousser avec chaque contraction. Durée : 30-60 min.<br><br>
+<strong>Phase 3 — Délivrance :</strong> Expulsion du placenta dans les 30 min. SURVEILLER LES HÉMORRAGIES — phase la plus dangereuse.<br><br>
+<strong>Protocole de l'accoucheur :</strong><br>
+1. Laver les mains — impératif absolu (Semmelweis)<br>
+2. Préparer eau bouillie, linges propres, fils de ligature, ciseaux<br>
+3. Surveiller contractions, dilatation cervicale, bruits du cœur fœtal<br>
+4. Guider l'expulsion — soutenir la tête, protéger le périnée<br>
+5. Ligaturer le cordon en deux points, couper entre les deux<br>
+6. Attendre l'expulsion spontanée du placenta — ne PAS tirer sur le cordon<br>
+7. Surveiller les saignements pendant 2h post-partum</div>` },
+      { num:3, title:'Dystocies et complications', content:`<div class="csi-text">
+<strong>Présentation du siège</strong><br>
+Fesses en bas au lieu de la tête. Version céphalique externe possible avant 36 semaines. Accouchement par siège possible avec technique.<br><br>
+<strong>Les forceps</strong><br>
+Instruments métalliques qui saisissent la tête fœtale pour aider l'expulsion. Indication : épuisement maternel, souffrance fœtale (battements < 100 ou > 180), progression arrêtée. Risques : lésions fœtales et déchirures maternelles.<br><br>
+<div class="fact-box"><div class="fact-box-title">La césarienne en 1904</div>Mortalité maternelle post-césarienne : 25-50% en zone rurale. Réservée aux situations désespérées où la vie de la mère est en danger immédiat.</div>
+<strong>L'hémorragie du post-partum — urgence absolue :</strong><br>
+Perte > 500 ml après la naissance. Cause : atonie utérine (utérus mou). Traitement : massage utérin énergique, compression bimanuelle. Peut tuer en 30 minutes.</div>` },
+      { num:4, title:'L'infection puerpérale — la fièvre des accouchées', content:`<div class="csi-text">
+<strong>La grande tueuse des maternités</strong><br><br>
+Streptococcus pyogenes — transmis par les mains des accoucheurs. C'est pour cela que Semmelweis imposait le lavage des mains en 1847.<br><br>
+<strong>Signes cliniques (24-48h après l'accouchement) :</strong><br>
+• Fièvre > 38°C persistante<br>
+• Douleurs utérines à la palpation<br>
+• Lochies malodorantes (écoulements fétides)<br>
+• Frissons, malaise général<br>
+• Formes graves : péritonite, septicémie, décès en 3-7 jours<br><br>
+<strong>Prévention :</strong> Lavage des mains à l'eau de Javel. Ne jamais examiner une parturiente après avoir touché un cadavre.<br><br>
+<strong>Traitement :</strong> Aucun antibiotique en 1904. Antiseptiques locaux (lavages à solution iodée diluée), antipyrétiques, soutien de l'état général. Pronostic très sombre dans les formes graves.</div>` }
+    ]
   },
+
+  dentisterie: {
+    icon:'🦷', title:'Dentisterie chirurgicale', lieu:'Texas & Louisiane',
+    subtitle:'Depuis 1884 et la cocaïne de Koller, arracher une dent ne signifie plus souffrir le martyre. Le chirurgien-dentiste de 1904 opère sous anesthésie locale — révolution absolue.',
+    cours:[
+      { num:1, title:'Anatomie dentaire et pathologies courantes', content:`<div class="csi-text">
+<strong>Anatomie d'une dent</strong><br><br>
+• <strong>Émail</strong> — tissu le plus dur du corps, protège la couronne<br>
+• <strong>Dentine</strong> — tissu calcifié sous l'émail, sensible à la douleur<br>
+• <strong>Pulpe</strong> — tissu vivant contenant nerfs et vaisseaux<br>
+• <strong>Racine</strong> — ancrée dans l'os par le ligament alvéolo-dentaire<br><br>
+<strong>Pathologies les plus courantes au Texas en 1904 :</strong><br>
+• <strong>Caries</strong> — destruction progressive de l'émail et dentine. Sans traitement : pulpite puis abcès.<br>
+• <strong>Abcès dentaire</strong> — très douloureux. Risque de cellulite cervicale descendant dans le cou — potentiellement mortel.<br>
+• <strong>Pyorrhée alvéolaire</strong> — infection chronique des gencives et de l'os. Principale cause de perte des dents chez l'adulte.<br>
+• <strong>Dents de sagesse incluses</strong> — infections récurrentes (péricoronite).</div>` },
+      { num:2, title:'Extractions — technique et anesthésie locale', content:`<div class="csi-text">
+<div class="fact-box"><div class="fact-box-title">La cocaïne comme anesthésique local (Koller, 1884)</div>Révolution absolue en dentisterie. Solution à 4%, injection dans la gencive près de la racine. Durée : 20-40 minutes. La Stovaïne (Fourneau, 1904) la remplace progressivement — moins toxique.</div>
+<strong>Technique d'extraction :</strong><br>
+1. Injection de cocaïne à 4% dans le ligament et la gencive adjacente<br>
+2. Attendre 3-5 minutes<br>
+3. Décollement du ligament avec un élévateur<br>
+4. Saisie avec le davier adapté à la position<br>
+5. Mouvements de rotation et luxation progressifs<br>
+6. Extraction par traction axiale<br>
+7. Compression du socket avec une compresse</div>` },
+      { num:3, title:'Abcès dentaires et infections cervico-faciales', content:`<div class="csi-text">
+<strong>L'évolution redoutée :</strong><br>
+Pulpite → nécrose pulpaire → abcès alvéolaire → phlegmon cervical → décès.<br><br>
+<strong>Traitement :</strong> extraction de la dent causale pour drainer, incision-drainage si collection fluctuante, surveillance étroite des signes de diffusion.<br><br>
+<div class="fact-box"><div class="fact-box-title">Angine de Ludwig</div>Cellulite cervicale diffuse à partir d'une infection dentaire mandibulaire. Plancher de bouche, cou, médiastin. Sans drainage chirurgical urgent, mort par asphyxie. Mortalité 50% en 1904.</div></div>` },
+      { num:4, title:'Prothèses et soins conservateurs', content:`<div class="csi-text">
+<strong>Matériaux prothétiques en 1904 :</strong><br>
+• <strong>Porcelaine</strong> — les meilleures, esthétiques, résistantes<br>
+• <strong>Ivoire ou os</strong> — moins durables, se colorent<br>
+• <strong>Caoutchouc vulcanisé (vulcanite)</strong> — base des prothèses amovibles depuis 1850<br>
+• <strong>Bridges fixes</strong> — couronnes sur dents voisines, résultat permanent<br><br>
+<strong>Soins conservateurs :</strong><br>
+• <strong>Obturation (plombage)</strong> — amalgame d'argent (Taveau, 1826). Pour petites caries.<br>
+• <strong>Dévitalisation</strong> — arseniate de sodium sur la pulpe pour tuer le nerf.<br>
+• Bains de bouche à la créosote pour maladies des gencives.</div>` }
+    ]
+  },
+
+  ophtalmologie: {
+    icon:'👁️', title:'Ophtalmologie', lieu:'Saint-Denis recommandé',
+    subtitle:'Depuis l'ophtalmoscope de Helmholtz (1851) et l'anesthésie locale de Koller (1884), la chirurgie oculaire est devenue une spécialité à part entière. À Saint-Denis, l'équipement permet des interventions impossibles ailleurs.',
+    cours:[
+      { num:1, title:'Anatomie et examen de l'œil', content:`<div class="csi-text">
+<strong>Structures anatomiques clés :</strong><br>
+• <strong>Cornée</strong> — fenêtre transparente. Première surface réfractive.<br>
+• <strong>Cristallin</strong> — lentille flexible. Accommodation. Opacification = cataracte.<br>
+• <strong>Rétine</strong> — la "pellicule photographique". Contient cônes et bâtonnets. Macula = vision fine.<br>
+• <strong>Humeur aqueuse</strong> — pression normale 10-21 mmHg. Élevée = glaucome.<br><br>
+<strong>L'examen ophtalmologique :</strong><br>
+• Acuité visuelle — tableau de Snellen (1862)<br>
+• Champ visuel — périmétrie par confrontation<br>
+• <strong>Fond d'œil à l'ophtalmoscope</strong> (Helmholtz, 1851) — rétine, papille, vaisseaux, macula<br>
+• Pupilles : taille, symétrie, réflexe photomoteur. Argyll Robertson (syphilis) : réagissent à l'accommodation mais pas à la lumière.</div>` },
+      { num:2, title:'Le glaucome et la cataracte', content:`<div class="csi-text">
+<strong>Le glaucome :</strong><br>
+Pression intra-oculaire élevée détruisant le nerf optique. Sans traitement : cécité irréversible.<br>
+• <strong>Aigu</strong> — urgence absolue. Douleur oculaire intense, halos colorés, nausées. Paracentèse de la chambre antérieure, atropine.<br>
+• <strong>Chronique</strong> — insidieux, indolore. Perte progressive du champ visuel périphérique. Traitement : pilocarpine en collyre.<br><br>
+<strong>La cataracte :</strong><br>
+Brouillard progressif, éblouissement. Principale cause de cécité réversible.<br>
+<strong>Opération :</strong> anesthésie locale cocaïne, incision limbique, extraction du cristallin opacifié. Correction optique post-op par lunettes épaisses.</div>` },
+      { num:3, title:'Traumatismes oculaires et corps étrangers', content:`<div class="csi-text">
+<strong>Corps étranger superficiel :</strong><br>
+Particule métallique ou bois sur la cornée. Anesthésie locale cocaïne, ablation à l'aiguille. Ne JAMAIS frotter. Pansement occlusif 24h.<br><br>
+<strong>Corps étranger intra-oculaire perforant :</strong><br>
+Urgence absolue. Endophtalmie peut détruire l'œil en 24h. Les corps métalliques extraits à l'aimant de Hirschberg (1885).<br><br>
+<strong>Brûlures chimiques :</strong><br>
+Lavage abondant et immédiat à l'eau — des dizaines de litres. Chaque minute compte. Pour la chaux vive : éliminer les particules solides AVANT d'irriguer.</div>` },
+      { num:4, title:'Infections et troubles de la réfraction', content:`<div class="csi-text">
+<strong>Trachome (Chlamydia) :</strong><br>
+Cause majeure de cécité mondiale en 1904. Conjonctivite chronique → cicatrisation → opacification cornéenne. Endémique dans certaines zones du Texas. Traitement : sulfate de cuivre, nitrate d'argent.<br><br>
+<strong>Ophtalmie du nouveau-né :</strong><br>
+Gonocoque lors du passage dans voie génitale. Prévention systématique : nitrate d'argent à 1% dans les yeux à la naissance (Credé, 1880). Résultat remarquable.<br><br>
+<strong>Troubles de réfraction :</strong><br>
+• <strong>Myopie</strong> — verres divergents (concaves)<br>
+• <strong>Hypermétropie</strong> — verres convergents (convexes)<br>
+• <strong>Astigmatisme</strong> — verres cylindriques<br>
+• <strong>Presbytie</strong> — verres convergents pour la lecture (après 40 ans)</div>` }
+    ]
+  },
+
+  orl: {
+    icon:'👂', title:'Oto-Rhino-Laryngologie', lieu:'Saint-Denis recommandé',
+    subtitle:'L'ORL s'est autonomisée entre 1870 et 1890. Laryngoscope, otoscope, bronchoscope — des instruments qui rendent visibles et traitables des zones autrefois inaccessibles.',
+    cours:[
+      { num:1, title:'L'oreille — anatomie et otites', content:`<div class="csi-text">
+<strong>Anatomie :</strong><br>
+• <strong>Oreille externe</strong> — pavillon + conduit → tympan<br>
+• <strong>Oreille moyenne</strong> — chaîne ossiculaire (marteau, enclume, étrier) + trompe d'Eustache<br>
+• <strong>Oreille interne</strong> — cochlée (audition) + vestibule (équilibre)<br><br>
+<strong>Otite moyenne aiguë — très fréquente chez les enfants :</strong><br>
+Fièvre, otalgie pulsatile. Si tympan bombant : paracentèse (incision du tympan) pour drainer le pus. Évolution sans traitement : mastoïdite (urgence chirurgicale), méningite otogène.<br><br>
+<strong>Otite externe :</strong><br>
+Infection du conduit auditif. Otalgie à la mobilisation du pavillon. Nettoyage et tampons antiseptiques.</div>` },
+      { num:2, title:'Le nez et les sinus', content:`<div class="csi-text">
+<strong>Sinusite maxillaire</strong> — la plus fréquente. Douleur sous-orbitaire, sécrétions purulentes. Souvent d'origine dentaire (racines des molaires dans le plancher du sinus). Ponction-lavage du sinus sous anesthésie locale.<br><br>
+<strong>Sinusite frontale</strong> — douleur frontale matinale "en barre". Risque d'extension intracrânienne si non traitée.<br><br>
+<strong>Épistaxis :</strong> Compression des narines 10 minutes. Si postérieure : méchage nasal avec tampons de gaze.</div>` },
+      { num:3, title:'Le larynx — urgences respiratoires', content:`<div class="csi-text">
+<strong>Laryngoscopie indirecte (García, 1854) :</strong><br>
+Petit miroir au bout d'un manche chauffé (évite la buée). Permet de voir les cordes vocales.<br><br>
+<strong>Diphtérie laryngée (croup) :</strong><br>
+Membrane diphtérique obstruant le larynx. Stridor inspiratoire, asphyxie progressive. URGENCE. Antitoxine diphtérique (Von Behring, 1894). Trachéotomie si asphyxie.<br><br>
+<strong>Corps étranger :</strong><br>
+Frapper dans le dos vigoureusement, tentative d'extraction manuelle, trachéotomie si impossible. En urgence absolue : même un couteau de poche peut servir.</div>` },
+      { num:4, title:'Les amygdales et végétations', content:`<div class="csi-text">
+<strong>Angine — formes graves :</strong><br>
+<strong>Phlegmon péri-amygdalien</strong> — abcès autour de l'amygdale. Trismus, voix de "patate chaude", déviation de la luette. Drainage chirurgical d'urgence sous anesthésie locale.<br><br>
+<strong>Végétations adénoïdes chez l'enfant :</strong><br>
+Hypertrophie du tissu lymphoïde du cavum. Obstruction nasale, ronflement, otites à répétition, faciès adénoïdien (bouche ouverte, traits tirés).<br><br>
+<strong>Amygdalectomie :</strong> Sous chloroforme léger. Amygdalotome + section. Hémorragie = principale complication.</div>` }
+    ]
+  },
+
+  dermatologie: {
+    icon:'🧬', title:'Dermatologie & Syphiligraphie', lieu:'Saint-Denis recommandé',
+    subtitle:'En 1904, la dermatologie et la syphiligraphie sont liées. La syphilis se manifeste sur la peau à tous ses stades. Un dermatologue est avant tout un expert des MST.',
+    cours:[
+      { num:1, title:'Sémiologie dermatologique', content:`<div class="csi-text">
+<strong>Les lésions élémentaires :</strong><br>
+• <strong>Macule</strong> — tache de couleur sans relief (roséole syphilitique, taches de rousseur)<br>
+• <strong>Papule</strong> — élevure solide < 1 cm (acné, eczéma, lichen)<br>
+• <strong>Vésicule</strong> — liquide clair < 5 mm (herpès, varicelle)<br>
+• <strong>Pustule</strong> — élevure avec pus (acné, impétigo)<br>
+• <strong>Ulcère</strong> — perte de substance atteignant le derme (chancre syphilitique)<br>
+• <strong>Squame</strong> — lamelle de couche cornée qui se détache (psoriasis)<br><br>
+<strong>Description d'une lésion :</strong> siège, forme, couleur, contours, consistance, évolution.</div>` },
+      { num:2, title:'La syphilis cutanée — la grande simulatrice', content:`<div class="csi-text">
+<strong>Stade 1 — Le chancre :</strong><br>
+Ulcère unique, indolore, base indurée (cartonnée). Organes génitaux, bouche, doigts. Guérison spontanée en 3-6 semaines — NE PAS conclure à la guérison.<br><br>
+<strong>Stade 2 :</strong><br>
+Roséole maculaire rosée symétrique sur le tronc. Plaques muqueuses très contagieuses. Alopécie en "clairières". Condylomes plans.<br><br>
+<strong>Stade 3 — Gommes :</strong><br>
+Nodules profonds qui s'ulcèrent. Destruction du nez "en selle", palais, os.<br><br>
+<strong>Traitement en 1904 :</strong> mercure (frictions, injections de sublimé). Partiellement efficace mais toxique. Salvarsan d'Ehrlich en 1910, pénicilline en 1943.</div>` },
+      { num:3, title:'Dermatoses infectieuses courantes', content:`<div class="csi-text">
+<strong>Impétigo :</strong><br>
+Streptocoque ou Staphylocoque. Vésicules → bulles → croûtes "en miel". Très contagieux. Antiseptiques locaux.<br><br>
+<strong>Furoncle :</strong><br>
+Infection du follicule pileux. Nodule douloureux avec pustule centrale. Incision-drainage quand fluctuant.<br><br>
+<strong>Érysipèle :</strong><br>
+Streptocoque. Placard rouge, chaud, bord net. Généralement à la jambe. Risque de récidive et lymphœdème chronique.<br><br>
+<strong>Gale :</strong><br>
+Sarcoptes scabiei. Prurit intense nocturne, sillons entre les doigts. Traitement : soufre en pommade 3 jours. Toute la famille en même temps.</div>` },
+      { num:4, title:'Psoriasis, eczéma et dermatoses chroniques', content:`<div class="csi-text">
+<strong>Psoriasis :</strong><br>
+Plaques rouges squames argentées. Coudes, genoux, cuir chevelu. Poussées chroniques. Traitement : goudron de houille, bains sulfureux, arsenic (Fowler).<br><br>
+<strong>Eczéma de contact :</strong><br>
+Réaction à un irritant ou allergène. Éviction de la cause. Compresses au nitrate d'argent dilué.<br><br>
+<strong>Acné :</strong><br>
+Follicules pilosébacés. Soufre en lotion, eau de chaux. Attention : bromure de potassium aggrave (bromodermie).</div>` }
+    ]
+  },
+
+  pediatrie: {
+    icon:'👶', title:'Pédiatrie', lieu:'Saint-Denis recommandé',
+    subtitle:'Les enfants ne sont pas des adultes en miniature. La mortalité infantile au Texas en 1904 : 200-250 décès pour 1000 naissances. Principale cause : infections gastro-intestinales.',
+    cours:[
+      { num:1, title:'Le nouveau-né — premières heures critiques', content:`<div class="csi-text">
+<div class="fact-box"><div class="fact-box-title">Mortalité infantile au Texas en 1904</div>200-250 décès pour 1000 naissances avant un an. Principale cause : infections gastro-intestinales liées à l'eau et au lait contaminés.</div>
+<strong>À la naissance — vérifications :</strong><br>
+• Cri — signe de vie et de bonne capacité respiratoire<br>
+• Couleur — rose (normal), bleuté (cyanose = insuffisance respiratoire)<br>
+• Tonicité musculaire — reflet de la santé neurologique<br>
+• Fontanelle — bombée = hypertension intracrânienne ; déprimée = déshydratation sévère<br><br>
+<strong>Soins immédiats :</strong><br>
+• Ligature et section du cordon<br>
+• Instillation nitrate d'argent 1% dans les yeux (Credé, 1880) — prévention ophtalmie gonococcique<br>
+• Peser et mesurer<br>
+• Allaitement précoce — le colostrum est riche en immunoglobulines</div>` },
+      { num:2, title:'Les maladies infectieuses de l'enfance', content:`<div class="csi-text">
+<strong>Diphtérie :</strong><br>
+Grande tueuse avant la vaccination. Membrane obstruant le pharynx et larynx. Exotoxine détruit le cœur et les nerfs. Traitement depuis 1894 : antitoxine de Von Behring (Prix Nobel 1901). Trachéotomie si asphyxie.<br><br>
+<strong>Scarlatine :</strong><br>
+Angine + éruption rouge + langue en "fraise". Risque complications rénales et cardiaques (RAA). Isolement 3 semaines.<br><br>
+<strong>Rougeole :</strong><br>
+Taches de Koplik (muqueuse jugale) pathognomoniques. Éruption descendant du visage au corps. Complications : pneumonie, encéphalite.<br><br>
+<strong>Coqueluche :</strong><br>
+Toux quinteuse en "chant du coq". Dangereux chez le nourrisson — apnées, convulsions. Durée 6-8 semaines.</div>` },
+      { num:3, title:'La diarrhée infantile et la déshydratation', content:`<div class="csi-text">
+<strong>Signes de déshydratation chez le nourrisson :</strong><br>
+• Fontanelle déprimée (signe précoce fiable)<br>
+• Yeux enfoncés<br>
+• Pli cutané persistant<br>
+• Bouche sèche, larmes absentes<br>
+• Agitation puis somnolence (alarme)<br><br>
+<strong>Protection absolue :</strong> lait maternel. Un nourrisson allaité est presque immunisé contre la diarrhée infectieuse.<br><br>
+<strong>Traitement :</strong> réhydratation orale — eau bouillie + sel + sucre. En cas de vomissements : cuillère toutes les 5 minutes. La patience est une vertu médicale.</div>` },
+      { num:4, title:'Croissance et malnutrition', content:`<div class="csi-text">
+<strong>Courbe de poids normale :</strong><br>
+• Naissance : 3-4 kg<br>
+• 4 mois : double le poids de naissance<br>
+• 12 mois : triple le poids de naissance<br><br>
+<strong>Le rachitisme :</strong><br>
+Carence en vitamine D (non encore identifiée). Malformations osseuses : crâne, thorax en carène, genoux cagneux, retard dentaire. Prévention : ensoleillement, huile de foie de morue (efficace empiriquement depuis 1850).<br><br>
+<strong>Malnutrition :</strong><br>
+Maigreur extrême, ventre gonflé, retard de croissance, apathie, infections à répétition. Alimentation progressive riche en protéines, traitement des infections.</div>` }
+    ]
+  },
+
+  radiologie: {
+    icon:'☢️', title:'Radiologie', lieu:'Saint-Denis uniquement',
+    subtitle:'Röntgen découvre les rayons X le 8 novembre 1895. En 1904 à Saint-Denis, un appareil à rayons X est le nec plus ultra de la médecine — voir l'intérieur du corps vivant fait l'effet d'un miracle.',
+    cours:[
+      { num:1, title:'La découverte des rayons X — 1895', content:`<div class="csi-text">
+<div class="fact-box"><div class="fact-box-title">La première radiographie</div>Röntgen interpose sa main entre le tube et un écran fluorescent. Le squelette et l'alliance de sa femme apparaissent. Le monde est stupéfait. Prix Nobel de physique 1901 — le premier jamais décerné.</div>
+<strong>Physique des rayons X :</strong><br>
+Rayonnements électromagnétiques de très courte longueur d'onde. Traversent les tissus mous mais absorbés par les structures denses. Cette différence crée le contraste.<br><br>
+<strong>Lecture d'une image :</strong><br>
+• <strong>Blanc</strong> — os, métal, calcifications (absorbent les RX)<br>
+• <strong>Noir</strong> — poumons, air, graisse (laissent passer)<br>
+• <strong>Gris</strong> — tissus mous, organes, liquides<br><br>
+<strong>L'appareil de Saint-Denis :</strong> Tube de Crookes + bobine d'induction. Exposition longue. Le patient doit rester parfaitement immobile. Les dangers des rayonnements ne sont pas encore compris.</div>` },
+      { num:2, title:'Technique et interprétation radiographique', content:`<div class="csi-text">
+<strong>La plaque photographique :</strong><br>
+Plaque de verre ou celluloïd au bromure d'argent. Développée en chambre noire. Résultat en quelques heures.<br><br>
+<strong>Interprétation systématique d'un thorax :</strong><br>
+1. Qualité technique (centrage, inspiration suffisante)<br>
+2. Silhouette cardiaque (normale < 50% du diamètre thoracique)<br>
+3. Parenchyme pulmonaire : opacités (condensation = pneumonie), hyperclarté (pneumothorax)<br>
+4. Diaphragmes : niveau, netteté<br>
+5. Côtes, clavicules : fractures<br>
+6. Parties molles : corps étrangers</div>` },
+      { num:3, title:'Applications cliniques — os, thorax, corps étrangers', content:`<div class="csi-text">
+<strong>Révolution des fractures :</strong><br>
+Avant 1896, le chirurgien opérait "à l'aveugle". La radiographie montre : type de fracture, déplacement, localisation du projectile, qualité de la réduction, évolution de la consolidation.<br><br>
+<strong>Pneumonie :</strong><br>
+Opacité alvéolaire confirme le diagnostic. Distingue pneumonie lobaire (Pneumocoque) de bronchopneumonie.<br><br>
+<strong>Corps étrangers métalliques :</strong><br>
+Localiser une balle avant l'extraction. Vérifier que l'extraction est complète. Révolution pour la chirurgie de guerre.<br><br>
+<strong>Tuberculose :</strong><br>
+Infiltrats des lobes supérieurs, cavernes, dissémination miliaire (micronodules).</div>` },
+      { num:4, title:'Dangers et précautions — ce qu'on ne sait pas encore en 1904', content:`<div class="csi-text">
+<div class="fact-box"><div class="fact-box-title">Marie Curie (1867-1934)</div>Deux Prix Nobel. Meurt en 1934 d'une aplasie médullaire — destruction de la moelle osseuse par les rayonnements. Ses cahiers sont encore radioactifs aujourd'hui.</div>
+<strong>En 1904, les radiologues ignorent :</strong><br>
+• Que les rayons X sont mutagènes (lèsent l'ADN)<br>
+• Que les expositions répétées accumulent leurs effets<br>
+• Que le cancer radio-induit peut apparaître des décennies plus tard<br><br>
+Les premiers radiologues mettent leurs mains dans le faisceau. Certains développent des cancers de la peau dès 1902.<br><br>
+<strong>Mesures empiriques des plus prudents :</strong><br>
+• Placer l'appareil derrière une cloison<br>
+• S'éloigner lors de l'exposition<br>
+• Limiter le temps d'exposition<br>
+Les tabliers de plomb viendront dans les années 1910-1920.</div>` }
+    ]
+  },
+
+  cardiochirurgie: {
+    icon:'❤️', title:'Chirurgie vasculaire & Cardiaque', lieu:'Saint-Denis uniquement — Statut Pionnier',
+    subtitle:'En 1904, opérer le cœur est la frontière absolue. Ludwig Rehn a suturé le premier ventricule en 1896 — 40% de survie. Billroth avait écrit qu'un tel chirurgien "perdrait le respect de ses pairs". Il avait tort.',
+    cours:[
+      { num:1, title:'Anatomie chirurgicale du cœur', content:`<div class="csi-text">
+<strong>Les quatre cavités :</strong><br>
+• <strong>Oreillette droite</strong> — reçoit le sang veineux (veine cave)<br>
+• <strong>Ventricule droit</strong> — pompe vers les poumons. Paroi mince.<br>
+• <strong>Oreillette gauche</strong> — reçoit le sang oxygéné (veines pulmonaires)<br>
+• <strong>Ventricule gauche</strong> — pompe vers tout le corps (aorte). Paroi 3-4× plus épaisse.<br><br>
+<div class="fact-box"><div class="fact-box-title">Tamponnade cardiaque</div>Sang dans le sac péricardique comprimant le cœur. Triade de Beck : tension effondrée + veines du cou gonflées + bruits assourdis. Traitement : ponction péricardique en urgence absolue.</div></div>` },
+      { num:2, title:'Ludwig Rehn — 9 septembre 1896', content:`<div class="csi-text">
+<strong>Frankfurt — Wilhelm Justus, 22 ans, poignardé :</strong><br>
+La lame traverse le ventricule droit. Rehn ouvre le thorax en urgence. Il voit le cœur battre. Il saisit les bords de la plaie avec ses doigts pour comprimer temporairement. Il passe trois points de soie pendant les diastoles (le moment de relâchement entre deux battements). Justus survivra 20 ans.<br><br>
+<strong>Résultats de Rehn (1896-1907) :</strong><br>
+124 interventions — 56 survivants — 45% de survie. Pour des patients en état désespéré, c'est extraordinaire.<br><br>
+<div class="fact-box"><div class="fact-box-title">Daniel Hale Williams — Chicago, 1893</div>Trois ans avant Rehn, Williams suture le péricarde d'un patient poignardé. Première chirurgie cardiaque réussie. Il est afro-américain dans une Amérique ségrégationniste.</div></div>` },
+      { num:3, title:'Chirurgie vasculaire — artères et veines', content:`<div class="csi-text">
+<strong>Les anévrismes :</strong><br>
+Dilatation localisée d'une artère par affaiblissement de sa paroi (syphilis tertiaire, athérosclérose). Risque de rupture — hémorragie fatale en minutes.<br>
+• <strong>Anévrisme aortique abdominal</strong> — masse pulsatile palpable. Mortalité de rupture > 90%.<br>
+• Traitement 1904 : ligature en amont et aval. Technique hasardeuse.<br><br>
+<strong>Sutures vasculaires — Alexis Carrel, 1902 :</strong><br>
+Technique anastomotique bout à bout des vaisseaux. Triangulation : trois fils à 120°. Prix Nobel 1912. En 1904, encore expérimental, disponible à Saint-Denis.<br><br>
+<div class="fact-box"><div class="fact-box-title">Alexis Carrel</div>Ses techniques permettront plus tard les transplantations d'organes. Travaille à l'Institut Rockefeller à New York à partir de 1906.</div></div>` },
+      { num:4, title:'Statut Pionnier — les limites de 1904', content:`<div class="csi-text">
+<strong>Ce qu'on peut faire en 1904 :</strong><br>
+• Suture d'une plaie pénétrante du cœur — avec 40% de survie<br>
+• Ponction péricardique pour tamponnade<br>
+• Ligature des grandes artères<br>
+• Suture vasculaire bout à bout (Carrel — très expérimental)<br>
+• Péricardectomie pour péricardite constrictive (Brauer, 1902)<br><br>
+<strong>Impossible en 1904 :</strong><br>
+• Chirurgie à cœur ouvert — nécessite la circulation extracorporelle (1953)<br>
+• Pontage coronarien (1960s)<br>
+• Transplantation cardiaque (1967)<br>
+• Pace-maker (1958)<br><br>
+<div class="fact-box"><div class="fact-box-title">La règle du chirurgien pionnier</div>"N'opérer que les cas désespérés, où la mort sans intervention est certaine. Une chance sur deux vaut mieux que zéro."</div></div>` }
+    ]
+  }
+
 };
 
 /* ══ RENDU ════════════════════════════════════════════════════ */
@@ -457,14 +804,14 @@ function renderAccueil(){
     {id:'alienisme',    icon:'🧠', title:'Aliénisme & Psychanalyse', desc:'Asile, Charcot, Freud, Kraepelin', lieu:'Texas & Louisiane'},
     {id:'legiste',      icon:'⚖️', title:'Médecine légale', desc:'Autopsie, blessures, toxicologie, rapport judiciaire', lieu:'Texas & Louisiane'},
     {id:'pharmacologie',icon:'💊', title:'Pharmacologie & Toxicologie', desc:'Médicaments, poisons, antidotes, dépendances', lieu:'Texas & Louisiane'},
-    {id:'obstetrique',  icon:'🏥', title:'Obstétrique', desc:'Accouchement, grossesse, urgences', lieu:'Texas & Louisiane', wip:true},
-    {id:'dentisterie',  icon:'🦷', title:'Dentisterie chirurgicale', desc:'Extractions, prothèses, anesthésie locale', lieu:'Texas & Louisiane', wip:true},
-    {id:'ophtalmologie',icon:'👁️', title:'Ophtalmologie', desc:'Examen oculaire, chirurgie, cataracte', lieu:'Saint-Denis recommandé', wip:true},
-    {id:'orl',          icon:'👂', title:'Oto-Rhino-Laryngologie', desc:'Oreille, nez, gorge, laryngoscopie', lieu:'Saint-Denis recommandé', wip:true},
-    {id:'dermatologie', icon:'🧬', title:'Dermatologie', desc:'Syphilis, maladies cutanées, traitements', lieu:'Saint-Denis recommandé', wip:true},
-    {id:'pediatrie',    icon:'👶', title:'Pédiatrie', desc:'Maladies infantiles, vaccinations, urgences', lieu:'Saint-Denis recommandé', wip:true},
-    {id:'radiologie',   icon:'☢️', title:'Radiologie', desc:'Rayons X, interprétation, applications', lieu:'Saint-Denis uniquement', wip:true},
-    {id:'cardiochirurgie',icon:'❤️', title:'Chirurgie cardiaque', desc:'La frontière absolue — statut Pionnier', lieu:'Saint-Denis uniquement', wip:true},
+    {id:'obstetrique',  icon:'🏥', title:'Obstétrique', desc:'Grossesse, accouchement, infections puerpérales', lieu:'Texas & Louisiane'},
+    {id:'dentisterie',  icon:'🦷', title:'Dentisterie chirurgicale', desc:'Extractions, abcès, anesthésie locale, prothèses', lieu:'Texas & Louisiane'},
+    {id:'ophtalmologie',icon:'👁️', title:'Ophtalmologie', desc:'Glaucome, cataracte, traumatismes, infections', lieu:'Saint-Denis recommandé'},
+    {id:'orl',          icon:'👂', title:'Oto-Rhino-Laryngologie', desc:'Otites, sinusites, larynx, amygdales', lieu:'Saint-Denis recommandé'},
+    {id:'dermatologie', icon:'🧬', title:'Dermatologie', desc:'Syphilis cutanée, dermatoses, infections', lieu:'Saint-Denis recommandé'},
+    {id:'pediatrie',    icon:'👶', title:'Pédiatrie', desc:'Maladies infantiles, déshydratation, malnutrition', lieu:'Saint-Denis recommandé'},
+    {id:'radiologie',   icon:'☢️', title:'Radiologie', desc:'Rayons X, technique, interprétation, dangers', lieu:'Saint-Denis uniquement'},
+    {id:'cardiochirurgie',icon:'❤️', title:'Chirurgie cardiaque', desc:'Rehn 1896 — suture ventriculaire — Statut Pionnier', lieu:'Saint-Denis uniquement'},
   ];
 
   var html = SPE_LIST.map(function(s){
