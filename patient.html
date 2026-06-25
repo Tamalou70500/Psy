@@ -144,8 +144,7 @@
 <script type="module">
 import { patientsGetById, patientsUpdate, patientsDelete, patientsAddSeance, patientsDeleteSeance, formatDate } from './js/patients.js';
 
-const session = authRequire(); authInjectUser();
-document.getElementById('logout-btn').onclick = authLogout;
+// Auth gérée par guard.js
 
 const pid = new URLSearchParams(window.location.search).get('id');
 let patient = null;
