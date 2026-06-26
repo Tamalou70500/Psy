@@ -7,6 +7,13 @@
 <script>(function(){ var t=localStorage.getItem("psy_theme")||"dark"; var f=localStorage.getItem("psy_font")||"victorien"; document.documentElement.setAttribute("data-theme",t); document.documentElement.setAttribute("data-font",f); })();</script>
 <link rel="stylesheet" href="css/style.css">
 <style>
+/* ── Onglets ── */
+.media-tabs{ display:flex; gap:0; border-bottom:1px solid var(--border); margin-bottom:2rem; }
+.media-tab{ font-family:'Cormorant Garamond',serif; font-size:.85rem; letter-spacing:.1em; text-transform:uppercase; padding:.75rem 1.75rem; border:none; background:transparent; color:var(--parch4); cursor:pointer; border-bottom:2px solid transparent; transition:color .2s; }
+.media-tab:hover{ color:var(--parch2); }
+.media-tab.active{ color:var(--gold); border-bottom:2px solid var(--gold); font-weight:700; }
+
+/* ── Vidéos ── */
 .media-wrap{ max-width:1100px; margin:0 auto; padding:1.5rem 1rem 4rem; }
 .media-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(520px,1fr)); gap:2rem; margin-top:1.5rem; }
 .media-card{ background:var(--ink); border:1px solid var(--border); border-radius:8px; overflow:hidden; }
@@ -27,6 +34,32 @@
 .filter-bar{ display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:1rem; }
 .filter-btn{ font-family:'Cormorant Garamond',serif; font-size:.78rem; padding:.3rem .8rem; border:1px solid var(--border); background:transparent; color:var(--parch3); border-radius:4px; cursor:pointer; }
 .filter-btn.active{ background:var(--gold); color:#1c1409; border-color:var(--gold); font-weight:700; }
+
+/* ── Séries ── */
+.series-wrap{ max-width:1100px; margin:0 auto; padding:0 1rem 4rem; display:none; }
+.serie-card{ background:var(--ink); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:2.5rem; }
+.serie-trailer{ position:relative; padding-bottom:42%; height:0; border-bottom:1px solid var(--border); }
+.serie-trailer iframe{ position:absolute; top:0; left:0; width:100%; height:100%; border:none; }
+.serie-trailer-placeholder{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.75rem; background:var(--ink2); }
+.serie-body{ display:grid; grid-template-columns:240px 1fr; }
+.serie-aside{ padding:1.5rem; border-right:1px solid var(--border); display:flex; flex-direction:column; gap:1rem; }
+.serie-title{ font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--parch); font-style:italic; line-height:1.15; }
+.serie-meta{ font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.12em; text-transform:uppercase; color:var(--parch4); }
+.serie-dispo-label{ font-family:'Cormorant Garamond',serif; font-size:.63rem; letter-spacing:.12em; text-transform:uppercase; color:var(--parch4); margin-bottom:.3rem; }
+.serie-dispo-val{ font-family:'EB Garamond',serif; font-size:.9rem; color:var(--parch2); }
+.serie-tags{ display:flex; gap:.35rem; flex-wrap:wrap; margin-top:auto; }
+.serie-tag{ font-family:'Cormorant Garamond',serif; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; padding:2px 7px; border:1px solid var(--border); color:var(--parch4); border-radius:3px; }
+.serie-content{ padding:1.5rem 2rem; }
+.serie-quote{ border-left:2px solid var(--gold); margin:0 0 1.1rem; padding:.55rem 1rem; font-family:'EB Garamond',serif; font-size:1rem; color:var(--parch); font-style:italic; line-height:1.75; }
+.serie-desc{ font-family:'EB Garamond',serif; font-size:.93rem; color:var(--parch2); line-height:1.85; margin-bottom:1.1rem; }
+.serie-rp{ background:rgba(199,154,82,.06); border:1px solid rgba(199,154,82,.12); border-radius:4px; padding:.85rem 1.1rem; }
+.serie-rp-label{ font-family:'Cormorant Garamond',serif; font-size:.62rem; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-bottom:.4rem; }
+.serie-rp-val{ font-family:'EB Garamond',serif; font-size:.88rem; color:var(--parch2); line-height:1.7; }
+@media(max-width:700px){
+  .serie-body{ grid-template-columns:1fr; }
+  .serie-aside{ border-right:none; border-bottom:1px solid var(--border); }
+  .serie-trailer{ padding-bottom:56.25%; }
+}
 </style>
 </head>
 <body>
@@ -39,9 +72,14 @@
   </div>
 </div>
 
-<div class="media-wrap">
+<div class="media-wrap" id="wrap-videos">
+  <div class="media-tabs">
+    <button class="media-tab active" onclick="showTab('videos',this)">🎬 Vidéos & Documentaires</button>
+    <button class="media-tab" onclick="showTab('series',this)">📺 Séries recommandées</button>
+  </div>
+
   <p style="font-family:'EB Garamond',serif;font-size:.92rem;color:var(--parch3);margin-bottom:1.25rem">
-    Documentaires, conférences et ressources vidéo pour approfondir votre formation médicale.
+    Documentaires et ressources vidéo pour approfondir votre formation médicale.
   </p>
 
   <div class="filter-bar">
@@ -54,154 +92,215 @@
   <div class="media-grid" id="media-grid"></div>
 </div>
 
-<!-- SALLE DE PROJECTION -->
-<div style="max-width:1100px;margin:0 auto;padding:0 1rem 4rem">
-
-  <div style="border-top:1px solid var(--border);padding-top:2.5rem;margin-bottom:2.5rem;display:flex;align-items:baseline;gap:1rem">
-    <div>
-      <span style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gold)">🎞 Séries & Films</span>
-      <h2 style="font-family:'Playfair Display',serif;font-size:2rem;color:var(--parch);margin:.3rem 0 .4rem;font-style:italic">Salle de projection</h2>
-      <p style="font-family:'EB Garamond',serif;font-size:.92rem;color:var(--parch3);margin:0">Séries et films qui plongent dans la médecine du tournant du XX° siècle — indispensables pour s'imprégner de l'atmosphère de 1904.</p>
-    </div>
+<!-- SÉRIES -->
+<div class="series-wrap" id="wrap-series">
+  <div class="media-tabs">
+    <button class="media-tab" onclick="showTab('videos',this)">🎬 Vidéos & Documentaires</button>
+    <button class="media-tab active" onclick="showTab('series',this)">📺 Séries recommandées</button>
   </div>
 
-  <div style="display:grid;gap:2rem">
+  <p style="font-family:'EB Garamond',serif;font-size:.92rem;color:var(--parch3);margin-bottom:2rem">
+    Séries qui plongent dans la médecine du tournant du XX° siècle — indispensables pour s'imprégner de l'atmosphère de 1904.
+  </p>
 
-    <!-- THE KNICK -->
-    <div style="background:var(--ink);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:220px 1fr">
-      <div style="background:linear-gradient(160deg,#12080400,#1a0e08),linear-gradient(135deg,#1c1008,#3a1c0a);padding:2rem 1.5rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--border)">
+  <!-- THE KNICK -->
+  <div class="serie-card">
+    <div class="serie-trailer">
+      <iframe src="https://www.youtube.com/embed/vCRizG9eYB4?rel=0" allowfullscreen loading="lazy" title="The Knick — Bande annonce VF"></iframe>
+    </div>
+    <div class="serie-body">
+      <div class="serie-aside" style="background:linear-gradient(160deg,#1c1008,#3a1c0a)">
         <div>
-          <div style="font-size:3rem;margin-bottom:1rem">🏥</div>
-          <div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:var(--gold);line-height:1.1;font-style:italic">The Knick</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--parch4);margin-top:.6rem">New York · 1900</div>
+          <div style="font-size:2.5rem;margin-bottom:.75rem">🏥</div>
+          <div class="serie-title" style="color:var(--gold)">The Knick</div>
+          <div class="serie-meta" style="margin-top:.5rem">New York · 1900</div>
         </div>
-        <div style="margin-top:1.5rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--parch4);margin-bottom:.4rem">Disponible sur</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.85rem;color:var(--parch2)">Max (HBO) · Apple TV+</div>
+        <div>
+          <div class="serie-dispo-label">Disponible sur</div>
+          <div class="serie-dispo-val">Max (HBO) · Apple TV+</div>
         </div>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1rem">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(199,154,82,.3);color:var(--gold);border-radius:3px">Chirurgie</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--parch4);border-radius:3px">Drame</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--parch4);border-radius:3px">2 saisons</span>
+        <div>
+          <div class="serie-dispo-label">Réalisateur</div>
+          <div class="serie-dispo-val">Steven Soderbergh</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Acteur principal</div>
+          <div class="serie-dispo-val">Clive Owen</div>
+        </div>
+        <div class="serie-tags">
+          <span class="serie-tag" style="color:var(--gold);border-color:rgba(199,154,82,.3)">Chirurgie</span>
+          <span class="serie-tag">Drame</span>
+          <span class="serie-tag">2 saisons</span>
+          <span class="serie-tag">🇺🇸 VF dispo</span>
         </div>
       </div>
-      <div style="padding:1.75rem 2rem">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.6rem">Cinemax · 2014–2015 · Steven Soderbergh · Clive Owen</div>
-        <blockquote style="border-left:2px solid var(--gold);margin:0 0 1.2rem;padding:.6rem 1rem;font-family:'EB Garamond',serif;font-size:1rem;color:var(--parch);font-style:italic;line-height:1.7">
+      <div class="serie-content">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.7rem">Cinemax · 2014–2015 · 20 épisodes · ~55 min</div>
+        <blockquote class="serie-quote">
           "New York, 1900. À l'hôpital Knickerbocker, le Dr Thackery révolutionne la chirurgie à coups de scalpel et de cocaïne. Chaque opération est une bataille contre la mort — et contre lui-même."
         </blockquote>
-        <p style="font-family:'EB Garamond',serif;font-size:.93rem;color:var(--parch2);line-height:1.8;margin-bottom:1.2rem">
+        <p class="serie-desc">
           La référence absolue pour notre univers. Soderbergh filme les blocs opératoires sans couper — on voit les vraies techniques de 1900 : transfusions expérimentales, césariennes à vif, anesthésie à la cocaïne. La hiérarchie médicale, la ségrégation, la misère des patients pauvres — tout y est.
         </p>
-        <div style="background:rgba(199,154,82,.06);border:1px solid rgba(199,154,82,.15);border-radius:4px;padding:.9rem 1.1rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:.5rem">🎓 Utile pour votre RP</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.88rem;color:var(--parch2);line-height:1.7">Chirurgie de l'époque · Anesthésie cocaïne · Transfusions sanguines · Hiérarchie médicale · Épidémies · Médecine des pauvres</div>
+        <div class="serie-rp">
+          <div class="serie-rp-label">🎓 Utile pour votre RP</div>
+          <div class="serie-rp-val">Chirurgie de l'époque · Anesthésie cocaïne · Transfusions sanguines · Hiérarchie médicale · Épidémies · Médecine des pauvres</div>
         </div>
       </div>
     </div>
-
-    <!-- A YOUNG DOCTOR'S NOTEBOOK -->
-    <div style="background:var(--ink);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:220px 1fr">
-      <div style="background:linear-gradient(135deg,#0c0e18,#1a1c2e);padding:2rem 1.5rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--border)">
-        <div>
-          <div style="font-size:3rem;margin-bottom:1rem">📓</div>
-          <div style="font-family:'Playfair Display',serif;font-size:1.3rem;color:#8ab4d4;line-height:1.2;font-style:italic">A Young Doctor's<br>Notebook</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--parch4);margin-top:.6rem">Russie rurale · 1917</div>
-        </div>
-        <div style="margin-top:1.5rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--parch4);margin-bottom:.4rem">Disponible sur</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.85rem;color:var(--parch2)">Netflix · Amazon Prime</div>
-        </div>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1rem">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(138,180,212,.3);color:#8ab4d4;border-radius:3px">Comédie noire</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--parch4);border-radius:3px">2 saisons</span>
-        </div>
-      </div>
-      <div style="padding:1.75rem 2rem">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.6rem">Sky Arts · 2012–2013 · Daniel Radcliffe &amp; Jon Hamm · d'après Boulgakov</div>
-        <blockquote style="border-left:2px solid #8ab4d4;margin:0 0 1.2rem;padding:.6rem 1rem;font-family:'EB Garamond',serif;font-size:1rem;color:var(--parch);font-style:italic;line-height:1.7">
-          "Russie, 1917. Un jeune médecin tout juste diplômé est envoyé seul dans un hôpital rural perdu dans la neige. Il doit tout inventer — avec les instruments qu'il a, et rien d'autre."
-        </blockquote>
-        <p style="font-family:'EB Garamond',serif;font-size:.93rem;color:var(--parch2);line-height:1.8;margin-bottom:1.2rem">
-          Adaptation des nouvelles autobiographiques de Mikhaïl Boulgakov (<em>Récits d'un jeune médecin</em>). Un médecin fraîchement diplômé envoyé seul dans un hôpital rural perdu — il improvise tout avec les moyens du bord. Amputations, extractions de dents, accouchements difficiles, blessures graves. L'ambiance rurale et isolée colle parfaitement à l'esprit du Texas en 1904.
-        </p>
-        <div style="background:rgba(138,180,212,.06);border:1px solid rgba(138,180,212,.15);border-radius:4px;padding:.9rem 1.1rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:#8ab4d4;margin-bottom:.5rem">🎓 Utile pour votre RP</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.88rem;color:var(--parch2);line-height:1.7">Médecine de campagne isolée · Amputations d'urgence · Extractions dentaires · Blessures graves · Accouchements difficiles · Improvisation médicale</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CHARITÉ -->
-    <div style="background:var(--ink);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:220px 1fr">
-      <div style="background:linear-gradient(135deg,#0e1a0e,#1a2e1a);padding:2rem 1.5rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--border)">
-        <div>
-          <div style="font-size:3rem;margin-bottom:1rem">🔬</div>
-          <div style="font-family:'Playfair Display',serif;font-size:1.6rem;color:#7ec87e;line-height:1.1;font-style:italic">Charité</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--parch4);margin-top:.6rem">Berlin · 1888–1907</div>
-        </div>
-        <div style="margin-top:1.5rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--parch4);margin-bottom:.4rem">Disponible sur</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.85rem;color:var(--parch2)">Arte · YouTube · Dailymotion</div>
-        </div>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1rem">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(126,200,126,.3);color:#7ec87e;border-radius:3px">🇩🇪 Allemand</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--parch4);border-radius:3px">Sous-titres FR</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--parch4);border-radius:3px">3 saisons</span>
-        </div>
-      </div>
-      <div style="padding:1.75rem 2rem">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.6rem">ARD · 2017–2021 · Série allemande · Saison 1 : 1888</div>
-        <blockquote style="border-left:2px solid #7ec87e;margin:0 0 1.2rem;padding:.6rem 1rem;font-family:'EB Garamond',serif;font-size:1rem;color:var(--parch);font-style:italic;line-height:1.7">
-          "Berlin, 1888. À l'hôpital de la Charité, Robert Koch, Rudolf Virchow et leurs étudiants sont en train d'inventer la bactériologie moderne. Les patients sont des cobayes — mais sans eux, rien n'avance."
-        </blockquote>
-        <p style="font-family:'EB Garamond',serif;font-size:.93rem;color:var(--parch2);line-height:1.8;margin-bottom:1.2rem">
-          Série allemande se déroulant exactement dans notre période (1888–1907 pour la saison 1). On y voit les vraies opérations de l'époque, les salles de dissection, les épidémies de maladies infectieuses, et la naissance de la médecine moderne. Plusieurs extraits circulent librement sur YouTube et Dailymotion — parfait pour une immersion rapide.
-        </p>
-        <div style="background:rgba(126,200,126,.06);border:1px solid rgba(126,200,126,.15);border-radius:4px;padding:.9rem 1.1rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:#7ec87e;margin-bottom:.5rem">🎓 Utile pour votre RP</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.88rem;color:var(--parch2);line-height:1.7">Bactériologie &amp; Koch · Chirurgie de l'époque · Salles de dissection · Maladies infectieuses · Naissance de la médecine moderne · Conditions hospitalières 1900</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- CASUALTY 1900s -->
-    <div style="background:var(--ink);border:1px solid var(--border);border-radius:8px;overflow:hidden;display:grid;grid-template-columns:220px 1fr">
-      <div style="background:linear-gradient(135deg,#1a0a0a,#2e1010);padding:2rem 1.5rem;display:flex;flex-direction:column;justify-content:space-between;border-right:1px solid var(--border)">
-        <div>
-          <div style="font-size:3rem;margin-bottom:1rem">🩺</div>
-          <div style="font-family:'Playfair Display',serif;font-size:1.3rem;color:#d47070;line-height:1.2;font-style:italic">Casualty<br>1900s</div>
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--parch4);margin-top:.6rem">Londres · 1906–1909</div>
-        </div>
-        <div style="margin-top:1.5rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.1em;text-transform:uppercase;color:var(--parch4);margin-bottom:.4rem">Disponible sur</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.85rem;color:var(--parch2)">Amazon Prime · DVD</div>
-        </div>
-        <div style="display:flex;gap:.4rem;flex-wrap:wrap;margin-top:1rem">
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid rgba(212,112,112,.3);color:#d47070;border-radius:3px">🇬🇧 Anglais</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--parch4);border-radius:3px">10 épisodes</span>
-          <span style="font-family:'Cormorant Garamond',serif;font-size:.6rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 7px;border:1px solid var(--border);color:var(--parch4);border-radius:3px">BBC</span>
-        </div>
-      </div>
-      <div style="padding:1.75rem 2rem">
-        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.6rem">BBC · 2008–2009 · London Hospital · East End · Basé sur de vrais dossiers</div>
-        <blockquote style="border-left:2px solid #d47070;margin:0 0 1.2rem;padding:.6rem 1rem;font-family:'EB Garamond',serif;font-size:1rem;color:var(--parch);font-style:italic;line-height:1.7">
-          "Londres, 1906. La salle des urgences du London Hospital reçoit les blessés et malades du East End. Chaque cas est réel — tiré des registres, journaux de bord et mémoires de l'hôpital."
-        </blockquote>
-        <p style="font-family:'EB Garamond',serif;font-size:.93rem;color:var(--parch2);line-height:1.8;margin-bottom:1.2rem">
-          Probablement la série la plus proche de The Knick dans l'esprit. Chaque épisode reconstitue de vrais cas médicaux à partir des archives du London Hospital — radiologie naissante, anesthésie au chloroforme, infections, amputations, urgences quotidiennes. Le Dr. Dean — accro à la cocaïne — sera familier aux fans de The Knick. Cherie Lunghi incarne l'infirmière-chef Eva Luckes, personnage réel.
-        </p>
-        <div style="background:rgba(212,112,112,.06);border:1px solid rgba(212,112,112,.15);border-radius:4px;padding:.9rem 1.1rem">
-          <div style="font-family:'Cormorant Garamond',serif;font-size:.63rem;letter-spacing:.15em;text-transform:uppercase;color:#d47070;margin-bottom:.5rem">🎓 Utile pour votre RP</div>
-          <div style="font-family:'EB Garamond',serif;font-size:.88rem;color:var(--parch2);line-height:1.7">Anesthésie au chloroforme · Radiologie primitive · Chirurgie &amp; amputations · Infections · Urgences réelles 1906 · Rôle des infirmières · Dépendance cocaïne</div>
-        </div>
-      </div>
-    </div>
-
   </div>
+
+  <!-- CASUALTY 1900s -->
+  <div class="serie-card">
+    <div class="serie-trailer">
+      <iframe src="https://www.youtube.com/embed/NaJFS8BQnCw?rel=0" allowfullscreen loading="lazy" title="Casualty 1909 — Trailer"></iframe>
+    </div>
+    <div class="serie-body">
+      <div class="serie-aside" style="background:linear-gradient(135deg,#1a0a0a,#2e1010)">
+        <div>
+          <div style="font-size:2.5rem;margin-bottom:.75rem">🩺</div>
+          <div class="serie-title" style="color:#d47070">Casualty 1900s</div>
+          <div class="serie-meta" style="margin-top:.5rem">Londres · 1906–1909</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Disponible sur</div>
+          <div class="serie-dispo-val">Amazon Prime · DVD</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Actrice principale</div>
+          <div class="serie-dispo-val">Cherie Lunghi</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Diffusé sur</div>
+          <div class="serie-dispo-val">BBC Two</div>
+        </div>
+        <div class="serie-tags">
+          <span class="serie-tag" style="color:#d47070;border-color:rgba(212,112,112,.3)">Dossiers réels</span>
+          <span class="serie-tag">10 épisodes</span>
+          <span class="serie-tag">🇬🇧 Anglais</span>
+        </div>
+      </div>
+      <div class="serie-content">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.7rem">BBC · 2008–2009 · London Hospital · East End · Basé sur les archives de l'hôpital</div>
+        <blockquote class="serie-quote" style="border-left-color:#d47070">
+          "Londres, 1906. La salle des urgences du London Hospital. Chaque cas est réel — tiré des registres, journaux de bord et mémoires de l'hôpital."
+        </blockquote>
+        <p class="serie-desc">
+          Probablement la série la plus proche de The Knick dans l'esprit, et la plus précise historiquement. Chaque épisode reconstitue de vrais cas médicaux tirés des archives du London Hospital — radiologie naissante avec Ernest Wilson (l'un des premiers radiologues britanniques), anesthésie au chloroforme, infections, amputations. Le Dr. Dean — accro à la cocaïne — sera familier aux fans de The Knick.
+        </p>
+        <div class="serie-rp" style="background:rgba(212,112,112,.06);border-color:rgba(212,112,112,.15)">
+          <div class="serie-rp-label" style="color:#d47070">🎓 Utile pour votre RP</div>
+          <div class="serie-rp-val">Anesthésie chloroforme · Radiologie primitive · Chirurgie &amp; amputations · Urgences réelles 1906 · Rôle des infirmières · Dépendance cocaïne</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- A YOUNG DOCTOR'S NOTEBOOK -->
+  <div class="serie-card">
+    <div class="serie-trailer">
+      <iframe src="https://www.youtube.com/embed/_OBxtD63IwA?rel=0" allowfullscreen loading="lazy" title="A Young Doctor's Notebook — Bande annonce"></iframe>
+    </div>
+    <div class="serie-body">
+      <div class="serie-aside" style="background:linear-gradient(135deg,#0c0e18,#1a1c2e)">
+        <div>
+          <div style="font-size:2.5rem;margin-bottom:.75rem">📓</div>
+          <div class="serie-title" style="color:#8ab4d4;font-size:1.25rem">A Young Doctor's Notebook</div>
+          <div class="serie-meta" style="margin-top:.5rem">Russie rurale · 1917</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Disponible sur</div>
+          <div class="serie-dispo-val">Netflix · Amazon Prime</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Acteurs</div>
+          <div class="serie-dispo-val">Daniel Radcliffe · Jon Hamm</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">D'après</div>
+          <div class="serie-dispo-val">Mikhaïl Boulgakov</div>
+        </div>
+        <div class="serie-tags">
+          <span class="serie-tag" style="color:#8ab4d4;border-color:rgba(138,180,212,.3)">Comédie noire</span>
+          <span class="serie-tag">2 saisons</span>
+          <span class="serie-tag">🇬🇧 VO sous-titrée</span>
+        </div>
+      </div>
+      <div class="serie-content">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.7rem">Sky Arts · 2012–2013 · 8 épisodes · ~25 min</div>
+        <blockquote class="serie-quote" style="border-left-color:#8ab4d4">
+          "Russie, 1917. Un jeune médecin diplômé est envoyé seul dans un hôpital rural perdu dans la neige. Il doit tout inventer — avec les instruments qu'il a, et rien d'autre."
+        </blockquote>
+        <p class="serie-desc">
+          Adaptation des nouvelles autobiographiques de Boulgakov. Un médecin fraîchement diplômé envoyé seul dans un hôpital rural — il improvise tout avec les moyens du bord. Amputations, extractions de dents, accouchements difficiles, blessures graves. L'ambiance isolée et le manque de moyens collent parfaitement à l'esprit du Texas en 1904. Épisodes courts — parfaits pour une pause entre deux sessions RP.
+        </p>
+        <div class="serie-rp" style="background:rgba(138,180,212,.06);border-color:rgba(138,180,212,.15)">
+          <div class="serie-rp-label" style="color:#8ab4d4">🎓 Utile pour votre RP</div>
+          <div class="serie-rp-val">Médecine de campagne · Amputations d'urgence · Extractions dentaires · Accouchements difficiles · Improvisation médicale · Dépendance morphine</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CHARITÉ -->
+  <div class="serie-card">
+    <div class="serie-trailer" style="background:linear-gradient(135deg,#0e1a0e,#1a2e1a)">
+      <div class="serie-trailer-placeholder">
+        <div style="font-size:3rem">🔬</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:#7ec87e;font-style:italic">Charité</div>
+        <div style="font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4)">Extraits disponibles sur YouTube et Dailymotion</div>
+        <a href="https://www.youtube.com/results?search_query=Charité+série+ARD+1888" target="_blank" rel="noopener" style="font-family:'Cormorant Garamond',serif;font-size:.8rem;color:#7ec87e;border:1px solid rgba(126,200,126,.4);padding:.4rem 1rem;border-radius:4px;text-decoration:none;margin-top:.5rem">Rechercher sur YouTube →</a>
+      </div>
+    </div>
+    <div class="serie-body">
+      <div class="serie-aside" style="background:linear-gradient(135deg,#0e1a0e,#1a2e1a)">
+        <div>
+          <div style="font-size:2.5rem;margin-bottom:.75rem">🔬</div>
+          <div class="serie-title" style="color:#7ec87e">Charité</div>
+          <div class="serie-meta" style="margin-top:.5rem">Berlin · 1888–1907</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Disponible sur</div>
+          <div class="serie-dispo-val">Arte · YouTube · Dailymotion</div>
+        </div>
+        <div>
+          <div class="serie-dispo-label">Diffusé sur</div>
+          <div class="serie-dispo-val">ARD (Allemagne)</div>
+        </div>
+        <div class="serie-tags">
+          <span class="serie-tag" style="color:#7ec87e;border-color:rgba(126,200,126,.3)">🇩🇪 Allemand</span>
+          <span class="serie-tag">Sous-titres FR</span>
+          <span class="serie-tag">3 saisons</span>
+        </div>
+      </div>
+      <div class="serie-content">
+        <div style="font-family:'Cormorant Garamond',serif;font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.7rem">ARD · 2017–2021 · Saison 1 : Berlin 1888 · Robert Koch · Rudolf Virchow</div>
+        <blockquote class="serie-quote" style="border-left-color:#7ec87e">
+          "Berlin, 1888. À l'hôpital de la Charité, Robert Koch et Rudolf Virchow inventent la bactériologie moderne. Les patients sont des cobayes — mais sans eux, rien n'avance."
+        </blockquote>
+        <p class="serie-desc">
+          Série allemande se déroulant exactement dans notre période (1888–1907 pour la saison 1). On y voit les vraies opérations de l'époque, les salles de dissection, les épidémies de maladies infectieuses, et la naissance de la médecine moderne autour de figures historiques réelles. Plusieurs extraits circulent librement sur YouTube et Dailymotion — parfait pour une immersion rapide, même sans abonnement.
+        </p>
+        <div class="serie-rp" style="background:rgba(126,200,126,.06);border-color:rgba(126,200,126,.15)">
+          <div class="serie-rp-label" style="color:#7ec87e">🎓 Utile pour votre RP</div>
+          <div class="serie-rp-val">Bactériologie &amp; Koch · Chirurgie 1888 · Salles de dissection · Maladies infectieuses · Naissance médecine moderne · Conditions hospitalières 1900</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 
 <script>
+function showTab(tab, btn){
+  document.querySelectorAll('.media-tab').forEach(function(t){ t.classList.remove('active'); });
+  document.querySelectorAll('.media-tab').forEach(function(t){
+    if(t.textContent.indexOf(tab==='videos'?'Vidéos':'Séries')>-1) t.classList.add('active');
+  });
+  document.getElementById('wrap-videos').style.display = tab==='videos' ? 'block' : 'none';
+  document.getElementById('wrap-series').style.display = tab==='series' ? 'block' : 'none';
+}
+
 var VIDEOS = [
   {
     id: 'aXLyLvoxKFA',
