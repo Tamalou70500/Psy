@@ -42,11 +42,12 @@
 .serie-trailer iframe{ position:absolute; top:0; left:0; width:100%; height:100%; border:none; }
 .serie-trailer-placeholder{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:.75rem; background:var(--ink2); }
 /* Thumbnail lazy-load trailer */
-.trailer-thumb{ position:absolute; inset:0; background-size:cover; background-position:center; cursor:pointer; }
-.trailer-thumb::after{ content:''; position:absolute; inset:0; background:rgba(0,0,0,.35); }
-.trailer-play{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:72px; height:72px; background:rgba(199,154,82,.92); border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:1.8rem; z-index:2; transition:transform .2s,background .2s; box-shadow:0 4px 24px rgba(0,0,0,.5); }
+.trailer-thumb{ position:absolute; inset:0; background-size:cover; background-position:center top; cursor:pointer; transition:opacity .3s; }
+.trailer-thumb::after{ content:''; position:absolute; inset:0; background:linear-gradient(to top, rgba(0,0,0,.65) 0%, rgba(0,0,0,.15) 50%, rgba(0,0,0,.25) 100%); }
+.trailer-play{ position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:76px; height:76px; background:rgba(199,154,82,.9); border-radius:50%; display:flex; align-items:center; justify-content:center; z-index:2; transition:transform .2s,background .2s; box-shadow:0 6px 32px rgba(0,0,0,.6); }
+.trailer-play svg{ width:28px; height:28px; fill:#1c1409; margin-left:4px; }
 .trailer-thumb:hover .trailer-play{ transform:translate(-50%,-50%) scale(1.1); background:rgba(199,154,82,1); }
-.trailer-label{ position:absolute; bottom:1rem; left:50%; transform:translateX(-50%); z-index:2; font-family:'Cormorant Garamond',serif; font-size:.7rem; letter-spacing:.15em; text-transform:uppercase; color:rgba(255,255,255,.8); white-space:nowrap; }
+.trailer-label{ position:absolute; bottom:1.1rem; left:50%; transform:translateX(-50%); z-index:2; font-family:'Cormorant Garamond',serif; font-size:.68rem; letter-spacing:.18em; text-transform:uppercase; color:rgba(255,255,255,.85); white-space:nowrap; text-shadow:0 1px 4px rgba(0,0,0,.8); }
 .serie-body{ display:grid; grid-template-columns:240px 1fr; }
 .serie-aside{ padding:1.5rem; border-right:1px solid var(--border); display:flex; flex-direction:column; gap:1rem; }
 .serie-title{ font-family:'Playfair Display',serif; font-size:1.5rem; color:var(--parch); font-style:italic; line-height:1.15; }
@@ -112,9 +113,12 @@
   <!-- THE KNICK -->
   <div class="serie-card">
     <div class="serie-trailer" onclick="loadTrailer(this,'vCRizG9eYB4')">
-      <div class="trailer-thumb" style="background-image:url('https://img.youtube.com/vi/vCRizG9eYB4/maxresdefault.jpg')">
-        <div class="trailer-play">▶</div>
-        <div class="trailer-label">▶ Bande annonce VF</div>
+      <div class="trailer-thumb" id="thumb-knick" style="background-color:#1c1008">
+        <img src="https://img.youtube.com/vi/vCRizG9eYB4/maxresdefault.jpg" style="display:none"
+          onload="document.getElementById('thumb-knick').style.backgroundImage='url(https://img.youtube.com/vi/vCRizG9eYB4/maxresdefault.jpg)'"
+          onerror="document.getElementById('thumb-knick').style.backgroundImage='url(https://img.youtube.com/vi/vCRizG9eYB4/hqdefault.jpg)'">
+        <div class="trailer-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="trailer-label">Bande annonce VF</div>
       </div>
     </div>
     <div class="serie-body">
@@ -162,9 +166,12 @@
   <!-- CASUALTY 1900s -->
   <div class="serie-card">
     <div class="serie-trailer" onclick="loadTrailer(this,'NaJFS8BQnCw')">
-      <div class="trailer-thumb" style="background-image:url('https://img.youtube.com/vi/NaJFS8BQnCw/maxresdefault.jpg')">
-        <div class="trailer-play">▶</div>
-        <div class="trailer-label">▶ Extrait · Casualty 1909</div>
+      <div class="trailer-thumb" id="thumb-casualty" style="background-color:#1a0a0a">
+        <img src="https://img.youtube.com/vi/NaJFS8BQnCw/maxresdefault.jpg" style="display:none"
+          onload="document.getElementById('thumb-casualty').style.backgroundImage='url(https://img.youtube.com/vi/NaJFS8BQnCw/maxresdefault.jpg)'"
+          onerror="document.getElementById('thumb-casualty').style.backgroundImage='url(https://img.youtube.com/vi/NaJFS8BQnCw/hqdefault.jpg)'">
+        <div class="trailer-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="trailer-label">Extrait · Casualty 1909</div>
       </div>
     </div>
     <div class="serie-body">
@@ -211,9 +218,12 @@
   <!-- A YOUNG DOCTOR'S NOTEBOOK -->
   <div class="serie-card">
     <div class="serie-trailer" onclick="loadTrailer(this,'_OBxtD63IwA')">
-      <div class="trailer-thumb" style="background-image:url('https://img.youtube.com/vi/_OBxtD63IwA/maxresdefault.jpg')">
-        <div class="trailer-play">▶</div>
-        <div class="trailer-label">▶ Bande annonce</div>
+      <div class="trailer-thumb" id="thumb-youngdoc" style="background-color:#0c0e18">
+        <img src="https://img.youtube.com/vi/_OBxtD63IwA/maxresdefault.jpg" style="display:none"
+          onload="document.getElementById('thumb-youngdoc').style.backgroundImage='url(https://img.youtube.com/vi/_OBxtD63IwA/maxresdefault.jpg)'"
+          onerror="document.getElementById('thumb-youngdoc').style.backgroundImage='url(https://img.youtube.com/vi/_OBxtD63IwA/hqdefault.jpg)'">
+        <div class="trailer-play"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+        <div class="trailer-label">Bande annonce</div>
       </div>
     </div>
     <div class="serie-body">
@@ -259,12 +269,26 @@
 
   <!-- CHARITÉ -->
   <div class="serie-card">
-    <div class="serie-trailer" style="background:linear-gradient(135deg,#0e1a0e,#1a2e1a)">
+    <div class="serie-trailer" style="background:linear-gradient(160deg,#0e1a0e 0%,#1a2e1a 50%,#0e1a0e 100%)">
       <div class="serie-trailer-placeholder">
-        <div style="font-size:3rem">🔬</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.4rem;color:#7ec87e;font-style:italic">Charité — Berlin 1888</div>
-        <div style="font-family:'Cormorant Garamond',serif;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;color:var(--parch4);margin-bottom:.5rem">Série ARD · Extraits disponibles sur YouTube</div>
-        <a href="https://www.youtube.com/results?search_query=Charité+série+ARD+1888+VOSTFR" target="_blank" rel="noopener" style="font-family:'Cormorant Garamond',serif;font-size:.85rem;color:#7ec87e;border:1px solid rgba(126,200,126,.4);padding:.45rem 1.2rem;border-radius:4px;text-decoration:none;background:rgba(126,200,126,.08)">🔎 Rechercher sur YouTube →</a>
+        <!-- Décor : croix médicale stylisée en filigrane -->
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;opacity:.04;font-size:18rem;line-height:1;color:#7ec87e;pointer-events:none;user-select:none">✚</div>
+        <div style="position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;gap:1rem;text-align:center;padding:1rem">
+          <div style="font-family:'Playfair Display',serif;font-size:2.2rem;color:#7ec87e;font-style:italic;letter-spacing:.04em;text-shadow:0 2px 16px rgba(0,0,0,.6)">Charité</div>
+          <div style="font-family:'Cormorant Garamond',serif;font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(126,200,126,.6)">Berlin · 1888 — Série ARD</div>
+          <div style="width:40px;height:1px;background:rgba(126,200,126,.3)"></div>
+          <div style="font-family:'EB Garamond',serif;font-size:.88rem;color:rgba(200,220,200,.6);font-style:italic;max-width:340px;line-height:1.6">Bande annonce disponible sur YouTube et Canal+</div>
+          <div style="display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;margin-top:.25rem">
+            <a href="https://www.youtube.com/results?search_query=Charité+série+ARD+2017+trailer+VOSTFR" target="_blank" rel="noopener"
+               style="font-family:'Cormorant Garamond',serif;font-size:.8rem;color:#7ec87e;border:1px solid rgba(126,200,126,.35);padding:.4rem 1rem;border-radius:4px;text-decoration:none;background:rgba(126,200,126,.07);transition:background .2s">
+              ▶ YouTube
+            </a>
+            <a href="https://www.canalplus.com/series/charite/h/12873102_40099/bandes-annonces/" target="_blank" rel="noopener"
+               style="font-family:'Cormorant Garamond',serif;font-size:.8rem;color:#7ec87e;border:1px solid rgba(126,200,126,.35);padding:.4rem 1rem;border-radius:4px;text-decoration:none;background:rgba(126,200,126,.07)">
+              ▶ Canal+
+            </a>
+          </div>
+        </div>
       </div>
     </div>
     <div class="serie-body">
