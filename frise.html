@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -6,53 +6,6 @@
 <title>Frise chronologique — Médecine 1800-1904</title>
 <script>(function(){ var t=localStorage.getItem("psy_theme")||"dark"; document.documentElement.setAttribute("data-theme",t); })();</script>
 <link rel="stylesheet" href="css/style.css">
-<style>
-* { box-sizing: border-box; }
-
-.frise-page { display: flex; flex-direction: column; height: calc(100vh - 54px); overflow: hidden; }
-
-/* CONTROLS */
-.frise-controls {
-  background: var(--ink2); border-bottom: 1px solid var(--bdr);
-  padding: .6rem 1.5rem; display: flex; align-items: center; gap: 1rem;
-  flex-wrap: wrap; flex-shrink: 0;
-}
-.frise-title { font-family:'Playfair Display',serif; font-size:.95rem; color:var(--parch); font-style:italic; }
-.filter-row { display: flex; gap: 5px; }
-.fbtn {
-  font-family:'Cormorant Garamond',serif; font-size:.6rem; letter-spacing:.1em;
-  text-transform:uppercase; padding:.25rem .7rem;
-  border:1px solid var(--bdr); background:transparent; color:var(--parch3); cursor:pointer; transition:all .15s;
-}
-.fbtn:hover { border-color:var(--bdr2); color:var(--parch2); }
-.fbtn.active { border-color:var(--gold); color:var(--gold); background:var(--gold-dim); }
-.legend { display:flex; gap:1rem; align-items:center; margin-left:auto; }
-.leg { display:flex; align-items:center; gap:.3rem; font-family:'Cormorant Garamond',serif; font-size:.58rem; letter-spacing:.08em; text-transform:uppercase; color:var(--parch4); }
-.leg-dot { width:7px; height:7px; border-radius:50%; }
-
-/* SCROLL AREA */
-.frise-scroll { flex:1; overflow-x:auto; overflow-y:hidden; cursor:grab; }
-.frise-scroll:active { cursor:grabbing; }
-.frise-scroll.scrolling { user-select:none; }
-
-/* CANVAS SVG */
-.frise-canvas { display:block; height:100%; }
-
-/* POPUP */
-.popup {
-  position:fixed; z-index:1000;
-  background:var(--ink2); border:1px solid var(--bdr2);
-  padding:1.1rem 1.25rem; max-width:320px; min-width:240px;
-  pointer-events:none; opacity:0; transition:opacity .15s;
-}
-.popup.show { opacity:1; pointer-events:all; }
-.popup-year { font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.16em; text-transform:uppercase; margin-bottom:.3rem; }
-.popup-title { font-family:'Playfair Display',serif; font-size:.95rem; color:var(--parch); font-style:italic; margin-bottom:.5rem; line-height:1.35; }
-.popup-detail { font-family:'EB Garamond',serif; font-size:.82rem; color:var(--parch2); line-height:1.65; }
-.popup-detail strong { color:var(--parch); }
-.popup-close { position:absolute; top:.5rem; right:.5rem; background:transparent; border:none; color:var(--parch4); cursor:pointer; font-size:.75rem; padding:2px 5px; }
-.popup-close:hover { color:var(--parch); }
-</style>
 </head>
 <body>
 <script src="js/header.js"></script>
