@@ -53,8 +53,33 @@
         <img id="p-photo-preview" referrerpolicy="no-referrer" style="width:52px;height:52px;border-radius:50%;object-fit:cover;border:1px solid var(--bdr2);display:none;filter:sepia(10%)" alt="">
         <span style="font-family:'Cormorant Garamond',serif;font-size:.72rem;color:var(--parch4);font-style:italic">Lien direct vers l'image</span>
       </div>
-      <div style="margin-top:.5rem;padding:.5rem .75rem;background:var(--ink2);border-left:2px solid var(--gold);border-radius:0 4px 4px 0;font-size:.72rem;color:var(--parch4);font-family:'Cormorant Garamond',serif">
-        💡 Uploadez votre image sur <a href="https://imgur.com" target="_blank" style="color:var(--gold)">imgur.com</a>, ouvrez-la, clic droit → <em>Copier l'adresse de l'image</em> — l'URL doit commencer par <code style="font-size:.7rem">https://i.imgur.com/</code>
+      <div style="margin-top:.5rem">
+        <button type="button" onclick="document.getElementById('imgur-modal').style.display='flex'" style="background:none;border:1px solid var(--gold);color:var(--gold);padding:.25rem .7rem;border-radius:4px;font-family:'Cormorant Garamond',serif;font-size:.78rem;cursor:pointer">💡 Comment obtenir un lien image ?</button>
+      </div>
+
+      <!-- MODAL IMGUR -->
+      <div id="imgur-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:9999;align-items:center;justify-content:center" onclick="if(event.target===this)this.style.display='none'">
+        <div style="background:var(--paper);border:1px solid var(--bdr2);border-radius:8px;max-width:480px;width:90%;padding:1.5rem;position:relative;font-family:'Cormorant Garamond',serif">
+          <button onclick="document.getElementById('imgur-modal').style.display='none'" style="position:absolute;top:.75rem;right:.75rem;background:none;border:none;color:var(--parch4);font-size:1.2rem;cursor:pointer">✕</button>
+          <h3 style="margin:0 0 1rem;font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--gold)">📷 Ajouter une photo via Imgur</h3>
+          <ol style="margin:0;padding-left:1.2rem;line-height:2;font-size:.9rem;color:var(--ink)">
+            <li>Allez sur <a href="https://imgur.com" target="_blank" style="color:var(--gold)">imgur.com</a> et connectez-vous</li>
+            <li>Cliquez <strong>New post</strong> et uploadez votre image</li>
+            <li>Une fois l'image affichée, <strong>faites un clic droit dessus</strong></li>
+            <li>Choisissez <em>« Copier l'adresse de l'image »</em></li>
+            <li>Collez le lien dans le champ Photo ci-dessus</li>
+          </ol>
+          <div style="margin-top:1rem;padding:.6rem .8rem;background:var(--ink2);border-radius:4px;font-size:.78rem;color:var(--parch4)">
+            ✅ Le lien doit ressembler à :<br>
+            <code style="color:var(--gold);font-size:.8rem">https://i.imgur.com/aBcDeF1.png</code><br>
+            <span style="font-size:.72rem;opacity:.7">Il finit toujours par <strong>.png</strong>, <strong>.jpg</strong> ou <strong>.jpeg</strong></span>
+          </div>
+          <div style="margin-top:.75rem;padding:.6rem .8rem;background:var(--ink2);border-radius:4px;font-size:.78rem;color:var(--parch4)">
+            ⚠️ N'utilisez pas un lien de galerie comme<br>
+            <code style="color:#c83030;font-size:.75rem">https://imgur.com/gallery/mon-image</code><br>
+            <span style="font-size:.72rem;opacity:.7">Ce type de lien ne fonctionne pas.</span>
+          </div>
+        </div>
       </div>
     </div>
     <div class="form-group">
