@@ -116,18 +116,24 @@ const db   = getFirestore(app);
 var ME = null;
 var ALL_MEDS = [];
 
-const GRADE_LABELS = {
-  stagiaire:'Stagiaire', apprenti:'Apprenti', medecin:'Médecin',
-  specialiste:'Spécialiste', chief:'Chef de dispensaire', admin:'Admin'
-};
-const GRADE_COLORS = {
+const ROLE_COLORS = {
   stagiaire:'#4a9a4a', apprenti:'#c89820', medecin:'#4a80b8',
   specialiste:'#9a3ab8', chief:'#b84a7a', chief_texas:'#b54a1e', chief_louisiane:'#1a7a8a', admin:'#c83030'
 };
 const ROLE_LABELS = {
-  medecin:'Médecin', chief:'Chef de dispensaire',
-  chief_texas:'Chief du Texas', chief_louisiane:'Chief de Louisiane', admin:'Admin'
+  stagiaire:'Stagiaire', apprenti:'Apprenti', medecin:'Médecin', specialiste:'Spécialiste',
+  chief:'Chef de dispensaire', chief_texas:'Chief du Texas', chief_louisiane:'Chief de Louisiane', admin:'Admin'
 };
+const CHIEF_ROLES = ['chief','chief_texas','chief_louisiane','admin'];
+function roleKey(m){
+  if(CHIEF_ROLES.includes(m.role)) return m.role;
+  return m.grade||'stagiaire';
+}
+function rColor(m){ return ROLE_COLORS[roleKey(m)]||'#c89820'; }
+function rLabel(m){ return ROLE_LABELS[roleKey(m)]||roleKey(m); }
+// Alias pour compatibilité avec les endroits qui utilisent encore GRADE_LABELS/GRADE_COLORS
+const GRADE_LABELS = ROLE_LABELS;
+const GRADE_COLORS = ROLE_COLORS;
 const DISPENSAIRES = {
   texas:     ['Blackwater','Strawberry','Sunset','Armadillo','Tumbleweed'],
   louisiane: ['Saint-Denis','Van Horn','Rhodes']
@@ -218,8 +224,6 @@ function renderAcces(){
   if(!ALL_MEDS.length){ tbody.innerHTML='<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--parch4)">Aucun médecin.</td></tr>'; return; }
 
   tbody.innerHTML = ALL_MEDS.map(m => {
-    const eg = m.role === 'admin' ? 'admin' : m.role === 'chief' ? 'chief' : (m.grade||'stagiaire');
-    const col = GRADE_COLORS[eg] || '#c89820';
     const isPrivileged = m.role === 'admin' || m.role === 'chief';
     
     let accesHtml;
@@ -242,7 +246,7 @@ function renderAcces(){
 
     return `<tr style="${!m.profilOk?'opacity:.7':''}">
       <td class="name-cell">${nameAcces}</td>
-      <td><span style="color:${col};font-family:'Cormorant Garamond',serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">${GRADE_LABELS[eg]||eg}</span></td>
+      <td><span style="color:${rColor(m)};font-family:'Cormorant Garamond',serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">${rLabel(m)}</span></td>
       <td style="font-family:'Cormorant Garamond',serif;font-size:.8rem;color:var(--parch3)">${esc(m.cabinet||'—')}</td>
       <td>${accesHtml}</td>
       <td><div class="action-row">${actionsHtml}</div></td>
@@ -264,8 +268,6 @@ function renderMedecins(){
   const examCount = m => Object.values(m.examens||{}).filter(e=>e.passed).length;
   
   tbody.innerHTML = ALL_MEDS.map(m => {
-    const eg = m.role==='admin'?'admin':m.role==='chief'?'chief':(m.grade||'stagiaire');
-    const col = GRADE_COLORS[eg]||'#c89820';
     const roleBadge = m.role==='admin'?'<span class="role-badge role-admin">Admin</span>'
       :m.role==='chief'?'<span class="role-badge role-chief">Chief</span>'
       :'<span class="role-badge role-medecin">Médecin</span>';
@@ -278,11 +280,11 @@ function renderMedecins(){
       : `<span style="color:var(--parch4);font-style:italic">Anonyme</span>${incompletBadge}`;
 
     // Chief : grades limités à stagiaire/apprenti/medecin, pas de suppression
-    const isChief = ME.role === 'chief';
+    const isChief = ['chief','chief_texas','chief_louisiane'].includes(ME.role);
     const gradeOptions = isChief
       ? ['stagiaire','apprenti','medecin']
       : ['stagiaire','apprenti','medecin','specialiste'];
-    const gradeDisabled = m.role==='admin' || m.role==='chief' || (isChief && (m.role==='admin'||m.role==='chief'));
+    const gradeDisabled = CHIEF_ROLES.includes(m.role);
 
     return `<tr style="${!m.profilOk?'opacity:.7':''}">
       <td class="name-cell">${nameCell}</td>
