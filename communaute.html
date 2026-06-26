@@ -358,7 +358,7 @@ function renderMessages(msgs){
       <div class="msg-body">
         <div class="msg-header">
           <span class="msg-name">${esc(m.prenom||'')} ${esc(m.nom||'')}</span>
-          <span class="msg-grade" style="color:${col}">${gradeLabel}${m.titreSpec?' · '+esc(m.titreSpec):''}</span>
+          <span class="msg-grade" style="color:${col}">${m.titreSpec?esc(m.titreSpec):gradeLabel}</span>
           <span class="msg-time">${time}</span>
           ${canDel?`<button class="msg-del" onclick="delMsg('${m.id}')" title="Supprimer">✕</button>`:''}
         </div>
@@ -435,7 +435,7 @@ function renderAnnuaire(){
       ${av}
       <div class="med-info">
         <div class="med-name">Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')}</div>
-        <div class="med-grade" style="color:${col}">${GRADE_LABELS[grade]||grade}${m.titreSpec?' · '+esc(m.titreSpec):''}</div>
+        <div class="med-grade" style="color:${col}">${m.titreSpec?esc(m.titreSpec):(GRADE_LABELS[grade]||grade)}</div>
         <div class="med-meta">Cabinet de ${esc(m.cabinet||'—')}${m.age?' · '+m.age+' ans':''}</div>
         ${m.telegram?`<div style="font-family:'Cormorant Garamond',serif;font-size:.68rem;color:var(--parch4);margin-top:2px">📡 ${esc(m.telegram)}</div>`:''}
         ${badges?'<div class="med-badges">'+badges+'</div>':''}
