@@ -1,10 +1,10 @@
-/* header.js — Navbar injectée sur toutes les pages */
+﻿/* header.js — Navbar injectée sur toutes les pages */
 
 (function(){
   var page = window.location.pathname.split('/').pop() || 'index.html';
 
   var links = [
-    { href:'annuaire.html',   label:'Dossiers'    },
+    { href:'dossier_patient.html',   label:'Dossiers'    },
     { href:'lexique.html',    label:'Lexique'     },
     { href:'visite.html',     label:'Visite'      },
     { href:'cours.html',      label:'Cours & Spé' },

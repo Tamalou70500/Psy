@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -128,7 +128,7 @@ var checkReady = setInterval(function(){
   window._fbOnReady(function(user){
     if(!user) return;
     window._fbGetProfile().then(function(p){
-      if(p && p.profilOk) window.location.href = 'annuaire.html';
+      if(p && p.profilOk) window.location.href = 'dossier_patient.html';
       else window.location.href = 'setup-profil.html';
     });
   });
@@ -142,7 +142,7 @@ function doSignIn(){
   waitFb('_fbSignIn', function(fn){
     fn().then(function(res){
       var p = res.profil;
-      window.location.href = (p && p.profilOk) ? 'annuaire.html' : 'setup-profil.html';
+      window.location.href = (p && p.profilOk) ? 'dossier_patient.html' : 'setup-profil.html';
     }).catch(function(e){
       btn.disabled = false;
       showLoading(false);
@@ -192,7 +192,7 @@ function doRpAction(){
   waitFb(fnName, function(fn){
     fn(id, pwd).then(function(res){
       var p = res.profil;
-      window.location.href = (p && p.profilOk) ? 'annuaire.html' : 'setup-profil.html';
+      window.location.href = (p && p.profilOk) ? 'dossier_patient.html' : 'setup-profil.html';
     }).catch(function(e){
       btn.disabled = false;
       showLoading(false);

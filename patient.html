@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -154,7 +154,7 @@ const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
 
 async function load(){
   patient = await patientsGetById(pid);
-  if(!patient){ document.getElementById('main').innerHTML='<div class="container"><div class="alert alert-error mt-3">Dossier introuvable. <a href="annuaire.html">Retour</a></div></div>'; return; }
+  if(!patient){ document.getElementById('main').innerHTML='<div class="container"><div class="alert alert-error mt-3">Dossier introuvable. <a href="dossier_patient.html">Retour</a></div></div>'; return; }
   render();
 }
 
@@ -191,7 +191,7 @@ function render(){
         </div>
       </div>
       <div class="patient-band-actions">
-        <a href="annuaire.html" class="btn btn-sm">← Dossiers</a>
+        <a href="dossier_patient.html" class="btn btn-sm">← Dossiers</a>
         <button class="btn btn-sm btn-gold" onclick="window.openEdit()">Modifier</button>
       </div>
     </div>
@@ -287,7 +287,7 @@ window.saveEdit = async function(){
 };
 window.deletePatient = async function(){
   if(!confirm(`Supprimer définitivement le dossier de ${patient.prenom} ${patient.nom} ?`))return;
-  await patientsDelete(pid); window.location.href='annuaire.html';
+  await patientsDelete(pid); window.location.href='dossier_patient.html';
 };
 load();
 </script>

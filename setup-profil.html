@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
@@ -107,7 +107,7 @@ var waitAuth = setInterval(function(){
     if(!user){ window.location.href='login.html'; return; }
     // Si profil déjà complet, rediriger
     window._fbGetProfile().then(function(p){
-      if(p && p.profilOk){ window.location.href='annuaire.html'; return; }
+      if(p && p.profilOk){ window.location.href='dossier_patient.html'; return; }
       // Pré-remplir avec données Google si dispo
       if(p){
         if(!p.prenom && user.displayName){
@@ -164,7 +164,7 @@ function saveSetup(){
       cabinet:  cabinet,
       profilOk: true,
     }).then(function(){
-      window.location.href = 'annuaire.html';
+      window.location.href = 'dossier_patient.html';
     }).catch(function(e){
       btn.textContent = 'Créer mon profil et accéder au cabinet →';
       btn.disabled = false;
