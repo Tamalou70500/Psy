@@ -20,6 +20,7 @@
     </div>
     <div class="admin-nav-item" onclick="showSection('medecins')" id="nav-medecins">👥 Médecins</div>
     <div class="admin-nav-item" onclick="showSection('roles')" id="nav-roles">🏛️ Rôles & Chiefs</div>
+    <div class="admin-nav-item" onclick="showSection('chiefs')" id="nav-chiefs">⭐ Élire un chef</div>
     <div class="admin-nav-sep">Données</div>
     <div class="admin-nav-item" onclick="showSection('patients')" id="nav-patients">🗂️ Patients</div>
   </aside>
@@ -76,6 +77,13 @@
       </table>
     </div>
 
+    <!-- SECTION ÉLIRE UN CHEF -->
+    <div id="section-chiefs" class="hidden admin-section">
+      <div class="admin-section-title">⭐ Élire un chef de dispensaire</div>
+      <div class="admin-section-sub" id="chiefs-sub"></div>
+      <div id="chiefs-content"></div>
+    </div>
+
     <!-- SECTION PATIENTS -->
     <div id="section-patients" class="hidden admin-section">
       <div class="admin-section-title">🗂️ Gestion des patients</div>
@@ -110,12 +118,31 @@ var ALL_MEDS = [];
 
 const GRADE_LABELS = {
   stagiaire:'Stagiaire', apprenti:'Apprenti', medecin:'Médecin',
-  specialiste:'Spécialiste', chief:'Chef de cabinet', admin:'Admin'
+  specialiste:'Spécialiste', chief:'Chef de dispensaire', admin:'Admin'
 };
 const GRADE_COLORS = {
   stagiaire:'#4a9a4a', apprenti:'#c89820', medecin:'#4a80b8',
-  specialiste:'#9a3ab8', chief:'#9a3ab8', admin:'#c83030'
+  specialiste:'#9a3ab8', chief:'#2a9d8f', admin:'#c83030'
 };
+const ROLE_LABELS = {
+  medecin:'Médecin', chief:'Chef de dispensaire',
+  chief_texas:'Chef du Texas', chief_louisiane:'Chef de Louisiane', admin:'Admin'
+};
+const DISPENSAIRES = {
+  texas:     ['Blackwater','Strawberry','Sunset','Armadillo','Tumbleweed'],
+  louisiane: ['Saint-Denis','Van Horn','Rhodes']
+};
+// Région de chaque dispensaire
+const CABINET_REGION = {
+  Blackwater:'texas', Strawberry:'texas', Sunset:'texas',
+  Armadillo:'texas', Tumbleweed:'texas',
+  'Saint-Denis':'louisiane', 'Van Horn':'louisiane', Rhodes:'louisiane'
+};
+function myRegion(role){
+  if(role==='chief_texas') return 'texas';
+  if(role==='chief_louisiane') return 'louisiane';
+  return null;
+}
 
 // ── AUTH ──────────────────────────────────────
 onAuthStateChanged(auth, async user => {
@@ -124,14 +151,21 @@ onAuthStateChanged(auth, async user => {
   if(snap.empty){ window.location.href='login.html'; return; }
   ME = { id:snap.docs[0].id, ...snap.docs[0].data() };
   if(!ME.profilOk){ window.location.href='setup-profil.html'; return; }
-  if(ME.role !== 'admin' && ME.role !== 'chief'){
+  const allowed = ['admin','chief','chief_texas','chief_louisiane'];
+  if(!allowed.includes(ME.role)){
     document.querySelector('.admin-main').innerHTML =
       '<div style="padding:3rem;text-align:center;font-family:\'EB Garamond\',serif;color:var(--parch3)">Accès réservé aux Administrateurs et Chefs de cabinet.</div>';
     return;
   }
-  // Masquer "Rôles" pour les chiefs
-  if(ME.role === 'chief'){
+  // Masquer sections selon rôle
+  if(ME.role !== 'admin'){
     document.getElementById('nav-roles').style.display = 'none';
+  }
+  if(ME.role === 'chief'){
+    document.getElementById('nav-chiefs').style.display = 'none';
+  }
+  if(ME.role === 'admin'){
+    document.getElementById('nav-chiefs').style.display = 'none';
   }
   await loadAll();
   showSection('acces');
@@ -140,9 +174,14 @@ onAuthStateChanged(auth, async user => {
 // ── CHARGEMENT ────────────────────────────────
 async function loadAll(){
   const snap = await getDocs(collection(db,'medecins'));
-  ALL_MEDS = snap.docs.map(d=>({id:d.id,...d.data()}))
-    .sort((a,b)=>{
-      // Profils incomplets en premier, puis en attente d'accès patients
+  let meds = snap.docs.map(d=>({id:d.id,...d.data()}));
+  // Filtrer par région pour chief_texas / chief_louisiane
+  const region = myRegion(ME.role);
+  if(region){
+    const disp = DISPENSAIRES[region];
+    meds = meds.filter(m => disp.includes(m.cabinet));
+  }
+  ALL_MEDS = meds.sort((a,b)=>{
       if(!a.profilOk && b.profilOk) return -1;
       if(a.profilOk && !b.profilOk) return 1;
       if(!a.accesPatients && b.accesPatients) return -1;
@@ -152,6 +191,7 @@ async function loadAll(){
   renderAcces();
   renderMedecins();
   renderRoles();
+  renderChiefs();
   renderPatients();
   updatePendingBadge();
 }
@@ -264,7 +304,8 @@ function renderMedecins(){
 
 window.setGrade = async function(uid, grade){
   const forbidden = ['specialiste','chief','admin'];
-  if(ME.role === 'chief' && forbidden.includes(grade)) return;
+  const isRegionalChief = ['chief','chief_texas','chief_louisiane'].includes(ME.role);
+  if(isRegionalChief && forbidden.includes(grade)) return;
   await updateDoc(doc(db,'medecins',uid), { grade });
   const med = ALL_MEDS.find(m=>m.id===uid);
   if(med) med.grade = grade;
@@ -277,33 +318,33 @@ window.deleteMed = async function(uid){
   renderMedecins(); renderAcces(); renderRoles();
 };
 
-// ── RÔLES ─────────────────────────────────────
+// ── RÔLES (admin uniquement) ───────────────────
 function renderRoles(){
   if(ME.role !== 'admin') return;
   const tbody = document.getElementById('roles-tbody');
-  
-  tbody.innerHTML = ALL_MEDS.map(m => {
-    const eg = m.role==='admin'?'admin':m.role==='chief'?'chief':(m.grade||'stagiaire');
-    const col = GRADE_COLORS[eg]||'#c89820';
-    
+  tbody.innerHTML = ALL_MEDS.filter(m=>m.profilOk).map(m => {
+    const eg = m.role==='admin'?'admin':['chief','chief_texas','chief_louisiane'].includes(m.role)?m.role:(m.grade||'stagiaire');
+    const roleBadge = {
+      admin:'<span class="role-badge role-admin">⚙️ Admin</span>',
+      chief_texas:'<span class="role-badge role-chief">🤠 Chef Texas</span>',
+      chief_louisiane:'<span class="role-badge role-chief">⚜️ Chef Louisiane</span>',
+      chief:'<span class="role-badge role-chief">🏛️ Chef dispensaire</span>',
+    }[m.role] || '<span class="role-badge role-medecin">Médecin</span>';
+
     let actions = '';
-    if(m.id !== ME.id){
-      if(m.role !== 'chief' && m.role !== 'admin'){
-        actions += `<button class="btn-action btn-purple" onclick="setRole('${m.id}','chief')">🏛️ Nommer Chief</button>`;
+    if(m.id !== ME.id && m.role !== 'admin'){
+      if(m.role === 'medecin' || m.role === 'chief'){
+        actions += `<button class="btn-action btn-purple" onclick="setRole('${m.id}','chief_texas')">🤠 Chef Texas</button>`;
+        actions += `<button class="btn-action btn-purple" onclick="setRole('${m.id}','chief_louisiane')">⚜️ Chef Louisiane</button>`;
       }
-      if(m.role === 'chief'){
-        actions += `<button class="btn-action btn-red" onclick="setRole('${m.id}','medecin')">Retirer Chief</button>`;
+      if(m.role !== 'medecin'){
+        actions += `<button class="btn-action btn-red" onclick="setRole('${m.id}','medecin')">Retirer rôle</button>`;
       }
     }
-
     return `<tr>
       <td class="name-cell">Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')}</td>
-      <td>${
-        m.role==='admin'?'<span class="role-badge role-admin">⚙️ Administrateur</span>'
-        :m.role==='chief'?'<span class="role-badge role-chief">🏛️ Chef de cabinet</span>'
-        :'<span class="role-badge role-medecin">Médecin</span>'
-      }</td>
-      <td style="color:${col};font-family:'Cormorant Garamond',serif;font-size:.7rem;letter-spacing:.08em;text-transform:uppercase">${GRADE_LABELS[eg]||eg}</td>
+      <td>${roleBadge}</td>
+      <td style="font-family:'Cormorant Garamond',serif;font-size:.78rem;color:var(--parch3)">${esc(m.cabinet||'—')}</td>
       <td><div class="action-row">${actions}</div></td>
     </tr>`;
   }).join('');
@@ -312,10 +353,76 @@ function renderRoles(){
 window.setRole = async function(uid, role){
   const med = ALL_MEDS.find(m=>m.id===uid);
   const name = med ? `Dr. ${med.prenom} ${med.nom}` : 'ce médecin';
-  if(!confirm(`Changer le rôle de ${name} en "${role}" ?`)) return;
+  const label = ROLE_LABELS[role]||role;
+  if(!confirm(`Attribuer le rôle "${label}" à ${name} ?`)) return;
   await updateDoc(doc(db,'medecins',uid), { role });
   if(med) med.role = role;
   renderRoles(); renderMedecins(); renderAcces();
+};
+
+// ── ÉLIRE UN CHEF DE DISPENSAIRE ──────────────
+function renderChiefs(){
+  const region = myRegion(ME.role);
+  if(!region) return;
+  const disp = DISPENSAIRES[region];
+  const regionLabel = region==='texas'?'Texas':'Louisiane';
+  document.getElementById('chiefs-sub').textContent =
+    `Élire un chef de dispensaire pour la région ${regionLabel}`;
+
+  const medList = ALL_MEDS.filter(m => m.profilOk && m.role !== 'admin' && m.role !== 'chief_texas' && m.role !== 'chief_louisiane');
+
+  document.getElementById('chiefs-content').innerHTML = `
+    <div style="max-width:480px">
+      <div class="form-group" style="margin-bottom:1rem">
+        <label class="form-label">Médecin à élire</label>
+        <select id="chief-elect-med" class="grade-select" style="width:100%">
+          <option value="">— Choisir un médecin —</option>
+          ${medList.map(m=>`<option value="${m.id}">Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')} · ${esc(m.cabinet||'')}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group" style="margin-bottom:1.5rem">
+        <label class="form-label">Dispensaire à diriger</label>
+        <select id="chief-elect-disp" class="grade-select" style="width:100%">
+          <option value="">— Choisir un dispensaire —</option>
+          ${disp.map(d=>`<option value="${d}">${d}</option>`).join('')}
+        </select>
+      </div>
+      <button class="btn btn-gold" onclick="electChief()">⭐ Élire comme chef de dispensaire</button>
+    </div>
+    <div style="margin-top:2rem">
+      <div class="admin-section-sub">Chefs actuels dans votre région</div>
+      <table class="med-table" style="margin-top:.5rem">
+        <thead><tr><th>Médecin</th><th>Dispensaire</th><th>Actions</th></tr></thead>
+        <tbody>${
+          ALL_MEDS.filter(m=>m.role==='chief'&&m.profilOk).map(m=>`<tr>
+            <td class="name-cell">Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')}</td>
+            <td style="font-family:'Cormorant Garamond',serif;font-size:.85rem;color:var(--parch3)">${esc(m.cabinet||'—')}</td>
+            <td><button class="btn-action btn-red" onclick="revokeChief('${m.id}')">Retirer</button></td>
+          </tr>`).join('') || '<tr><td colspan="3" style="text-align:center;padding:1rem;color:var(--parch4)">Aucun chef élu.</td></tr>'
+        }</tbody>
+      </table>
+    </div>`;
+}
+
+window.electChief = async function(){
+  const uid  = document.getElementById('chief-elect-med').value;
+  const disp = document.getElementById('chief-elect-disp').value;
+  if(!uid || !disp){ alert('Choisissez un médecin et un dispensaire.'); return; }
+  const med = ALL_MEDS.find(m=>m.id===uid);
+  const name = med ? `Dr. ${med.prenom} ${med.nom}` : 'ce médecin';
+  if(!confirm(`Élire ${name} comme chef de ${disp} ?`)) return;
+  await updateDoc(doc(db,'medecins',uid), { role:'chief', cabinet:disp });
+  if(med){ med.role='chief'; med.cabinet=disp; }
+  renderChiefs(); renderMedecins(); renderAcces();
+};
+
+window.revokeChief = async function(uid){
+  const med = ALL_MEDS.find(m=>m.id===uid);
+  const name = med ? `Dr. ${med.prenom} ${med.nom}` : 'ce médecin';
+  if(!confirm(`Retirer le rôle de chef à ${name} ?`)) return;
+  await updateDoc(doc(db,'medecins',uid), { role:'medecin' });
+  if(med) med.role='medecin';
+  renderChiefs(); renderMedecins(); renderAcces();
 };
 
 // ── PATIENTS ──────────────────────────────────
