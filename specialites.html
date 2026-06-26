@@ -823,7 +823,7 @@ document.addEventListener('DOMContentLoaded', function(){
   renderAccueil();
   var waitG = setInterval(function(){
     if(window.guardPage){ clearInterval(waitG);
-      guardPage({ minGrade:'medecin', onReady:function(p){} });
+      guardPage({ allowIncomplete:true, minGrade:'medecin', onReady:function(p){} });
     }
   }, 80);
 });

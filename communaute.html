@@ -133,7 +133,24 @@ onAuthStateChanged(auth, async user => {
   const snap = await getDoc(doc(db,'medecins',user.uid));
   if(!snap.exists()){ window.location.href='setup-profil.html'; return; }
   ME = { uid:user.uid, ...snap.data() };
-  if(!ME.profilOk){ window.location.href='setup-profil.html'; return; }
+  if(!ME.profilOk){
+    var nb0 = document.getElementById('navbar-user');
+    if(nb0) nb0.textContent = 'Nouveau membre';
+    var ov = document.createElement('div');
+    ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:center;justify-content:center';
+    ov.innerHTML = `<div style="background:#1c1409;border:1px solid #6b4f1e;border-radius:10px;max-width:440px;width:90%;padding:2rem;text-align:center;font-family:'Cormorant Garamond',serif">
+      <div style="font-size:2.2rem;margin-bottom:.75rem">📋</div>
+      <h2 style="font-family:'Playfair Display',serif;color:#c9a84c;margin:0 0 .75rem;font-size:1.3rem">Fiche de personnage incomplète</h2>
+      <p style="color:#e8d9b8;line-height:1.8;font-size:.95rem;margin:0 0 1.5rem">
+        Pour accéder à la communauté, vous devez d'abord remplir votre fiche de personnage —
+        <strong>prénom, nom RP, âge et cabinet</strong>.
+      </p>
+      <a href="profil.html" style="display:inline-block;padding:.6rem 1.4rem;background:#c9a84c;color:#1c1409;border-radius:5px;font-family:'Playfair Display',serif;font-size:.95rem;text-decoration:none;font-weight:700">Compléter ma fiche →</a>
+      <br><button onclick="auth.signOut().then(()=>window.location.href='login.html')" style="margin-top:1rem;background:none;border:none;color:#a08060;font-size:.8rem;cursor:pointer;font-family:'Cormorant Garamond',serif">Se déconnecter</button>
+    </div>`;
+    document.body.appendChild(ov);
+    return;
+  }
   document.getElementById('logout-btn').onclick = () => { auth.signOut().then(()=>window.location.href='login.html'); };
   var nb = document.getElementById('navbar-user');
   if(nb) nb.textContent = (ME.prenom||'')+' '+(ME.nom||'')+' · '+(window.GRADE_LABELS&&window.GRADE_LABELS[ME.grade||'stagiaire']||ME.grade||'');

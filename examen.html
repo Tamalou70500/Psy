@@ -1101,7 +1101,7 @@ function backToAccueil(){ show('view-accueil'); renderAccueil(); window.scrollTo
 document.addEventListener('DOMContentLoaded', function(){
   var waitG = setInterval(function(){
     if(window.guardPage){ clearInterval(waitG);
-      guardPage({ minGrade:'stagiaire', onReady:function(p){
+      guardPage({ popupIfIncomplete:true, minGrade:'stagiaire', onReady:function(p){
         // Synchroniser scores Firebase → localStorage
         if(p && p.examens){
           var scores={};

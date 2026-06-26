@@ -55,7 +55,41 @@ window.guardPage = function(opts){
         }
 
         /* Profil incomplet */
-        if(!p.profilOk){ window.location.href='setup-profil.html'; return; }
+        if(!p.profilOk){
+          if(opts && opts.allowIncomplete){
+            /* Page libre : accès autorisé, navbar minimale */
+            var nb = document.getElementById('navbar-user');
+            if(nb) nb.textContent = 'Nouveau membre';
+            var lb = document.getElementById('logout-btn');
+            if(lb) lb.onclick = function(){ window._fbSignOut(); };
+            if(opts.onReady) opts.onReady(p);
+            return;
+          }
+          if(opts && opts.popupIfIncomplete){
+            /* Popup invitation à compléter le profil */
+            var overlay = document.createElement('div');
+            overlay.id = 'profil-incomplete-overlay';
+            overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:9999;display:flex;align-items:center;justify-content:center';
+            overlay.innerHTML = `
+              <div style="background:#1c1409;border:1px solid #6b4f1e;border-radius:10px;max-width:440px;width:90%;padding:2rem;text-align:center;font-family:'Cormorant Garamond',serif">
+                <div style="font-size:2.2rem;margin-bottom:.75rem">📋</div>
+                <h2 style="font-family:'Playfair Display',serif;color:#c9a84c;margin:0 0 .75rem;font-size:1.3rem">Fiche de personnage incomplète</h2>
+                <p style="color:#e8d9b8;line-height:1.8;font-size:.95rem;margin:0 0 1.5rem">
+                  Pour accéder à cette section, vous devez d'abord remplir votre fiche de personnage —
+                  <strong>prénom, nom RP, âge et cabinet</strong>.
+                </p>
+                <a href="profil.html" style="display:inline-block;padding:.6rem 1.4rem;background:#c9a84c;color:#1c1409;border-radius:5px;font-family:'Playfair Display',serif;font-size:.95rem;text-decoration:none;font-weight:700">Compléter ma fiche →</a>
+                <br>
+                <button onclick="window._fbSignOut()" style="margin-top:1rem;background:none;border:none;color:#a08060;font-size:.8rem;cursor:pointer;font-family:'Cormorant Garamond',serif">Se déconnecter</button>
+              </div>`;
+            document.body.appendChild(overlay);
+            /* Remplir quand même la navbar */
+            var nb2 = document.getElementById('navbar-user');
+            if(nb2) nb2.textContent = 'Nouveau membre';
+            return;
+          }
+          window.location.href='setup-profil.html'; return;
+        }
 
         var eg       = effectiveGrade(p);
         var userLvl  = GRADE_LEVEL[eg] ?? 0;

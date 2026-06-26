@@ -140,9 +140,11 @@ onAuthStateChanged(auth, async user => {
 // ── CHARGEMENT ────────────────────────────────
 async function loadAll(){
   const snap = await getDocs(collection(db,'medecins'));
-  ALL_MEDS = snap.docs.map(d=>({id:d.id,...d.data()})).filter(m=>m.profilOk)
+  ALL_MEDS = snap.docs.map(d=>({id:d.id,...d.data()}))
     .sort((a,b)=>{
-      // Trier : en attente d'abord, puis par grade
+      // Profils incomplets en premier, puis en attente d'accès patients
+      if(!a.profilOk && b.profilOk) return -1;
+      if(a.profilOk && !b.profilOk) return 1;
       if(!a.accesPatients && b.accesPatients) return -1;
       if(a.accesPatients && !b.accesPatients) return 1;
       return 0;
@@ -228,8 +230,15 @@ function renderMedecins(){
       :m.role==='chief'?'<span class="role-badge role-chief">Chief</span>'
       :'<span class="role-badge role-medecin">Médecin</span>';
     
-    return `<tr>
-      <td class="name-cell">Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')}</td>
+    const incompletBadge = !m.profilOk
+      ? '<span style="font-size:.65rem;background:#7a3010;color:#ffcca0;padding:1px 6px;border-radius:3px;margin-left:6px;font-family:\'Courier Prime\',monospace">⚠ Incomplet</span>'
+      : '';
+    const nameCell = m.profilOk
+      ? `Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')}${incompletBadge}`
+      : `<em style="color:var(--parch4)">${esc(m.email||m.id)}</em>${incompletBadge}`;
+
+    return `<tr style="${!m.profilOk?'opacity:.7':''}">
+      <td class="name-cell">${nameCell}</td>
       <td>
         <select class="grade-select" onchange="setGrade('${m.id}',this.value)" ${m.role==='admin'?'disabled':''}>
           ${['stagiaire','apprenti','medecin','specialiste'].map(g=>

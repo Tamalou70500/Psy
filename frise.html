@@ -408,7 +408,7 @@ window.addEventListener('resize', function(){ render(); });
 
 document.addEventListener('DOMContentLoaded', function(){
   var waitG = setInterval(function(){
-    if(window.guardPage){ clearInterval(waitG); guardPage({ minGrade:'stagiaire' }); }
+    if(window.guardPage){ clearInterval(waitG); guardPage({ allowIncomplete:true, minGrade:'stagiaire' }); }
   }, 80);
 });
 </script>

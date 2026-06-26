@@ -1065,7 +1065,7 @@ function backToAccueil(){ show('view-accueil'); renderAccueil(); window.scrollTo
 document.addEventListener('DOMContentLoaded', function(){
   var waitG=setInterval(function(){
     if(window.guardPage){ clearInterval(waitG);
-      guardPage({ minGrade:'medecin', onReady:function(p){
+      guardPage({ popupIfIncomplete:true, minGrade:'medecin', onReady:function(p){
         if(p&&p.examens){
           var scores={}; Object.entries(p.examens).forEach(function(kv){ scores[kv[0]]={pct:kv[1].pct,passed:kv[1].passed}; });
           localStorage.setItem('psy_exam_scores',JSON.stringify(scores));
