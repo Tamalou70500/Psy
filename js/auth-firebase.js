@@ -138,6 +138,16 @@ async function updateProfile(data) {
   await setDoc(doc(db, 'medecins', user.uid), data, { merge: true });
 }
 
+/* ─── Sauvegarder un résultat d'examen ──────────────────── */
+async function saveExam(examId, pct, passed, mention) {
+  const user = auth.currentUser;
+  if (!user) return;
+  await updateDoc(doc(db, 'medecins', user.uid), {
+    [`examens.${examId}`]: { pct, passed, mention, date: new Date().toLocaleDateString('fr-FR') }
+  });
+}
+window._fbSaveExam = saveExam;
+
 /* ─── Lister tous les médecins ──────────────────────────── */
 async function getAllMedecins() {
   const snap = await getDocs(collection(db, 'medecins'));
