@@ -161,7 +161,7 @@ onAuthStateChanged(auth, async user => {
   }
   document.getElementById('logout-btn').onclick = () => { auth.signOut().then(()=>window.location.href='login.html'); };
   var nb = document.getElementById('navbar-user');
-  if(nb) nb.textContent = (ME.prenom||'')+' '+(ME.nom||'')+' · '+(window.GRADE_LABELS&&window.GRADE_LABELS[ME.grade||'stagiaire']||ME.grade||'');
+  if(nb) nb.textContent = (ME.prenom||'')+' '+(ME.nom||'')+' · '+roleLabel(ME);
   if(window._showAdminBtn) window._showAdminBtn(ME.role);
   init();
 });

@@ -139,6 +139,24 @@
 
 <script type="module" src="js/patients.js"></script>
 <script>
+var ROLE_COLORS = {
+  stagiaire:'#4a9a4a', apprenti:'#c89820', medecin:'#4a80b8',
+  specialiste:'#9a3ab8', chief:'#b84a7a', chief_texas:'#b54a1e', chief_louisiane:'#1a7a8a', admin:'#c83030'
+};
+var ROLE_LABELS_PR = {
+  stagiaire:'Stagiaire', apprenti:'Apprenti médecin', medecin:'Médecin', specialiste:'Spécialiste',
+  chief:'Chef de dispensaire', chief_texas:'Chief du Texas', chief_louisiane:'Chief de Louisiane', admin:'Administrateur'
+};
+function profilRoleLabel(p){
+  var r = p.role;
+  if(['chief','chief_texas','chief_louisiane','admin'].includes(r)) return ROLE_LABELS_PR[r];
+  return ROLE_LABELS_PR[p.grade||'stagiaire']||'Médecin';
+}
+function profilRoleColor(p){
+  var r = p.role;
+  if(['chief','chief_texas','chief_louisiane','admin'].includes(r)) return ROLE_COLORS[r];
+  return ROLE_COLORS[p.grade||'stagiaire']||'#c89820';
+}
 var THEMES = [
   { id:'dark',      name:'Sombre',    bg:'#070503', accent:'#B8843A' },
   { id:'parchment', name:'Parchemin', bg:'#F5EDD8', accent:'#8B6914' },
@@ -229,7 +247,7 @@ function populateForm(p){
     : '<div class="avatar-ph">'+(p.prenom?.[0]||'?')+(p.nom?.[0]||'')+'</div>';
   avEl.innerHTML = avHtml
     + '<div class="medecin-name">'+(p.prenom||'')+' '+(p.nom||'')+'</div>'
-    + '<div class="medecin-role">'+(p.role==='admin'?'Administrateur':'Médecin')+'</div>'
+    + '<div class="medecin-role" style="color:'+profilRoleColor(p)+'">'+profilRoleLabel(p)+'</div>'
     + '<div class="medecin-cabinet">Cabinet de '+(p.cabinet||'Sunset')+'</div>'
     + (p.telegram ? '<div style="font-family:\'Cormorant Garamond\',serif;font-size:.72rem;letter-spacing:.1em;color:var(--parch3);margin-top:4px">📡 Télégraphe&nbsp;: <strong style=\"color:var(--parch)\">'+(p.telegram)+'</strong></div>' : '');
 
