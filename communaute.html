@@ -101,7 +101,7 @@
 <script type="module" src="js/auth-firebase.js"></script>
 <script type="module">
 import { getApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
-import { getAuth } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
 import {
   getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot,
   query, orderBy, limit, getDocs, serverTimestamp, where,
