@@ -278,16 +278,26 @@ function populateForm(p){
   // Progression
   var pw = document.getElementById('progression-wrap');
   var examens = p.examens || {};
-  var html = '<div style="display:flex;flex-direction:column;gap:6px">';
+  // Notification niv4 complété → spécialisation disponible
+  var niv4done = examens['e4'] && examens['e4'].passed;
+  var allNivDone = ['e1','e2','e3','e4'].every(function(k){ return examens[k] && examens[k].passed; });
+  var notifHtml = '';
+  if(allNivDone && !p.titreSpec){
+    notifHtml = '<div style="background:rgba(199,154,82,.12);border:1px solid var(--gold);border-left:3px solid var(--gold);padding:.85rem 1.25rem;margin-bottom:1rem;font-family:\'EB Garamond\',serif;font-size:.9rem;color:var(--parch)">'
+      + '🎓 Félicitations ! Vous avez validé les 4 niveaux — vous pouvez maintenant <a href="examen.html" style="color:var(--gold)">choisir votre spécialisation →</a></div>';
+  }
+
+  var html = notifHtml + '<div style="display:flex;flex-direction:column;gap:6px">';
   Object.entries(EXAMEN_LABELS).forEach(function(e){
     var id = e[0]; var label = e[1];
     var res = examens[id];
     var isSpe = id.startsWith('s');
-    var isActive = isSpe && res && res.passed && p.titreSpec === label;
+    // Comparer par ID de spé stocké dans p.titreSpecId, sinon fallback sur label
+    var isActive = isSpe && res && res.passed && (p.titreSpecId === id || (!p.titreSpecId && p.titreSpec === label));
     html += '<div style="display:flex;align-items:center;gap:1rem;padding:.5rem .75rem;background:'+(isActive?'rgba(199,154,82,.1)':'var(--ink2)')+';border:1px solid '+(isActive?'var(--gold)':'var(--bdr)')+'">'
       + '<span style="font-family:\'EB Garamond\',serif;font-size:.9rem;color:var(--parch2);flex:1">'+label+'</span>'
       + (res ? '<span style="font-family:\'Courier Prime\',monospace;font-size:.72rem;color:'+(res.passed?'#6abf6a':'#c07070')+'">'+res.pct+'% — '+(res.passed?'Validé':'Échoué')+'</span>' : '<span style="font-family:\'Cormorant Garamond\',serif;font-size:.68rem;color:var(--parch4);letter-spacing:.08em;text-transform:uppercase">Non passé</span>')
-      + (isSpe && res && res.passed && !isActive ? '<button onclick="setTitreSpec(\''+label+'\')" style="font-family:\'Cormorant Garamond\',serif;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;">Choisir</button>' : '')
+      + (isSpe && res && res.passed && !isActive ? '<button onclick="setTitreSpec(\''+id+'\',\''+label+'\')" style="font-family:\'Cormorant Garamond\',serif;font-size:.65rem;letter-spacing:.08em;text-transform:uppercase;padding:2px 8px;border:1px solid var(--gold);background:transparent;color:var(--gold);cursor:pointer;">Choisir</button>' : '')
       + (isActive ? '<span style="font-family:\'Cormorant Garamond\',serif;font-size:.65rem;color:var(--gold);letter-spacing:.08em">★ Active</span>' : '')
       + '</div>';
   });
@@ -417,8 +427,8 @@ async function deleteMyAccount(){
   }
 }
 
-function setTitreSpec(label){
-  window._fbUpdateProfile({ titreSpec: label }).then(function(){
+function setTitreSpec(id, label){
+  window._fbUpdateProfile({ titreSpec: label, titreSpecId: id }).then(function(){
     window._fbGetProfile().then(function(p){ if(p) populateForm(p); });
   });
 }
