@@ -231,11 +231,11 @@ function renderMedecins(){
       :'<span class="role-badge role-medecin">Médecin</span>';
     
     const incompletBadge = !m.profilOk
-      ? '<span style="font-size:.65rem;background:#7a3010;color:#ffcca0;padding:1px 6px;border-radius:3px;margin-left:6px;font-family:\'Courier Prime\',monospace">⚠ Incomplet</span>'
+      ? '<span title="Cet utilisateur ne a pas encore rempli sa fiche de personnage" style="font-size:.65rem;background:#7a3010;color:#ffcca0;padding:1px 6px;border-radius:3px;margin-left:6px;font-family:\'Courier Prime\',monospace;cursor:help">⚠ Profil incomplet</span>'
       : '';
     const nameCell = m.profilOk
       ? `Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')}${incompletBadge}`
-      : `<em style="color:var(--parch4)">${esc(m.email||m.id)}</em>${incompletBadge}`;
+      : `<span style="color:var(--parch4);font-style:italic">Anonyme</span>${incompletBadge}`;
 
     return `<tr style="${!m.profilOk?'opacity:.7':''}">
       <td class="name-cell">${nameCell}</td>
