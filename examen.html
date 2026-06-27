@@ -1346,6 +1346,7 @@ var examState = { examId:null, questions:[], current:0, answers:[], errors:[], s
 /* ══ PROFIL COURANT & CHEF ══════════════════════════════════ */
 var currentProfil = null;
 var currentChief  = null;
+var currentDoyen  = null;
 
 var TEXAS_CABINETS = ['Sunset','Blackwater','Strawberry','Armadillo','Tumbleweed'];
 var LOUISIANE_CABINETS = ['Saint-Denis','Annsburg','Van Horn','Valentine','Rhodes','Hôpital Saint-Denis'];
@@ -1365,6 +1366,17 @@ function loadChief(region, callback){
       var chief = null;
       snap.forEach(function(d){ if(!chief) chief = d.data(); });
       callback(chief);
+    }).catch(function(){ callback(null); });
+}
+
+function loadDoyen(callback){
+  if(!window._fbFirestoreUtils || !window._fbDb){ callback(null); return; }
+  var fu = window._fbFirestoreUtils;
+  fu.getDocs(fu.query(fu.collection(window._fbDb,'medecins'), fu.where('role','==','admin')))
+    .then(function(snap){
+      var doyen = null;
+      snap.forEach(function(d){ if(!doyen) doyen = d.data(); });
+      callback(doyen);
     }).catch(function(){ callback(null); });
 }
 
@@ -1625,7 +1637,7 @@ function showResult(){
           '</div>'+
           '<div class="dv-sig">'+
             '<div class="dv-sig-line"></div>'+
-            '<div class="dv-sig-name">Dr. Abernathy Lucius</div>'+
+            '<div class="dv-sig-name">'+(currentDoyen ? 'Dr. '+(currentDoyen.prenom||'')+' '+(currentDoyen.nom||'') : 'Doyen de l\'École')+'</div>'+
             '<div class="dv-sig-titre">Doyen de l\'École de Médecine</div>'+
           '</div>'+
         '</div>'+
@@ -1714,9 +1726,10 @@ document.addEventListener('DOMContentLoaded', function(){
     if(window.guardPage){ clearInterval(waitG);
       guardPage({ popupIfIncomplete:true, minGrade:'stagiaire', onReady:function(p){
         currentProfil = p;
-        // Charger le chef de région
+        // Charger le chef de région et le doyen
         var region = getRegion((p && p.cabinet)||'Sunset');
         loadChief(region, function(chief){ currentChief = chief; });
+        loadDoyen(function(doyen){ currentDoyen = doyen; });
         // Synchroniser scores Firebase → localStorage
         if(p && p.examens){
           var scores={};
