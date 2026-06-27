@@ -1343,6 +1343,31 @@ var EXAMENS = [
 /* ══ ÉTAT DE L\'EXAMEN ═══════════════════════════════════════ */
 var examState = { examId:null, questions:[], current:0, answers:[], errors:[], score:0 };
 
+/* ══ PROFIL COURANT & CHEF ══════════════════════════════════ */
+var currentProfil = null;
+var currentChief  = null;
+
+var TEXAS_CABINETS = ['Sunset','Blackwater','Strawberry','Armadillo','Tumbleweed'];
+var LOUISIANE_CABINETS = ['Saint-Denis','Annsburg','Van Horn','Valentine','Rhodes','Hôpital Saint-Denis'];
+
+function getRegion(cabinet){
+  if(TEXAS_CABINETS.indexOf(cabinet) > -1) return 'texas';
+  if(LOUISIANE_CABINETS.indexOf(cabinet) > -1) return 'louisiane';
+  return 'texas';
+}
+
+function loadChief(region, callback){
+  var role = region === 'louisiane' ? 'chief_louisiane' : 'chief_texas';
+  if(!window._fbFirestoreUtils || !window._fbDb){ callback(null); return; }
+  var fu = window._fbFirestoreUtils;
+  fu.getDocs(fu.query(fu.collection(window._fbDb,'medecins'), fu.where('role','==',role)))
+    .then(function(snap){
+      var chief = null;
+      snap.forEach(function(d){ if(!chief) chief = d.data(); });
+      callback(chief);
+    }).catch(function(){ callback(null); });
+}
+
 /* ══ ROTATION DES QUESTIONS THÉORIQUES ══════════════════════ */
 function shuffleQuestions(questions){
   var theorie = [], cas = [], inCas = false;
@@ -1531,18 +1556,84 @@ function showResult(){
   var diplome='';
   if(passed){
     var today=new Date().toLocaleDateString('fr-FR',{day:'2-digit',month:'long',year:'numeric'});
-    diplome=['═══════════════════════════════════════',
-      '  CABINET MÉDICAL DU NOUVEAU MONDE',
-      '  École de Saint-Denis · Texas · 1904',
-      '═══════════════════════════════════════','',
-      'Nous certifions que','',
-      '  Dr. [Votre nom]','',
-      'a satisfait aux épreuves de','  '+exam.title.toUpperCase(),'',
-      'et est déclaré :','  '+mention.toUpperCase(),'',
-      'Score : '+pct+'% ('+score+'/'+total+') — Requis : '+exam.reqScore+'%','',
-      'Saint-Denis, Louisiane, le '+today,'',
-      '  Cabinet Médical du Nouveau Monde',
-      '═══════════════════════════════════════'].join('\n');
+    var p = currentProfil || {};
+    var doctorName = (p.prenom||'') + ' ' + (p.nom||'');
+    var cabinet = p.cabinet || 'Sunset';
+    var region = getRegion(cabinet);
+    var regionLabel = region==='louisiane' ? 'Louisiane' : 'Texas';
+    var chiefName = currentChief ? 'Dr. '+(currentChief.prenom||'')+' '+(currentChief.nom||'') : 'Le Chef de dispensaire';
+    var isSpe = examState.examId && examState.examId.startsWith('s');
+    var gradeLine = isSpe
+      ? 'est certifié(e) en la discipline de'
+      : 'a satisfait aux épreuves du grade de';
+    var lieu = region==='louisiane' ? 'Saint-Denis, Louisiane' : 'Blackwater, Texas';
+
+    // Texte brut pour copier en RP
+    var diplomeTexte = [
+      '════════════════════════════════════════════',
+      '   CABINET MÉDICAL DU NOUVEAU MONDE — 1904',
+      '   École de Médecine de '+regionLabel,
+      '════════════════════════════════════════════',
+      '',
+      'Nous, soussignés, certifions que',
+      '',
+      '   Dr. '+doctorName,
+      '   Cabinet de '+cabinet,
+      '',
+      gradeLine,
+      '   '+exam.title.toUpperCase(),
+      '',
+      'et est déclaré(e) :',
+      '   '+mention.toUpperCase(),
+      '',
+      'Score obtenu : '+pct+'% ('+score+'/'+total+') — Requis : '+exam.reqScore+'%',
+      '',
+      lieu+', le '+today,
+      '',
+      '   '+chiefName,
+      '   Chef de dispensaire du '+regionLabel,
+      '════════════════════════════════════════════',
+    ].join('\n');
+
+    // Diplôme HTML visuel
+    diplome = '<div class="diplome-visuel">'+
+      '<div class="dv-border">'+
+      '<div class="dv-header">'+
+        '<div class="dv-ornement">✦ ✦ ✦</div>'+
+        '<div class="dv-institution">Cabinet Médical du Nouveau Monde</div>'+
+        '<div class="dv-sous">École de Médecine de '+regionLabel+' · Anno Domini 1904</div>'+
+        '<div class="dv-ornement">― ― ―</div>'+
+      '</div>'+
+      '<div class="dv-body">'+
+        '<p class="dv-certifie">Nous, soussignés, certifions que</p>'+
+        '<p class="dv-nom">Dr. '+doctorName+'</p>'+
+        '<p class="dv-cabinet">du Cabinet de <em>'+cabinet+'</em></p>'+
+        '<p class="dv-certifie" style="margin-top:1.2rem">'+gradeLine+'</p>'+
+        '<p class="dv-titre">'+exam.title+'</p>'+
+        '<p class="dv-certifie" style="margin-top:1rem">et est déclaré(e)</p>'+
+        '<p class="dv-mention">'+mention+'</p>'+
+        '<p class="dv-score">Score : '+pct+' %  ·  '+score+'/'+total+' bonnes réponses  ·  Requis : '+exam.reqScore+' %</p>'+
+      '</div>'+
+      '<div class="dv-footer">'+
+        '<div class="dv-ornement">― ― ―</div>'+
+        '<p class="dv-lieu">Fait à '+lieu+', le '+today+'</p>'+
+        '<div class="dv-signatures">'+
+          '<div class="dv-sig">'+
+            '<div class="dv-sig-line"></div>'+
+            '<div class="dv-sig-name">'+chiefName+'</div>'+
+            '<div class="dv-sig-titre">Chef de dispensaire du '+regionLabel+'</div>'+
+          '</div>'+
+          '<div class="dv-sig">'+
+            '<div class="dv-sig-line"></div>'+
+            '<div class="dv-sig-name">Dr. Abernathy Lucius</div>'+
+            '<div class="dv-sig-titre">Doyen de l\'École de Médecine</div>'+
+          '</div>'+
+        '</div>'+
+        '<div class="dv-ornement" style="margin-top:1rem">✦ ✦ ✦</div>'+
+      '</div>'+
+      '</div>'+
+      '</div>'+
+      '<div style="display:none" id="diplome-txt">'+diplomeTexte+'</div>';
   }
 
   var errHtml='';
@@ -1561,8 +1652,8 @@ function showResult(){
     +'<div class="result-detail"><strong>'+exam.reqScore+'%</strong>Score requis</div>'
     +'<div class="result-detail"><strong>'+(passed?'✓ Validé':'✗ Échoué')+'</strong>Statut</div>'
     +'</div>';
-  if(passed) html+='<div class="diplome" id="diplome-txt">'+diplome+'</div>'
-    +'<button class="btn btn-gold w-full" style="margin-bottom:1rem" onclick="copyDiplome()">Copier le diplôme RP</button>';
+  if(passed) html+=diplome
+    +'<button class="btn btn-gold w-full" style="margin-bottom:1rem" onclick="copyDiplome()">📋 Copier le diplôme RP (texte)</button>';
   html+=errHtml;
   html+='<div style="display:flex;gap:.6rem;margin-top:1.25rem;flex-wrap:wrap;justify-content:center">';
   html+='<button class="btn" onclick="backToAccueil()">← Retour</button>';
@@ -1622,6 +1713,10 @@ document.addEventListener('DOMContentLoaded', function(){
   var waitG = setInterval(function(){
     if(window.guardPage){ clearInterval(waitG);
       guardPage({ popupIfIncomplete:true, minGrade:'stagiaire', onReady:function(p){
+        currentProfil = p;
+        // Charger le chef de région
+        var region = getRegion((p && p.cabinet)||'Sunset');
+        loadChief(region, function(chief){ currentChief = chief; });
         // Synchroniser scores Firebase → localStorage
         if(p && p.examens){
           var scores={};

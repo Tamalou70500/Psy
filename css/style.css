@@ -1292,6 +1292,40 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .result-detail { font-family:'EB Garamond',serif; font-size:.88rem; color:var(--parch3); }
 .result-detail strong { display:block; font-size:1.4rem; color:var(--parch); font-family:Playfair Display,serif; font-weight:400; }
 .diplome { background:var(--ink3); border:1px solid var(--bdr2); border-left:3px solid var(--gold); padding:1.25rem; margin:1.25rem 0; text-align:left; font-family:'Courier Prime',monospace; font-size:.76rem; color:var(--parch2); white-space:pre-wrap; line-height:1.8; }
+
+/* ── Diplôme visuel ── */
+.diplome-visuel { margin:1.5rem 0; }
+.dv-border {
+  border:2px solid var(--gold-d);
+  outline:1px solid var(--bdr2);
+  outline-offset:6px;
+  padding:2rem 2.5rem;
+  background:linear-gradient(160deg, var(--ink2) 0%, var(--ink3) 100%);
+  text-align:center;
+  position:relative;
+}
+.dv-border::before {
+  content:'';
+  position:absolute;
+  inset:8px;
+  border:1px solid rgba(192,154,74,.2);
+  pointer-events:none;
+}
+.dv-ornement { font-family:'Cormorant Garamond',serif; color:var(--gold-d); font-size:.9rem; letter-spacing:.4em; margin:.5rem 0; }
+.dv-institution { font-family:'Playfair Display',serif; font-size:1.15rem; color:var(--gold-l); letter-spacing:.06em; font-style:italic; margin:.4rem 0; }
+.dv-sous { font-family:'Cormorant Garamond',serif; font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--parch4); }
+.dv-certifie { font-family:'EB Garamond',serif; font-size:.95rem; color:var(--parch3); font-style:italic; margin:.6rem 0 .2rem; }
+.dv-nom { font-family:'Playfair Display',serif; font-size:1.7rem; font-weight:700; color:var(--parch); font-style:italic; margin:.3rem 0; letter-spacing:.02em; }
+.dv-cabinet { font-family:'Cormorant Garamond',serif; font-size:.78rem; letter-spacing:.12em; text-transform:uppercase; color:var(--parch4); }
+.dv-titre { font-family:'Playfair Display',serif; font-size:1.1rem; color:var(--gold-l); font-style:italic; margin:.4rem 0; }
+.dv-mention { font-family:'Cormorant Garamond',serif; font-size:1rem; letter-spacing:.2em; text-transform:uppercase; color:var(--gold); margin:.3rem 0; }
+.dv-score { font-family:'Cormorant Garamond',serif; font-size:.72rem; color:var(--parch4); letter-spacing:.06em; margin-top:.75rem; }
+.dv-lieu { font-family:'EB Garamond',serif; font-size:.85rem; color:var(--parch3); font-style:italic; margin:.5rem 0 1.25rem; }
+.dv-signatures { display:flex; justify-content:space-around; gap:2rem; flex-wrap:wrap; margin-top:.5rem; }
+.dv-sig { flex:1; min-width:140px; }
+.dv-sig-line { border-bottom:1px solid var(--bdr2); margin-bottom:.4rem; height:28px; }
+.dv-sig-name { font-family:'Playfair Display',serif; font-size:.82rem; color:var(--parch2); font-style:italic; }
+.dv-sig-titre { font-family:'Cormorant Garamond',serif; font-size:.65rem; letter-spacing:.1em; text-transform:uppercase; color:var(--parch4); margin-top:.15rem; }
 .errors-list { text-align:left; margin-top:1.25rem; }
 .error-item { padding:.65rem .9rem; border-left:2px solid #9a2424; background:rgba(154,36,36,.04); margin-bottom:5px; }
 .error-q { font-family:'EB Garamond',serif; font-size:.88rem; color:var(--parch); font-style:italic; margin-bottom:.25rem; }
