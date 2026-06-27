@@ -1561,7 +1561,7 @@ function showResult(){
     var cabinet = p.cabinet || 'Sunset';
     var region = getRegion(cabinet);
     var regionLabel = region==='louisiane' ? 'Louisiane' : 'Texas';
-    var chiefName = currentChief ? 'Dr. '+(currentChief.prenom||'')+' '+(currentChief.nom||'') : 'Le Chef de dispensaire';
+    var chiefName = currentChief ? 'Dr. '+(currentChief.prenom||'')+' '+(currentChief.nom||'') : 'Chief '+regionLabel;
     var isSpe = examState.examId && examState.examId.startsWith('s');
     var gradeLine = isSpe
       ? 'est certifié(e) en la discipline de'
