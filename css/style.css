@@ -519,6 +519,7 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .msg-header { display:flex; align-items:baseline; gap:.5rem; margin-bottom:.2rem; flex-wrap:wrap; }
 .msg-name { font-family:'Playfair Display',serif; font-size:.85rem; color:var(--parch); font-style:italic; }
 .msg-grade { font-family:'Cormorant Garamond',serif; font-size:.58rem; letter-spacing:.1em; text-transform:uppercase; }
+.msg-cabinet { font-family:'Cormorant Garamond',serif; font-size:.58rem; color:var(--gold-d); font-style:italic; font-weight:600; }
 .msg-time { font-family:'Cormorant Garamond',serif; font-size:.58rem; color:var(--parch4); margin-left:auto; white-space:nowrap; }
 .msg-text { font-family:'EB Garamond',serif; font-size:.9rem; color:var(--parch2); line-height:1.55; word-break:break-word; }
 .msg-text h1 { font-family:'Playfair Display',serif; font-size:1rem; font-weight:400; margin:.2rem 0; color:var(--parch); }

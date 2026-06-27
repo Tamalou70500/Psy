@@ -215,6 +215,7 @@ function renderMessages(msgs){
         <div class="msg-header">
           <span class="msg-name">${esc(m.prenom||'')} ${esc(m.nom||'')}</span>
           <span class="msg-grade" style="color:${col}">${m.titreSpec?esc(m.titreSpec):gradeLabel}</span>
+          ${m.cabinet?`<span class="msg-cabinet">${esc(m.cabinet)}</span>`:''}
           <span class="msg-time">${time}</span>
           ${canDel?`<button class="msg-del" onclick="delMsg('${m.id}')" title="Supprimer">✕</button>`:''}
         </div>
@@ -314,7 +315,7 @@ function renderClassement(){
       ${av}
       <div class="rank-info">
         <div class="rank-name">Dr. ${esc(m.prenom||'')} ${esc(m.nom||'')}</div>
-        <div class="rank-detail">${(m.badges||[]).length} badge${(m.badges||[]).length>1?'s':''}</div>
+        <div class="rank-detail">${m.cabinet?`<em style="color:var(--gold-d)">${esc(m.cabinet)}</em> · `:''} ${(m.badges||[]).length} badge${(m.badges||[]).length>1?'s':''}</div>
       </div>
     </div>`;
   }).join('');
