@@ -253,6 +253,36 @@ function populateForm(p){
     + '<div class="medecin-cabinet">Cabinet de '+(p.cabinet||'Sunset')+'</div>'
     + (p.telegram ? '<div style="font-family:\'Cormorant Garamond\',serif;font-size:.72rem;letter-spacing:.1em;color:var(--parch3);margin-top:4px">📡 Télégraphe&nbsp;: <strong style=\"color:var(--parch)\">'+(p.telegram)+'</strong></div>' : '');
 
+  // Sync rétroactive : ajoute les badges manquants depuis les examens réussis
+  var BADGE_MAP = {
+    e1:{icon:'🎓',label:'Diplômé Stagiaire'},
+    e2:{icon:'🩺',label:'Diplômé Apprenti médecin'},
+    e3:{icon:'⚕️',label:'Médecin de campagne'},
+    e4:{icon:'⭐',label:'Médecin confirmé'},
+    s1:{icon:'🔪',label:'Certification Chirurgien'},
+    s2:{icon:'🧠',label:'Certification Neurologue'},
+    s3:{icon:'💊',label:'Certification Pharmacologue'},
+    s4:{icon:'🦠',label:'Certification Infectiologue'},
+    s5:{icon:'🏥',label:'Certification Accoucheur'},
+    s6:{icon:'🦷',label:'Certification Dentiste'},
+    s7:{icon:'🌿',label:'Certification Herboriste'},
+    s8:{icon:'🩹',label:'Certification Urgentiste'},
+    s9:{icon:'👁️',label:'Certification Opticien'},
+    s10:{icon:'🦴',label:'Certification Orthopédiste'},
+    s11:{icon:'❤️',label:'Certification Cardiologue'},
+    s12:{icon:'🫁',label:'Certification Pneumologue'},
+  };
+  (function syncBadges(){
+    var examens0 = p.examens || {};
+    var existing = (p.badges||[]).map(function(b){ return b.label; });
+    var toAdd = Object.entries(BADGE_MAP).filter(function(kv){
+      return examens0[kv[0]] && examens0[kv[0]].passed && existing.indexOf(kv[1].label) === -1;
+    }).map(function(kv){ return kv[1]; });
+    if(!toAdd.length) return;
+    p.badges = (p.badges||[]).concat(toAdd);
+    if(window._fbUpdateProfile) window._fbUpdateProfile({ badges: p.badges });
+  })();
+
   // Badges
   var bl = document.getElementById('badges-list');
   if(p.badges && p.badges.length){
