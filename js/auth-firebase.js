@@ -138,15 +138,38 @@ async function updateProfile(data) {
 }
 
 /* ─── Sauvegarder un résultat d'examen ──────────────────── */
+const EXAM_BADGES = {
+  e1: { icon:'🎓', label:'Diplômé Stagiaire' },
+  e2: { icon:'🩺', label:'Diplômé Apprenti médecin' },
+  e3: { icon:'⚕️', label:'Médecin de campagne' },
+  e4: { icon:'⭐', label:'Médecin confirmé' },
+  s1: { icon:'🔪', label:'Certification Chirurgien' },
+  s2: { icon:'🧠', label:'Certification Neurologue' },
+  s3: { icon:'💊', label:'Certification Pharmacologue' },
+  s4: { icon:'🦠', label:'Certification Infectiologue' },
+  s5: { icon:'🏥', label:'Certification Accoucheur' },
+  s6: { icon:'🦷', label:'Certification Dentiste' },
+  s7: { icon:'🌿', label:'Certification Herboriste' },
+  s8: { icon:'🩹', label:'Certification Urgentiste' },
+  s9: { icon:'👁️', label:'Certification Opticien' },
+  s10:{ icon:'🦴', label:'Certification Orthopédiste' },
+  s11:{ icon:'❤️', label:'Certification Cardiologue' },
+  s12:{ icon:'🫁', label:'Certification Pneumologue' },
+};
+
 async function saveExam(examId, pct, passed, mention) {
   const user = auth.currentUser;
   if (!user) return;
   const date = new Date().toLocaleDateString('fr-FR');
   const entry = { examId, pct, passed, mention, date, ts: Date.now() };
-  await updateDoc(doc(db, 'medecins', user.uid), {
+  const update = {
     [`examens.${examId}`]: { pct, passed, mention, date },
     historique: arrayUnion(entry)
-  });
+  };
+  if (passed && EXAM_BADGES[examId]) {
+    update.badges = arrayUnion(EXAM_BADGES[examId]);
+  }
+  await updateDoc(doc(db, 'medecins', user.uid), update);
 }
 window._fbSaveExam = saveExam;
 
