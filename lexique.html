@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Lexique médical — Cabinet du Dr. Abernathy Lucius</title>
+<title>Dictionnaire médical — Cabinet du Dr. Abernathy Lucius</title>
 <script>(function(){ var t=localStorage.getItem("psy_theme")||"dark"; var f=localStorage.getItem("psy_font")||"victorien"; document.documentElement.setAttribute("data-theme",t); document.documentElement.setAttribute("data-font",f); window.setTheme=function(t){document.documentElement.setAttribute("data-theme",t);localStorage.setItem("psy_theme",t);}; window.setFont=function(f){document.documentElement.setAttribute("data-font",f);localStorage.setItem("psy_font",f);}; })();</script>
 <link rel="stylesheet" href="css/style.css">
 
@@ -16,8 +16,8 @@
 
 <div class="page-band">
   <div>
-    <span class="eyebrow">Référence médicale · Sunset, Texas · 1904</span>
-    <h2>Lexique du Dr. Lucius</h2>
+    <span class="eyebrow">Dictionnaire médical · Sunset, Texas · 1904</span>
+    <h2>Dictionnaire du Dr. Lucius</h2>
   </div>
 </div>
 
@@ -667,18 +667,23 @@ function render(){
     if(Object.keys(groups).length>1)
       html+=`<div class="section-divider">${SUB_LABELS[sub]||sub}</div>`;
     items.forEach(e=>{
-      const defHtml=e.def?`<div class="entry-def">${e.def}</div>`:'';
-      const ficheHtml=(e.symptomes||e.traitement)?`<div class="fiche">
-        ${e.symptomes?`<div class="fiche-cell"><span class="fiche-label">Symptômes observés</span><div class="fiche-value">${e.symptomes}</div></div>`:''}
-        ${e.traitement?`<div class="fiche-cell"><span class="fiche-label">Traitement prescrit</span><div class="fiche-value">${e.traitement}</div></div>`:''}
+      /* ── PARTIE DICTIONNAIRE ── */
+      const defHtml=e.def?`<p class="dict-def">${e.def}</p>`:'';
+      const sympHtml=e.symptomes?`<div class="dict-section">
+        <div class="dict-section-label">Symptômes observés</div>
+        <div class="dict-section-text">${e.symptomes}</div>
       </div>`:'';
+      const traitHtml=e.traitement?`<div class="dict-section">
+        <div class="dict-section-label">Traitement prescrit</div>
+        <div class="dict-section-text">${e.traitement}</div>
+      </div>`:'';
+      const epochHtml=e.epoch?`<div class="dict-note">✦ ${e.epoch}</div>`:'';
 
+      /* ── PARTIE AIDE RP ── */
       const ROLE_LABEL={doc:'Docteur — parole',action:'Action / Geste',obs:'Observation clinique',phrase:'Phrase RP'};
       const ROLE_CLASS={doc:'role-doc',action:'role-action',obs:'role-obs'};
-
       const allText=(e.steps||[]).map(s=>s.text).join('\n');
       const allSafe=allText.replace(/'/g,"&#39;").replace(/"/g,'&quot;').replace(/\n/g,'\\n');
-
       const stepsHtml=(e.steps||[]).map((s,i)=>{
         const safe=s.text.replace(/'/g,"&#39;").replace(/"/g,'&quot;');
         return `<li class="rp-step">
@@ -690,7 +695,6 @@ function render(){
           <button class="rp-step-copy" onclick="cp(this,'${safe}')">Copier</button>
         </li>`;
       }).join('');
-
       const rpId='rp-'+Math.random().toString(36).slice(2);
       const rpHtml=e.steps&&e.steps.length?`
         <div class="rp-toggle" onclick="toggleRp('${rpId}',this)">
@@ -705,15 +709,16 @@ function render(){
           <ol class="rp-steps">${stepsHtml}</ol>
         </div>`:'';
 
-      const epochHtml=e.epoch?`<div class="epoch">Note historique · ${e.epoch}</div>`:'';
-
       html+=`<div class="entry fade-up">
         <div class="entry-head" onclick="this.parentElement.classList.toggle('open')">
           <span class="entry-term">${e.term}</span>
           <span class="entry-cat ${e.cat}">${e.label}</span>
           <span class="entry-chev">▼</span>
         </div>
-        <div class="entry-body">${defHtml}${ficheHtml}${epochHtml}${rpHtml}</div>
+        <div class="entry-body">
+          <div class="dict-body">${defHtml}${sympHtml}${traitHtml}${epochHtml}</div>
+          ${rpHtml}
+        </div>
       </div>`;
     });
   });

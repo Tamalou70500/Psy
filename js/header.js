@@ -5,7 +5,7 @@
 
   var links = [
     { href:'dossier_patient.html',   label:'Dossiers'    },
-    { href:'lexique.html',    label:'Lexique'     },
+    { href:'lexique.html',    label:'Dictionnaire' },
     { href:'visite.html',     label:'Visite'      },
     { href:'cours.html',      label:'Cours & Spé' },
     { href:'examen.html',     label:'Examens'     },

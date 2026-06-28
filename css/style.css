@@ -1563,19 +1563,33 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .entry-body { display:none; padding:0 1.5rem 1.5rem; }
 .entry.open .entry-body { display:block; }
 
-/* DEF */
-.entry-def {
-  font-family:'EB Garamond',serif; font-size:0.92rem;
-  color:var(--parch2); line-height:1.75; font-style:italic;
-  padding:0.5rem 0 0.9rem; border-bottom:1px solid var(--bdr); margin-bottom:1rem;
+/* ── DICTIONNAIRE MÉDICAL — corps d'entrée ── */
+.dict-body { padding:0.2rem 0 0.5rem; }
+
+.dict-def {
+  font-family:'EB Garamond',serif; font-size:1.05rem;
+  color:var(--parch); line-height:1.85;
+  margin:0 0 1.1rem;
+  border-left:3px solid var(--gold-dim); padding-left:1rem;
 }
 
-/* FICHE 2 COL */
-.fiche { display:grid; grid-template-columns:1fr 1fr; gap:1px; background:var(--bdr); margin-bottom:1rem; }
-.fiche-cell { background:var(--ink2); padding:0.75rem 1rem; }
-.fiche-cell.full { grid-column:1/-1; }
-.fiche-label { font-family:'Cormorant Garamond',serif; font-size:0.6rem; letter-spacing:0.18em; text-transform:uppercase; color:var(--gold-d); display:block; margin-bottom:0.35rem; }
-.fiche-value { font-family:'EB Garamond',serif; font-size:0.9rem; color:var(--parch2); line-height:1.65; }
+.dict-section { margin-bottom:0.85rem; }
+.dict-section-label {
+  font-family:'Cormorant Garamond',serif; font-size:0.58rem;
+  letter-spacing:0.2em; text-transform:uppercase;
+  color:var(--gold-d); font-weight:700; margin-bottom:0.25rem;
+}
+.dict-section-text {
+  font-family:'EB Garamond',serif; font-size:0.93rem;
+  color:var(--parch2); line-height:1.7;
+}
+
+.dict-note {
+  margin-top:1rem; padding-top:0.65rem;
+  border-top:1px solid var(--bdr);
+  font-family:'Cormorant Garamond',serif; font-size:0.8rem;
+  color:var(--parch4); font-style:italic; line-height:1.6;
+}
 
 /* BOUTON TOGGLE FICHE RP */
 .rp-toggle {
