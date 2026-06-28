@@ -3,14 +3,44 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Thèmes & Polices — Cabinet du Dr. Abernathy Lucius</title>
+<title>Thèmes & Polices — École de Médecine 1904</title>
 <script>(function(){ var t=localStorage.getItem("psy_theme")||"dark"; var f=localStorage.getItem("psy_font")||"victorien"; document.documentElement.setAttribute("data-theme",t); document.documentElement.setAttribute("data-font",f); window.setTheme=function(t){document.documentElement.setAttribute("data-theme",t);localStorage.setItem("psy_theme",t);renderAll();}; window.setFont=function(f){document.documentElement.setAttribute("data-font",f);localStorage.setItem("psy_font",f);renderAll();}; })();</script>
 <link rel="stylesheet" href="css/style.css">
-<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@300;400;600&family=Lato:ital,wght@0,300;0,400;1,400&family=Abril+Fatface&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Josefin+Sans:wght@300;400;600&family=IBM+Plex+Mono:ital,wght@0,400;1,400&family=Nunito:wght@300;400;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Raleway:wght@300;400;600&family=Lato:ital,wght@0,300;0,400;1,400&family=Abril+Fatface&family=Cinzel:wght@400;600&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=Josefin+Sans:wght@300;400;600&family=IBM+Plex+Mono:ital,wght@0,400;1,400&family=Nunito:wght@300;400;600&family=Dancing+Script:wght@400;600;700&family=Pinyon+Script&family=UnifrakturMaguntia&family=Spectral:ital,wght@0,400;0,600;1,400&family=Philosopher:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+<style>
+.themes-scene { position:fixed; inset:0; z-index:0; background:url('images/dico/dico.png') center center / cover no-repeat; }
+.themes-scene::after { content:''; position:absolute; inset:0; background:rgba(10,6,2,0.38); }
+.themes-panel { position:fixed; inset:0; z-index:3; display:flex; flex-direction:column; padding-top:54px; overflow:hidden; }
+.themes-inner {
+  flex:1; display:flex; flex-direction:column; overflow:hidden;
+  width: min(1050px, 96vw); margin: 0.75rem auto;
+  background: color-mix(in srgb, var(--ink) 75%, transparent);
+  border: 1px solid var(--bdr2);
+  animation: themesOpen 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+@keyframes themesOpen { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.themes-scroll { flex:1; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--gold-d) transparent; }
+.themes-scroll::-webkit-scrollbar { width:4px; }
+.themes-scroll::-webkit-scrollbar-thumb { background:var(--gold-d); }
+.themes-panel .themes-wrap, .themes-panel .live-preview,
+.themes-panel .layout-2col { background: transparent !important; }
+nav.navbar { position:fixed !important; top:0; left:0; right:0; z-index:10 !important; background: color-mix(in srgb, var(--ink) 92%, transparent) !important; backdrop-filter:blur(12px); }
+@media(max-width:768px){
+  .themes-scene { display:none; }
+  nav.navbar { position:sticky !important; }
+  .themes-panel { position:static; padding-top:0; overflow:visible; }
+  .themes-inner { width:100%; margin:0; background:var(--ink); border:none; animation:none; }
+  .themes-scroll { overflow:visible; }
+}
+</style>
 </head>
 <body>
 <script src="js/header.js"></script>
 
+<div class="themes-scene"></div>
+<div class="themes-panel">
+<div class="themes-inner">
+<div class="themes-scroll">
 
 <div class="themes-wrap">
   <h2 style="margin-bottom:.5rem">Personnalisation de l'interface</h2>
@@ -59,13 +89,18 @@ var THEMES = [
 ];
 
 var FONTS = [
-  { id:'victorien', name:'Victorien',    desc:'Playfair Display + EB Garamond',        sample:'Cabinet du Dr. Lucius',  sub:'Serif élégant · Style 1904',     css:"'Playfair Display', 'EB Garamond', serif" },
-  { id:'medical',   name:'Médical',      desc:'Libre Baskerville + Source Serif Pro',  sample:'Cabinet du Dr. Lucius',  sub:'Serif professionnel · Lisible',  css:"'Libre Baskerville', serif" },
-  { id:'sansserif', name:'Sans-serif',   desc:'Raleway + Lato',                        sample:'Cabinet du Dr. Lucius',  sub:'Moderne · Ultra-lisible',        css:"'Raleway', 'Lato', sans-serif" },
-  { id:'presse',    name:'Presse 1904',  desc:'Abril Fatface + Libre Baskerville',     sample:'Cabinet du Dr. Lucius',  sub:'Impact fort · Style journal',    css:"'Abril Fatface', 'Libre Baskerville', serif" },
-  { id:'manuscrit', name:'Manuscrit',    desc:'Cinzel + Crimson Text',                 sample:'Cabinet du Dr. Lucius',  sub:'Gravé · Antique · Solennel',     css:"'Cinzel', 'Crimson Text', serif" },
-  { id:'technique', name:'Technique',    desc:'Josefin Sans + IBM Plex Mono',          sample:'Cabinet du Dr. Lucius',  sub:'Froid · Précis · Dossier tech',  css:"'Josefin Sans', 'IBM Plex Mono', monospace" },
-  { id:'doux',      name:'Doux',         desc:'Cormorant Garamond + Nunito',           sample:'Cabinet du Dr. Lucius',  sub:'Arrondi · Reposant · Mobile',    css:"'Cormorant Garamond', 'Nunito', sans-serif" },
+  { id:'victorien',    name:'Victorien',           desc:'Playfair Display + EB Garamond',       sample:'Cabinet du Docteur',  sub:'Serif élégant · Style 1904',       css:"'Playfair Display', 'EB Garamond', serif" },
+  { id:'medical',      name:'Médical',              desc:'Libre Baskerville + Source Serif Pro', sample:'Cabinet du Docteur',  sub:'Serif professionnel · Lisible',    css:"'Libre Baskerville', serif" },
+  { id:'sansserif',    name:'Sans-serif',           desc:'Raleway + Lato',                       sample:'Cabinet du Docteur',  sub:'Moderne · Ultra-lisible',          css:"'Raleway', 'Lato', sans-serif" },
+  { id:'presse',       name:'Presse 1904',          desc:'Abril Fatface + Libre Baskerville',    sample:'Cabinet du Docteur',  sub:'Impact fort · Style journal',      css:"'Abril Fatface', 'Libre Baskerville', serif" },
+  { id:'manuscrit',    name:'Manuscrit',            desc:'Cinzel + Crimson Text',                sample:'Cabinet du Docteur',  sub:'Gravé · Antique · Solennel',       css:"'Cinzel', 'Crimson Text', serif" },
+  { id:'technique',    name:'Technique',            desc:'Josefin Sans + IBM Plex Mono',         sample:'Cabinet du Docteur',  sub:'Froid · Précis · Dossier tech',    css:"'Josefin Sans', 'IBM Plex Mono', monospace" },
+  { id:'doux',         name:'Doux',                 desc:'Cormorant Garamond + Nunito',          sample:'Cabinet du Docteur',  sub:'Arrondi · Reposant · Mobile',      css:"'Cormorant Garamond', 'Nunito', sans-serif" },
+  { id:'calligraphie', name:'Calligraphie',         desc:'Dancing Script',                       sample:'Cabinet du Docteur',  sub:'Cursive élégante · Lettre manuscrite', css:"'Dancing Script', cursive" },
+  { id:'plume',        name:'Écriture à la Plume',  desc:'Pinyon Script',                        sample:'Cabinet du Docteur',  sub:'Plume fine · Très ornée · 1800s',  css:"'Pinyon Script', cursive" },
+  { id:'gothique',     name:'Gothique médiéval',    desc:'UnifrakturMaguntia',                   sample:'Cabinet du Docteur',  sub:'Caractères gothiques · Vieille Allemagne', css:"'UnifrakturMaguntia', serif" },
+  { id:'spectral',     name:'Spectral',             desc:'Spectral',                             sample:'Cabinet du Docteur',  sub:'Serif digital · Lecture longue',   css:"'Spectral', serif" },
+  { id:'philosophe',   name:'Philosophe',           desc:'Philosopher',                          sample:'Cabinet du Docteur',  sub:'Classique · Académique · Sobre',   css:"'Philosopher', serif" },
 ];
 
 function renderAll(){
@@ -105,6 +140,12 @@ function renderAll(){
 
 renderAll();
 </script>
+
+</div><!-- /themes-wrap -->
+</div><!-- /themes-scroll -->
+</div><!-- /themes-inner -->
+</div><!-- /themes-panel -->
+
 <script src="js/guard.js" defer></script>
 <script>
 document.addEventListener('DOMContentLoaded', function(){
