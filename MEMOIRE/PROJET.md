@@ -80,10 +80,13 @@ Le mobile reste propre et lisible (pas d'image lourde).
 
 ### Pages et leur scène
 
-#### 🗂 Dossiers patients — FAIT ✅
+#### 🗂 Dossiers patients — VALIDÉ PAR LE CLIENT ✅✅
 - **PC** : Bureau médecin 1900 en fond plein écran. Objets posés (lampe, stéthoscope, loupe, montre, encrier, scalpel). Dossier ouvert au centre avec fiches patients à l'intérieur. Tampon rouge animé au chargement.
 - **Mobile** : Liste propre avec initiales + badges statut. Bouton + flottant.
-- **Images utilisées** : Le fond principal.png, dossier ouvert.png, tampon.png + objets individuels
+- **Images utilisées** : Le fond principal.png uniquement en fond (objets retirés = trop chargé)
+- **Dossier ouvert.png** : réservé pour patient.html (ouverture du dossier individuel)
+- **Couleurs** : 100% variables CSS — compatible tous thèmes (dark/parchemin/urgence/cabinet/jour)
+- **Résultat** : MAGNIFIQUE selon le client — fond immersif + panneau glassmorphism
 
 #### 📖 Dictionnaire — À FAIRE
 - **PC** : L'écran EST le livre. Livre ouvert prend 80% de l'écran. Page gauche = index alphabétique. Page droite = entrée sélectionnée + illustration. Animation page qui se tourne (CSS 3D flip).
