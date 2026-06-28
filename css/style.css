@@ -439,25 +439,31 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 }
 
 /* ─── POLICES ─── */
-/* Utilise * pour écraser les font-family hardcodées dans les classes */
+/* :not(.font-preview) protège les aperçus de la page Profil */
 
-[data-font="medical"] *   { font-family: 'Source Serif Pro', 'Libre Baskerville', serif !important; }
+[data-font="medical"] *:not(.font-preview)   { font-family: 'Source Serif Pro', 'Libre Baskerville', serif !important; }
 [data-font="medical"] h1,[data-font="medical"] h2,[data-font="medical"] h3 { font-family: 'Libre Baskerville', serif !important; }
 
-[data-font="sansserif"] * { font-family: 'Lato', sans-serif !important; }
+[data-font="sansserif"] *:not(.font-preview) { font-family: 'Lato', sans-serif !important; }
 [data-font="sansserif"] h1,[data-font="sansserif"] h2,[data-font="sansserif"] h3 { font-family: 'Raleway', sans-serif !important; font-weight:600 !important; }
 
-[data-font="presse"] *    { font-family: 'Libre Baskerville', serif !important; }
+[data-font="presse"] *:not(.font-preview)    { font-family: 'Libre Baskerville', serif !important; }
 [data-font="presse"] h1,[data-font="presse"] h2 { font-family: 'Abril Fatface', serif !important; font-weight:400 !important; }
 
-[data-font="manuscrit"] * { font-family: 'Crimson Text', serif !important; }
+[data-font="manuscrit"] *:not(.font-preview) { font-family: 'Crimson Text', serif !important; }
 [data-font="manuscrit"] h1,[data-font="manuscrit"] h2,[data-font="manuscrit"] h3 { font-family: 'Cinzel', serif !important; }
 
-[data-font="technique"] * { font-family: 'IBM Plex Mono', monospace !important; }
+[data-font="technique"] *:not(.font-preview) { font-family: 'IBM Plex Mono', monospace !important; }
 [data-font="technique"] h1,[data-font="technique"] h2,[data-font="technique"] h3 { font-family: 'Josefin Sans', sans-serif !important; font-weight:600 !important; }
 
-[data-font="doux"] *      { font-family: 'Nunito', sans-serif !important; }
+[data-font="doux"] *:not(.font-preview)      { font-family: 'Nunito', sans-serif !important; }
 [data-font="doux"] h1,[data-font="doux"] h2,[data-font="doux"] h3 { font-family: 'Cormorant Garamond', serif !important; }
+
+[data-font="calligraphie"] *:not(.font-preview) { font-family: 'Dancing Script', cursive !important; }
+[data-font="plume"] *:not(.font-preview)        { font-family: 'Pinyon Script', cursive !important; }
+[data-font="gothique"] *:not(.font-preview)     { font-family: 'UnifrakturMaguntia', serif !important; }
+[data-font="spectral"] *:not(.font-preview)     { font-family: 'Spectral', serif !important; }
+[data-font="philosophe"] *:not(.font-preview)   { font-family: 'Philosopher', serif !important; }
 
 
 /* ============================================================
