@@ -26,7 +26,7 @@
   }).join('\n    ');
 
   var html = '<nav class="navbar" id="main-navbar">'
-    + '\n  <a href="index.html" class="navbar-brand">Cabinet Médical</a>'
+    + '\n  <a href="index.html" class="navbar-brand">École de Médecine <em style="font-weight:300;opacity:0.7">1904</em></a>'
     + '\n  <button class="navbar-burger" id="nav-burger" aria-label="Menu" onclick="(function(){var n=document.getElementById(\'main-navbar\');n.classList.toggle(\'nav-open\');})()">'
     + '&#9776;</button>'
     + '\n  <div class="navbar-sep"></div>'
@@ -49,6 +49,14 @@
       if(window._fbSignOut) window._fbSignOut();
       else window.location.href = 'login.html';
     };
+  });
+
+  /* Scroll reveal — anime les éléments .reveal au passage dans le viewport */
+  document.addEventListener('DOMContentLoaded', function(){
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){ if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.reveal').forEach(function(el){ io.observe(el); });
   });
 
   /* Afficher le bouton Admin si chief ou admin — déclenché par guard.js via onReady */

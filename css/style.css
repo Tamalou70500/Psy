@@ -51,10 +51,10 @@ body::after {
 }
 
 /* ── TYPO ── */
-h1 { font-family: 'Playfair Display', serif; font-size: 1.9rem; font-weight: 700; color: var(--parch); letter-spacing: 0.01em; line-height: 1.2; }
-h2 { font-family: 'Playfair Display', serif; font-size: 1.3rem; font-weight: 600; color: var(--gold-l); letter-spacing: 0.01em; }
-h3 { font-family: 'Playfair Display', serif; font-size: 1rem; font-weight: 400; color: var(--parch); font-style: italic; }
-p  { font-size: 0.95rem; color: var(--parch2); line-height: 1.8; }
+h1 { font-family: 'Playfair Display', serif; font-size: 2.4rem; font-weight: 700; color: var(--parch); letter-spacing: -0.01em; line-height: 1.1; }
+h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; font-weight: 600; color: var(--gold-l); letter-spacing: 0.01em; line-height: 1.2; }
+h3 { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 400; color: var(--parch); font-style: italic; }
+p  { font-size: 1rem; color: var(--parch2); line-height: 1.85; }
 a  { color: var(--gold); text-decoration: none; transition: color .2s; }
 a:hover { color: var(--gold-l); }
 
@@ -149,14 +149,16 @@ a:hover { color: var(--gold-l); }
   border: 1px solid var(--bdr);
   padding: 1.5rem;
   position: relative;
+  transition: border-color .2s, box-shadow .2s, transform .2s;
 }
+.card:hover { border-color: var(--bdr2); box-shadow: 0 6px 20px rgba(0,0,0,0.3); transform: translateY(-1px); }
 .card::before {
   content: ''; position: absolute; inset: 5px;
   border: 1px solid rgba(192,154,74,0.05); pointer-events: none;
 }
 .card-title {
   font-family: 'Playfair Display', serif;
-  font-size: 0.9rem; color: var(--gold); font-style: italic;
+  font-size: 1rem; color: var(--gold); font-style: italic;
 }
 
 /* ── BOUTONS ── */
@@ -273,8 +275,12 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .text-gold  { color: var(--gold); }
 .text-muted { color: var(--parch3); }
 
-@keyframes fadeUp { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-.fade-up { animation: fadeUp 0.35s ease both; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+.fade-up { animation: fadeUp 0.4s ease both; }
+
+/* ── Scroll reveal ── */
+.reveal { opacity: 0; transform: translateY(18px); transition: opacity .5s ease, transform .5s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
 
 @media(max-width:640px) {
   .form-row-2 { grid-template-columns: 1fr; }
@@ -1046,12 +1052,18 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 /* ── dossier_patient ──────────────────────────────────────────── */
 .page-band {
   background: var(--ink2);
-  border-bottom: 1px solid var(--bdr);
-  padding: 1.5rem 2rem;
+  border-bottom: 3px solid transparent;
+  border-image: linear-gradient(90deg, var(--gold-d), var(--gold), var(--gold-d)) 1;
+  padding: 2rem 2rem 1.75rem;
   display: flex; align-items: flex-end; justify-content: space-between; gap: 1rem; flex-wrap: wrap;
+  position: relative;
 }
-.page-band h2 { margin: 0; }
-.page-band .eyebrow { margin-bottom: 0.3rem; }
+.page-band::before {
+  content: ''; position: absolute; left: 0; top: 0; bottom: 0;
+  width: 3px; background: linear-gradient(180deg, var(--gold-d), var(--gold));
+}
+.page-band h2 { margin: 0; font-size: 1.9rem; }
+.page-band .eyebrow { margin-bottom: 0.4rem; font-size: 0.72rem; letter-spacing: 0.3em; }
 
 .toolbar {
   display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap;
@@ -1084,7 +1096,7 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .pcard {
   background: var(--ink2);
   padding: 1.4rem 1.5rem;
-  cursor: pointer; transition: background .2s;
+  cursor: pointer; transition: background .2s, transform .2s, box-shadow .2s;
   text-decoration: none; display: block;
   position: relative; overflow: hidden;
 }
@@ -1093,8 +1105,8 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
   position: absolute; left: 0; top: 0; bottom: 0;
   width: 2px; background: transparent; transition: background .2s;
 }
-.pcard:hover { background: var(--ink3); text-decoration: none; }
-.pcard:hover::before { background: var(--gold-d); }
+.pcard:hover { background: var(--ink3); text-decoration: none; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.35); }
+.pcard:hover::before { background: var(--gold); }
 
 .pcard-head { display: flex; align-items: center; gap: 0.85rem; margin-bottom: 0.75rem; }
 .avatar {
@@ -1529,13 +1541,7 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .popup-close:hover { color:var(--parch); }
 
 /* ── lexique ──────────────────────────────────────────── */
-.page-band {
-  background:var(--ink2); border-bottom:1px solid var(--bdr);
-  padding:1.25rem 2rem;
-  display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap;
-}
-.page-band h2 { margin:0; }
-.page-band .eyebrow { margin-bottom:0.3rem; }
+/* page-band héritée du bloc dossier_patient */
 
 .tabs {
   display:flex; gap:0; border-bottom:1px solid var(--bdr);
@@ -2011,12 +2017,7 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 @media(max-width:900px){ .layout-2col { grid-template-columns:1fr; } .live-preview { position:static; } }
 
 /* ── visite ──────────────────────────────────────────── */
-.page-band {
-  background:var(--ink2); border-bottom:1px solid var(--bdr);
-  padding:1.25rem 2rem;
-  display:flex; align-items:flex-end; justify-content:space-between; gap:1rem; flex-wrap:wrap;
-}
-.page-band h2 { margin:0; }
+/* page-band héritée du bloc dossier_patient */
 
 /* ÉTAPES */
 .steps-bar {
