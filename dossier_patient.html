@@ -49,29 +49,24 @@
 }
 
 .folder-wrap {
-  position: relative;
-  width: min(780px, 88vw);
+  width: min(860px, 92vw);
   pointer-events: all;
-}
-
-.folder-bg {
-  width: 100%;
-  display: block;
-  filter: drop-shadow(0 20px 60px rgba(0,0,0,0.7));
   animation: folderOpen 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
 }
 @keyframes folderOpen {
-  from { opacity: 0; transform: scale(0.93) translateY(20px); }
-  to   { opacity: 1; transform: scale(1) translateY(0); }
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Contenu posé sur le dossier ouvert */
 .folder-content {
-  position: absolute;
-  top: 18%; left: 8%; right: 8%; bottom: 10%;
   display: flex;
   flex-direction: column;
   gap: 0;
+  background: rgba(12,8,3,0.72);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(192,154,74,0.2);
+  padding: 1.5rem;
+  max-height: calc(100vh - 100px);
   overflow: hidden;
 }
 
@@ -347,8 +342,6 @@ nav.navbar {
 
 <div class="desk-content">
   <div class="folder-wrap">
-    <img class="folder-bg" src="images/desk/dossier ouvert.png" alt="Dossier ouvert">
-    <img class="tampon" src="images/desk/tampon.png" alt="">
     <div class="folder-content">
       <div class="folder-header">
         <div>
