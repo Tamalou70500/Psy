@@ -129,13 +129,21 @@ function renderAll(){
   // Polices
   var fl = document.getElementById('fonts-list');
   fl.innerHTML = FONTS.map(function(f){
-    return '<div class="font-card '+(f.id===curF?'active':'')+'" onclick="setFont(\''+f.id+'\')">'
+    return '<div class="font-card '+(f.id===curF?'active':'')+'" onclick="setFont(\''+f.id+'\')" data-font-css="'+f.css+'">'
       + '<div class="font-tag">'+f.name+'<br><span style="opacity:.6;font-size:.6rem">'+f.desc+'</span></div>'
-      + '<div><div class="font-sample" style="font-family:'+f.css+'">'+f.sample+'</div>'
-      + '<div class="font-sample-sub" style="font-family:'+f.css+'">'+f.sub+'</div></div>'
+      + '<div>'
+      + '<div class="font-sample" data-ff="'+f.css+'">'+f.sample+'</div>'
+      + '<div class="font-sample-sub" data-ff="'+f.css+'">'+f.sub+'</div>'
+      + '</div>'
       + '<div class="font-check">✓</div>'
       + '</div>';
   }).join('');
+
+  // setProperty 'important' bat n'importe quel !important CSS
+  document.querySelectorAll('.font-sample, .font-sample-sub').forEach(function(el){
+    var ff = el.getAttribute('data-ff');
+    if(ff) el.style.setProperty('font-family', ff, 'important');
+  });
 }
 
 renderAll();
