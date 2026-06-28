@@ -69,17 +69,47 @@
   .serie-aside{ border-right:none; border-bottom:1px solid var(--border); }
   .serie-trailer{ padding-bottom:56.25%; }
 }
+
+/* ═══ FOND IMMERSIF ════════════════════════════════════════ */
+.media-scene {
+  position: fixed; inset: 0; z-index: 0;
+  background: url('images/media/media.png') center center / cover no-repeat;
+}
+.media-scene::after { content:''; position:absolute; inset:0; background:rgba(10,6,2,0.38); }
+.media-panel { position:fixed; inset:0; z-index:3; display:flex; flex-direction:column; padding-top:54px; overflow:hidden; }
+.media-inner {
+  flex:1; display:flex; flex-direction:column; overflow:hidden;
+  width: min(1100px, 96vw); margin: 0.75rem auto;
+  background: color-mix(in srgb, var(--ink) 75%, transparent);
+  border: 1px solid var(--bdr2);
+  animation: mediaOpen 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+@keyframes mediaOpen { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+.media-scroll { flex:1; overflow-y:auto; scrollbar-width:thin; scrollbar-color:var(--gold-d) transparent; }
+.media-scroll::-webkit-scrollbar { width:4px; }
+.media-scroll::-webkit-scrollbar-thumb { background:var(--gold-d); }
+.media-panel .media-wrap, .media-panel .media-card,
+.media-panel .media-body, .media-panel .serie-card,
+.media-panel .serie-body, .media-panel .serie-aside,
+.media-panel .serie-content { background: transparent !important; }
+nav.navbar { position:fixed !important; top:0; left:0; right:0; z-index:10 !important; background:rgba(10,6,2,0.88) !important; backdrop-filter:blur(12px); }
+@media(max-width:768px){
+  .media-scene { display:none; }
+  nav.navbar { position:sticky !important; }
+  .media-panel { position:static; padding-top:0; overflow:visible; }
+  .media-inner { width:100%; margin:0; background:var(--ink); border:none; animation:none; }
+  .media-scroll { overflow:visible; }
+  .media-panel .media-card { background:var(--ink2) !important; }
+}
 </style>
 </head>
 <body>
 <script src="js/header.js"></script>
 
-<div class="page-band">
-  <div>
-    <span class="eyebrow">Ressources · École de Médecine · 1904</span>
-    <h2>Médiathèque</h2>
-  </div>
-</div>
+<div class="media-scene"></div>
+<div class="media-panel">
+<div class="media-inner">
+<div class="media-scroll">
 
 <div class="media-wrap" id="wrap-videos">
   <div class="media-tabs">
@@ -427,6 +457,10 @@ function renderGrid(){
 
 renderGrid();
 </script>
+
+</div><!-- /media-scroll -->
+</div><!-- /media-inner -->
+</div><!-- /media-panel -->
 
 <script type="module" src="js/auth-firebase.js"></script>
 <script src="js/guard.js" defer></script>
