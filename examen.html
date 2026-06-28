@@ -3,8 +3,55 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Examens médicaux — Cabinet du Texas</title>
-<script>(function(){ var t=localStorage.getItem("psy_theme")||"dark"; document.documentElement.setAttribute("data-theme",t); })();
+<title>Examens — École de Médecine 1904</title>
+<script>(function(){ var t=localStorage.getItem("psy_theme")||"dark"; var f=localStorage.getItem("psy_font")||"victorien"; document.documentElement.setAttribute("data-theme",t); document.documentElement.setAttribute("data-font",f); })();</script>
+<style>
+/* ═══ FOND IMMERSIF — SALLE D'EXAMEN ══════════════════════ */
+.exam2-scene {
+  position: fixed; inset: 0; z-index: 0;
+  background: url('images/cours/ampi.png') center center / cover no-repeat;
+}
+.exam2-scene::after {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(10,6,2,0.38);
+}
+.exam2-panel {
+  position: fixed; inset: 0; z-index: 3;
+  display: flex; flex-direction: column;
+  padding-top: 54px; overflow: hidden;
+}
+.exam2-inner {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  width: min(860px, 94vw);
+  margin: 0.75rem auto;
+  background: color-mix(in srgb, var(--ink) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--bdr2);
+  animation: exam2Open 0.45s cubic-bezier(0.22,1,0.36,1) forwards;
+}
+@keyframes exam2Open {
+  from { opacity:0; transform:translateY(12px); }
+  to   { opacity:1; transform:translateY(0); }
+}
+.exam2-scroll {
+  flex: 1; overflow-y: auto;
+  scrollbar-width: thin; scrollbar-color: var(--gold-d) transparent;
+}
+.exam2-scroll::-webkit-scrollbar { width: 4px; }
+.exam2-scroll::-webkit-scrollbar-thumb { background: var(--gold-d); }
+nav.navbar {
+  position: fixed !important; top:0; left:0; right:0; z-index:10 !important;
+  background: rgba(10,6,2,0.88) !important; backdrop-filter: blur(12px);
+}
+@media(max-width:768px){
+  .exam2-scene { display:none; }
+  nav.navbar { position:sticky !important; }
+  .exam2-panel { position:static; padding-top:0; overflow:visible; }
+  .exam2-inner { width:100%; margin:0; background:var(--ink); backdrop-filter:none; border:none; animation:none; }
+  .exam2-scroll { overflow:visible; }
+}
+</style>
+<script>(function(){ /* données certifications */
 
 /* ── DONNÉES CERTIFICATIONS SPÉ ── */
 var EXAMENS_SPE = [
@@ -831,6 +878,11 @@ var SPE_SIMPLE = [
 </head>
 <body>
 <script src="js/header.js"></script>
+
+<div class="exam2-scene"></div>
+<div class="exam2-panel">
+<div class="exam2-inner">
+<div class="exam2-scroll">
 
 <!-- ACCUEIL -->
 <div id="view-accueil">
@@ -1744,5 +1796,9 @@ document.addEventListener('DOMContentLoaded', function(){
   }, 80);
 });
 </script>
+
+</div><!-- /exam2-scroll -->
+</div><!-- /exam2-inner -->
+</div><!-- /exam2-panel -->
 </body>
 </html>
