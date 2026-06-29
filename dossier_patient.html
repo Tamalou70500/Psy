@@ -486,7 +486,7 @@ import { patientsLoad, patientsCreate } from './js/patients.js';
 
 const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
 const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
-const PAGE_SIZE = { grid:12, big:6, list:15 };
+const PAGE_SIZE = { grid:12, big:8, list:15 };
 let all = [], activeS = 'all', currentPage = 0, filteredList = [];
 
 async function loadAll(){ all = await patientsLoad(); renderAll(); }
