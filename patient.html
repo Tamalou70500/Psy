@@ -352,10 +352,9 @@ window.openMedPopup = function(uid) {
     : `<div class="med-popup-photo-ph">${ini}</div>`;
 
   const ROLES = {
-    stagiaire:'Stagiaire', apprenti:'Apprenti médecin',
-    medecin:'Médecin', specialiste:'Spécialiste',
-    chief:'Chef de dispensaire', chief_texas:'Chef du Texas',
-    chief_louisiane:'Chef de Louisiane', admin:'Administrateur'
+    stagiaire:'Stagiaire', apprenti:'Apprenti', medecin:'Médecin', specialiste:'Spécialiste',
+    chief:'Chef dispensaire', chief_texas:'Chief Texas', chief_louisiane:'Chief Louisiane',
+    doyen:'Doyen', admin:'Admin'
   };
   const role = ROLES[med.role] || med.role || 'Médecin';
   const cabinet = med.cabinet ? `<div class="med-popup-cabinet">${med.cabinet}</div>` : '';
