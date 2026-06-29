@@ -162,6 +162,10 @@
   font-family: 'Playfair Display', serif; font-size: 1.1rem;
   color: var(--parch); margin-bottom: 4px;
 }
+.med-popup-cabinet {
+  font-family: 'Cormorant Garamond', serif; font-size: 0.72rem;
+  color: var(--parch3); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 4px;
+}
 .med-popup-role {
   font-family: 'Cormorant Garamond', serif; font-size: 0.78rem;
   color: var(--gold); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px;
@@ -346,14 +350,29 @@ window.openMedPopup = function(uid) {
   const photo = med.photo
     ? `<img class="med-popup-photo" src="${med.photo}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="med-popup-photo-ph" style="display:none">${ini}</div>`
     : `<div class="med-popup-photo-ph">${ini}</div>`;
-  const ROLES = { stagiaire:'Stagiaire', apprenti:'Apprenti médecin', campagne:'Médecin de campagne', confirme:'Médecin confirmé' };
+
+  const ROLES = {
+    stagiaire:'Stagiaire', apprenti:'Apprenti médecin',
+    medecin:'Médecin', specialiste:'Spécialiste',
+    chief:'Chef de dispensaire', chief_texas:'Chef du Texas',
+    chief_louisiane:'Chef de Louisiane', admin:'Administrateur'
+  };
   const role = ROLES[med.role] || med.role || 'Médecin';
-  const badges = (med.badges||[]).map(b=>`<span class="med-popup-badge">${b.icon||''} ${b.label||''}</span>`).join('');
+  const cabinet = med.cabinet ? `<div class="med-popup-cabinet">${med.cabinet}</div>` : '';
+
+  // Certifications uniquement (pas les diplômes d'examen)
+  const CERT_KEYS = ['Aliéniste','Chirurgien','Neurologue','Pharmacologue','Accoucheur'];
+  const certs = (med.badges||[])
+    .filter(b => CERT_KEYS.some(k => (b.label||'').includes(k)))
+    .map(b => `<span class="med-popup-badge">${b.icon||''} ${b.label||''}</span>`)
+    .join('');
+
   document.getElementById('med-popup-body').innerHTML = `
     ${photo}
     <div class="med-popup-name">Dr. ${med.prenom||''} ${med.nom||''}</div>
+    ${cabinet}
     <div class="med-popup-role">${role}</div>
-    ${badges?`<div class="med-popup-badges">${badges}</div>`:''}
+    ${certs ? `<div class="med-popup-badges" style="margin-top:8px">${certs}</div>` : ''}
   `;
   document.getElementById('med-popup-overlay').classList.remove('hidden');
 };
