@@ -57,11 +57,6 @@ async function ensureProfile(user) {
 const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
 
 async function signInWithGoogle() {
-  if (isMobile) {
-    // Sur mobile, popup bloqué → redirect flow
-    await signInWithRedirect(auth, provider);
-    return null; // la page va se recharger
-  }
   const result = await signInWithPopup(auth, provider);
   const profil = await ensureProfile(result.user);
   return { user: result.user, profil };
