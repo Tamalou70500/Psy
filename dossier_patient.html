@@ -649,7 +649,7 @@ window.createPatient = async function(){
   closeModal(); window.location.href='patient.html?id='+p.id;
 };
 
-loadAll();
+// loadAll() déclenché par guardPage après vérification accesPatients
 </script>
 
 <script type="module" src="js/auth-firebase.js"></script>
@@ -660,6 +660,14 @@ document.addEventListener('DOMContentLoaded', function(){
   var f = localStorage.getItem('psy_font')  || 'victorien';
   document.documentElement.setAttribute('data-theme', t);
   document.documentElement.setAttribute('data-font', f);
+});
+// Lancer le chargement seulement après vérification d'accès
+window.addEventListener('load', function(){
+  var waitG = setInterval(function(){
+    if(!window.guardPage) return;
+    clearInterval(waitG);
+    guardPage({ requirePatients:true, onReady: function(){ loadAll(); } });
+  }, 80);
 });
 </script>
 </body>
