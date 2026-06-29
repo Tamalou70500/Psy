@@ -144,8 +144,23 @@ var checkReady = setInterval(function(){
     window._fbOnReady(function(user){
       if(!user) return;
       window._fbGetProfile().then(function(p){
-        if(p && p.profilOk) window.location.href = 'dossier_patient.html';
-        else window.location.href = 'setup-profil.html';
+        if(p && p.profilOk) {
+          window.location.href = 'dossier_patient.html';
+          return;
+        }
+        // Profil absent ou incomplet : bandeau, pas de redirection automatique
+        if(document.getElementById('session-banner')) return;
+        var msg = document.createElement('div');
+        msg.id = 'session-banner';
+        msg.style.cssText = 'background:#2a1f0a;border:1px solid #6b4f1e;color:#c9a84c;padding:10px 16px;margin-bottom:14px;font-family:"Cormorant Garamond",serif;font-size:.9rem;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap';
+        msg.innerHTML = '<span>Session active — votre fiche de personnage est incomplète.</span>'
+          + '<div style="display:flex;gap:8px">'
+          + '<button onclick="window.location.href=\'setup-profil.html\'" style="background:#6b4f1e;border:none;color:#e8d5a0;padding:4px 12px;cursor:pointer;font-family:inherit;font-size:.85rem">Compléter ma fiche →</button>'
+          + '<button onclick="window._fbSignOut&&window._fbSignOut().then(()=>this.closest(\'#session-banner\').remove())" style="background:none;border:1px solid #6b4f1e;color:#c9a84c;padding:4px 10px;cursor:pointer;font-family:inherit;font-size:.85rem">Se déconnecter</button>'
+          + '</div>';
+        var card = document.querySelector('.login-card');
+        if(card) card.insertAdjacentElement('beforebegin', msg);
+        else document.body.prepend(msg);
       });
     });
   }, 1500);
