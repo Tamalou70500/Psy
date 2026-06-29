@@ -272,11 +272,12 @@ nav.navbar {
 <script src="js/voice.js"></script>
 <script type="module">
 import { patientsGetById, patientsUpdate, patientsDelete, patientsAddSeance, patientsDeleteSeance, formatDate } from './js/patients.js';
-import { getAllMedecins } from './js/auth-firebase.js';
 
-// Cache médecins pour correspondance
+// Cache médecins pour correspondance (chargé via window._fbGetAllMedecins)
 let _medecinsList = [];
-getAllMedecins().then(list => { _medecinsList = list; }).catch(()=>{});
+window.addEventListener('load', () => {
+  if (window._fbGetAllMedecins) window._fbGetAllMedecins().then(list => { _medecinsList = list; }).catch(()=>{});
+});
 
 // Normalise un nom pour comparaison : lowercase + mots triés
 function normName(n) { return (n||'').toLowerCase().replace(/[^a-zàâçéèêëîïôùûüæœ ]/gi,'').split(/\s+/).sort().join(' '); }
