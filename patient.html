@@ -356,7 +356,8 @@ window.openMedPopup = function(uid) {
     chief:'Chef dispensaire', chief_texas:'Chief Texas', chief_louisiane:'Chief Louisiane',
     doyen:'Doyen', admin:'Admin'
   };
-  const role = ROLES[med.roleRp || med.role] || med.roleRp || med.role || 'Médecin';
+  const roleKey = med.roleRp || (med.role === 'admin' ? 'medecin' : med.role);
+  const role = ROLES[roleKey] || roleKey || 'Médecin';
   const cabinet = med.cabinet ? `<div class="med-popup-cabinet">${med.cabinet}</div>` : '';
 
   // Certifications uniquement (pas les diplômes d'examen)
