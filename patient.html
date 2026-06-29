@@ -357,13 +357,12 @@ window.openMedPopup = function(uid) {
     doyen:'Doyen', admin:'Admin'
   };
   const roleKey = med.roleRp || (med.role === 'admin' ? 'medecin' : med.role);
-  const role = ROLES[roleKey] || roleKey || 'Médecin';
+  const role = ROLES[roleKey] || ROLES[med.role] || med.roleRp || med.role || 'Médecin';
   const cabinet = med.cabinet ? `<div class="med-popup-cabinet">${med.cabinet}</div>` : '';
 
   // Certifications uniquement (pas les diplômes d'examen)
-  const CERT_KEYS = ['Aliéniste','Chirurgien','Neurologue','Pharmacologue','Accoucheur'];
   const certs = (med.badges||[])
-    .filter(b => CERT_KEYS.some(k => (b.label||'').includes(k)))
+    .filter(b => (b.label||'').toLowerCase().includes('certification'))
     .map(b => `<span class="med-popup-badge">${b.icon||''} ${b.label||''}</span>`)
     .join('');
 
