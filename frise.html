@@ -480,7 +480,7 @@ window.addEventListener('resize', function(){ render(); });
 
 document.addEventListener('DOMContentLoaded', function(){
   var waitG = setInterval(function(){
-    if(window.guardPage){ clearInterval(waitG); guardPage({ allowIncomplete:true, minGrade:'stagiaire' }); }
+    if(window.guardPage){ clearInterval(waitG); guardPage({ allowVisiteur:true, allowIncomplete:true, minGrade:'stagiaire' }); }
   }, 80);
 });
 </script>
@@ -490,4 +490,5 @@ document.addEventListener('DOMContentLoaded', function(){
 </div><!-- /frise-panel -->
 </body>
 </html>
+
 

@@ -1,6 +1,19 @@
 /* guard.js — Protection des pages selon le grade + rôle chief
    Inclure APRÈS auth-firebase.js sur chaque page protégée */
 
+window._injectVisiteurBanner = function(){
+  if(document.getElementById('visiteur-banner')) return;
+  var b = document.createElement('div');
+  b.id = 'visiteur-banner';
+  b.style.cssText = 'position:fixed;bottom:0;left:0;right:0;z-index:9000;background:#1c1409;border-top:1px solid #6b4f1e;padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;font-family:"Cormorant Garamond",serif;font-size:.85rem;color:#c9a84c';
+  b.innerHTML = '<span style="font-style:italic">Vous naviguez en tant que visiteur — les dossiers patients ne sont pas accessibles.</span>'
+    + '<div style="display:flex;gap:8px;flex-shrink:0">'
+    + '<a href="login.html" style="background:#6b4f1e;border:none;color:#e8d5a0;padding:5px 14px;cursor:pointer;font-family:\'Cormorant Garamond\',serif;font-size:.85rem;text-decoration:none;display:inline-block">Créer mon profil →</a>'
+    + '<button onclick="sessionStorage.removeItem(\'visiteur\');window.location.href=\'login.html\'" style="background:none;border:1px solid #6b4f1e;color:#c9a84c;padding:5px 10px;cursor:pointer;font-family:inherit;font-size:.85rem">Se connecter</button>'
+    + '</div>';
+  document.body.appendChild(b);
+};
+
 var GRADE_LABELS = {
   stagiaire:        '🎓 Stagiaire',
   apprenti:         '🩺 Apprenti médecin',
@@ -28,9 +41,26 @@ window.GRADE_LABELS = GRADE_LABELS;
 window.GRADE_LEVEL  = GRADE_LEVEL;
 window.effectiveGrade = effectiveGrade;
 
+/* ── Mode visiteur ─────────────────────────────────────── */
+window.isVisiteur = function(){ return sessionStorage.getItem('visiteur') === '1'; };
+
 window.guardPage = function(opts){
-  var minGrade      = (opts && opts.minGrade)      || 'stagiaire';
+  var minGrade        = (opts && opts.minGrade)        || 'stagiaire';
   var requirePatients = (opts && opts.requirePatients) || false;
+  var allowVisiteur   = (opts && opts.allowVisiteur)   || false;
+
+  /* Page accessible aux visiteurs */
+  if(allowVisiteur && window.isVisiteur()){
+    window._injectVisiteurBanner();
+    if(opts && opts.onReady) opts.onReady({ role:'visiteur', nom:'Visiteur', prenom:'' });
+    return;
+  }
+
+  /* Page protégée et on est visiteur → login */
+  if(!allowVisiteur && window.isVisiteur()){
+    window.location.href = 'login.html';
+    return;
+  }
 
   var waitG = setInterval(function(){
     if(!window._fbOnReady) return;

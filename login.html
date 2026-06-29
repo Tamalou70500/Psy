@@ -116,11 +116,27 @@ body { display:flex; align-items:center; justify-content:center; min-height:100v
       Accès réservé aux médecins du cabinet.<br>
       Contactez le Chef de cabinet pour rejoindre.
     </p>
+
+    <div style="border-top:1px solid var(--bdr);margin-top:1.25rem;padding-top:1.1rem;text-align:center">
+      <p style="font-family:'EB Garamond',serif;font-size:.82rem;color:var(--parch3);font-style:italic;margin:0 0 .75rem">
+        Juste passer voir ? Entrez en tant que visiteur.
+      </p>
+      <button onclick="enterAsVisitor()" style="background:none;border:1px solid var(--bdr);color:var(--parch3);padding:8px 20px;font-family:'Cormorant Garamond',serif;font-size:.88rem;letter-spacing:.06em;cursor:pointer;transition:all .2s;width:100%"
+        onmouseover="this.style.borderColor='var(--gold)';this.style.color='var(--parch)'"
+        onmouseout="this.style.borderColor='var(--bdr)';this.style.color='var(--parch3)'">
+        Continuer en visiteur
+      </button>
+    </div>
   </div>
 </div>
 
 <script type="module" src="js/auth-firebase.js"></script>
 <script>
+function enterAsVisitor(){
+  sessionStorage.setItem('visiteur', '1');
+  window.location.href = 'index.html';
+}
+
 // Gère le retour depuis signInWithRedirect (mobile Google)
 var redirectHandled = false;
 var checkRedirect = setInterval(function(){
