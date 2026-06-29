@@ -273,6 +273,15 @@ nav.navbar {
 <script type="module">
 import { patientsGetById, patientsUpdate, patientsDelete, patientsAddSeance, patientsDeleteSeance, formatDate } from './js/patients.js';
 
+function formatResume(text) {
+  return text
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .split('\n')
+    .map(l => l.trim())
+    .filter(l => l)
+    .join('<br>');
+}
+
 const pid = new URLSearchParams(window.location.search).get('id');
 let patient = null;
 const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
@@ -356,7 +365,7 @@ function render(){
           ${s.medecin ? `<span class="seance-medecin">Dr. ${s.medecin}</span>` : ''}
           ${s.humeur ? `<span class="seance-type">${s.humeur}</span>` : ''}
         </div>
-        <div class="seance-text">${s.resume||'—'}</div>
+        <div class="seance-text">${formatResume(s.resume||'—')}</div>
       </div>`).join('')
     : `<div class="seances-empty">Aucune consultation enregistrée.</div>`;
 
