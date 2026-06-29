@@ -160,10 +160,11 @@ document.addEventListener('DOMContentLoaded', function(){
   var wait = setInterval(function(){
     if(!window.guardPage) return;
     clearInterval(wait);
-    guardPage({ allowVisiteur:true, allowIncomplete:true, minGrade:'stagiaire', onReady: function(p){} });
+    guardPage({ allowIncomplete:true, minGrade:'stagiaire', onReady: function(p){} });
   }, 80);
 });
 </script>
 </body>
 </html>
+
 
