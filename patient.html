@@ -313,34 +313,44 @@ function render(){
     ? `<div class="info-row"><div class="info-label">${label}</div><div class="info-value">${val}</div></div>`
     : `<div class="info-row"><div class="info-label">${label}</div><div class="info-value empty">—</div></div>`;
 
-  document.getElementById('pat-left').innerHTML = `
-    <div class="info-section-title">Identité</div>
-    ${f('Nom', p.nom)} ${f('Prénom', p.prenom)}
-    ${f('Âge', p.age ? p.age+' ans' : '')} ${f('Sexe', p.sexe==='M'?'Masculin':p.sexe==='F'?'Féminin':'')}
-    ${f('Télégramme', p.telegram || p.identite?.includes('@') ? p.telegram : '')}
-    ${f('Profession', p.profession)}
+  // Colonne gauche — photo grande + résumé rapide
+  const photoBlock = p.photo
+    ? `<img src="${p.photo}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;border:1px solid var(--bdr2);filter:sepia(15%);margin-bottom:.75rem" onerror="this.style.display='none'">`
+    : `<div style="width:100%;aspect-ratio:3/4;background:var(--ink3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:3rem;color:var(--parch4);margin-bottom:.75rem">${(p.prenom?.[0]||'')+(p.nom?.[0]||'')}</div>`;
 
-    <div class="info-section-title">Médical</div>
+  document.getElementById('pat-left').innerHTML = `
+    ${photoBlock}
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--parch);font-style:italic;margin-bottom:.25rem">${p.prenom} ${p.nom}</div>
+    <div style="margin-bottom:.85rem"><span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span></div>
+
+    <div class="info-section-title">Identité</div>
+    ${f('Âge', p.age ? p.age+' ans' : '')}
+    ${f('Télégramme', p.telegram)}
+    ${f('Profession', p.profession)}
     ${f('Groupe sanguin', p.groupeSanguin)}
     ${f('Mensurations', p.mensurations || (p.taille && p.poids ? p.taille+' cm / '+p.poids+' kg' : ''))}
+
+    <div class="info-section-title">Médical</div>
     ${f('Antécédents', p.antecedents)}
     ${f('Allergies', p.allergies)}
-
-    <div class="info-section-title">Suivi</div>
-    ${f('Statut', SL[p.statut]||p.statut)}
     ${f('Diagnostic', p.diagnostic)}
     ${f('Traitement', p.traitement)}
-    ${p.medecinAuteur ? f('Fiche créée par', p.medecinAuteur) : ''}
   `;
 
-  // Colonne droite — séances/visites
-  const seances = p.seances || [];
+  // Colonne droite — consultations triées (plus récente en haut)
+  const seances = [...(p.seances || [])].sort((a,b)=>{
+    const da = new Date(a.createdAt || a.date || 0);
+    const db = new Date(b.createdAt || b.date || 0);
+    return db - da; // décroissant
+  });
+
   const seancesHtml = seances.length
-    ? seances.map(s=>`
-      <div class="seance-card">
+    ? seances.map((s,i)=>`
+      <div class="seance-card" ${i===0?'style="border-left-color:var(--gold)"':''}>
         <button class="seance-del" onclick="window.delSeance('${s.id}')">✕</button>
         <div class="seance-card-top">
           <span class="seance-date">${formatDate(s.date)}</span>
+          ${i===0?'<span style="font-family:\'Cormorant Garamond\',serif;font-size:.62rem;color:var(--gold);letter-spacing:.1em">DERNIÈRE</span>':''}
           ${s.medecin ? `<span class="seance-medecin">Dr. ${s.medecin}</span>` : ''}
           ${s.humeur ? `<span class="seance-type">${s.humeur}</span>` : ''}
         </div>
@@ -350,7 +360,7 @@ function render(){
 
   document.getElementById('pat-right').innerHTML = `
     <div class="seances-title">
-      <span>Historique des consultations — ${seances.length}</span>
+      <span>Consultations — ${seances.length}</span>
       <a href="visite.html?id=${pid}" class="btn btn-sm" style="border-color:var(--gold);color:var(--gold);font-size:.7rem">+ Nouvelle consultation</a>
     </div>
     ${seancesHtml}
