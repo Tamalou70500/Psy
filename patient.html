@@ -294,13 +294,28 @@ nav.navbar {
   <div class="form-group"><label class="form-label">Antécédents médicaux</label><textarea class="form-control" id="e-antecedents" style="min-height:60px"></textarea></div>
   <div class="form-group"><label class="form-label">Allergies</label><input class="form-control" id="e-allergies"></div>
   <div class="form-group"><label class="form-label">Statut clinique</label>
-    <select class="form-control" id="e-statut"><option value="suivi">En suivi</option><option value="stable">Stable</option><option value="grave">Grave</option></select>
+    <select class="form-control" id="e-statut">
+      <option value="suivi">En suivi</option>
+      <option value="stable">Stable</option>
+      <option value="grave">Grave / Dangereux</option>
+      <option value="decede">† Décédé</option>
+    </select>
   </div>
   <div class="form-group"><label class="form-label">Diagnostic</label><input class="form-control" id="e-diagnostic"></div>
   <div class="form-group"><label class="form-label">Traitement prescrit</label><input class="form-control" id="e-traitement"></div>
   <div class="form-group">
-    <label class="form-label">Portrait (URL image)</label>
-    <input class="form-control" id="e-photo" placeholder="https://cdn.discordapp.com/…" oninput="previewEditUrl(this)">
+    <label class="form-label">Portrait</label>
+    <div style="display:flex;gap:6px;margin-bottom:6px">
+      <button type="button" id="photo-tab-url"  onclick="setPhotoTab('url')"    style="flex:1;padding:4px;background:var(--gold-dim);border:1px solid var(--gold);color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:.8rem;cursor:pointer">🔗 Lien URL</button>
+      <button type="button" id="photo-tab-file" onclick="setPhotoTab('file')"   style="flex:1;padding:4px;background:none;border:1px solid var(--bdr);color:var(--parch3);font-family:'Cormorant Garamond',serif;font-size:.8rem;cursor:pointer">📁 Fichier</button>
+    </div>
+    <div id="photo-mode-url">
+      <input class="form-control" id="e-photo" placeholder="https://i.ibb.co/…" oninput="previewEditUrl(this)">
+    </div>
+    <div id="photo-mode-file" style="display:none">
+      <input type="file" id="e-photo-file" accept="image/*" onchange="previewEditFile(this)" style="width:100%;font-family:'Cormorant Garamond',serif;font-size:.82rem;color:var(--parch3);background:var(--ink2);border:1px solid var(--bdr);padding:5px">
+      <div id="photo-upload-status" style="font-size:.75rem;color:var(--parch4);margin-top:4px"></div>
+    </div>
     <div style="display:flex;align-items:center;gap:.75rem;margin-top:.5rem">
       <div id="ep-ph" style="width:48px;height:48px;background:var(--ink3);border:1px solid var(--bdr);display:flex;align-items:center;justify-content:center;color:var(--parch4)">✦</div>
       <img id="ep-img" style="width:48px;height:48px;object-fit:cover;border:1px solid var(--bdr2);display:none;filter:sepia(10%)" alt="">
@@ -474,8 +489,8 @@ function formatResume(text) {
 
 const pid = new URLSearchParams(window.location.search).get('id');
 let patient = null;
-const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
-const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
+const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave', decede:'badge-decede' };
+const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave / Dangereux', decede:'† Décédé' };
 
 async function load(){
   await loadMedecins();
@@ -521,9 +536,18 @@ function render(){
     ? `<img src="${p.photo}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;border:1px solid var(--bdr2);filter:sepia(15%);margin-bottom:.75rem" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div style="${phStyle};display:none">${ini2}</div>`
     : `<div style="${phStyle}">${ini2}</div>`;
 
+  const decedeOverlay = p.statut === 'decede'
+    ? `<div style="position:relative;margin-bottom:.75rem">
+        ${photoBlock.replace('margin-bottom:.75rem','margin-bottom:0')}
+        <div style="position:absolute;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;border:1px solid #555">
+          <span style="font-family:'Playfair Display',serif;font-size:1.1rem;color:#aaa;letter-spacing:.18em;font-style:italic">† DÉCÉDÉ</span>
+        </div>
+      </div>`
+    : photoBlock;
+
   document.getElementById('pat-left').innerHTML = `
-    ${photoBlock}
-    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:var(--parch);font-style:italic;margin-bottom:.25rem">${p.prenom} ${p.nom}</div>
+    ${decedeOverlay}
+    <div style="font-family:'Playfair Display',serif;font-size:1.1rem;color:${p.statut==='decede'?'#888':'var(--parch)'};font-style:italic;margin-bottom:.25rem;${p.statut==='decede'?'text-decoration:line-through;opacity:.7':''}">${p.prenom} ${p.nom}</div>
     <div style="margin-bottom:.85rem"><span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span></div>
 
     <div class="info-section-title">Identité</div>
@@ -594,18 +618,51 @@ window.openEdit = function(){
   document.getElementById('edit-overlay').classList.remove('hidden');
 };
 window.closeEdit = ()=> document.getElementById('edit-overlay').classList.add('hidden');
+window.setPhotoTab = function(tab) {
+  document.getElementById('photo-mode-url').style.display  = tab==='url'  ? '' : 'none';
+  document.getElementById('photo-mode-file').style.display = tab==='file' ? '' : 'none';
+  document.getElementById('photo-tab-url').style.background  = tab==='url'  ? 'var(--gold-dim)' : 'none';
+  document.getElementById('photo-tab-url').style.borderColor = tab==='url'  ? 'var(--gold)' : 'var(--bdr)';
+  document.getElementById('photo-tab-url').style.color       = tab==='url'  ? 'var(--gold)' : 'var(--parch3)';
+  document.getElementById('photo-tab-file').style.background  = tab==='file' ? 'var(--gold-dim)' : 'none';
+  document.getElementById('photo-tab-file').style.borderColor = tab==='file' ? 'var(--gold)' : 'var(--bdr)';
+  document.getElementById('photo-tab-file').style.color       = tab==='file' ? 'var(--gold)' : 'var(--parch3)';
+};
 window.previewEditUrl = function(input){
   const url = input.value.trim();
   const img = document.getElementById('ep-img'); const ph = document.getElementById('ep-ph');
   if(url){ img.src=url; img.style.display='block'; ph.style.display='none'; }
   else { img.style.display='none'; ph.style.display='flex'; }
 };
+window.previewEditFile = function(input){
+  const file = input.files[0]; if(!file) return;
+  const img = document.getElementById('ep-img'); const ph = document.getElementById('ep-ph');
+  const reader = new FileReader();
+  reader.onload = e => { img.src=e.target.result; img.style.display='block'; ph.style.display='none'; };
+  reader.readAsDataURL(file);
+};
 window.saveEdit = async function(){
   const btn = document.getElementById('save-btn'); btn.textContent='Enregistrement…'; btn.disabled=true;
   const data = {};
-  ['nom','prenom','age','profession','telegram','groupeSanguin','mensurations','antecedents','allergies','diagnostic','traitement','photo'].forEach(k=>{
+  ['nom','prenom','age','profession','telegram','groupeSanguin','mensurations','antecedents','allergies','diagnostic','traitement'].forEach(k=>{
     const el = document.getElementById('e-'+k); if(el) data[k]=el.value.trim();
   });
+  // Photo : fichier prioritaire sur URL
+  const fileInput = document.getElementById('e-photo-file');
+  if(fileInput && fileInput.files[0]){
+    const statusEl = document.getElementById('photo-upload-status');
+    statusEl.textContent = 'Envoi de l\'image…';
+    try {
+      const apiKey = '28f63d63a3b44f8fbbfda2e788d38f6f';
+      const fd = new FormData(); fd.append('image', fileInput.files[0]);
+      const res = await fetch('https://api.imgbb.com/1/upload?key='+apiKey, { method:'POST', body:fd });
+      const json = await res.json();
+      if(json.success){ data.photo = json.data.url; statusEl.textContent = '✓ Image envoyée'; }
+      else { statusEl.textContent = 'Erreur upload imgbb'; }
+    } catch(e){ statusEl.textContent = 'Erreur réseau'; }
+  } else {
+    const urlEl = document.getElementById('e-photo'); if(urlEl) data.photo = urlEl.value.trim();
+  }
   data.sexe = document.getElementById('e-sexe').value;
   data.statut = document.getElementById('e-statut').value;
   await patientsUpdate(pid, data);
