@@ -25,7 +25,9 @@
     border-right: 1px solid var(--bdr);
     display: flex; flex-direction: column;
     background: var(--ink2);
+    transition: width .2s, opacity .2s;
   }
+  #mini-list.hidden-panel { width: 0; opacity: 0; overflow: hidden; border: none; }
 
   #mini-search-wrap {
     padding: 10px 10px 6px;
@@ -217,8 +219,9 @@
       </div>
       <div id="mh-actions">
         <span id="mh-statut" class="badge"></span>
-        <button class="btn btn-sm btn-gold" onclick="openFullDossier()">Ouvrir →</button>
-        <button class="btn btn-sm" style="border-color:var(--gold);color:var(--gold)" onclick="openConsult()">+ Soin</button>
+        <button class="btn btn-sm" id="btn-retour" onclick="retourListe()" style="display:none">← Retour</button>
+        <button class="btn btn-sm btn-gold" onclick="togglePleinEcran()">⛶ Plein écran</button>
+        <button class="btn btn-sm" style="border-color:var(--gold);color:var(--gold)" onclick="openConsultMini()">+ Soin</button>
       </div>
     </div>
 
@@ -350,11 +353,25 @@ window.selectPatient = async function(id) {
   document.getElementById('mh-actions').querySelector('.btn-gold').onclick = () => openFullDossier();
 };
 
-window.openFullDossier = function() {
-  if (window._miniPid) window.open('patient.html?id='+window._miniPid, '_blank');
+let _pleinEcran = false;
+
+window.togglePleinEcran = function() {
+  _pleinEcran = !_pleinEcran;
+  const list = document.getElementById('mini-list');
+  const btn  = document.querySelector('#mh-actions .btn-gold');
+  const retour = document.getElementById('btn-retour');
+  list.classList.toggle('hidden-panel', _pleinEcran);
+  btn.textContent = _pleinEcran ? '⛶ Réduire' : '⛶ Plein écran';
+  retour.style.display = _pleinEcran ? '' : 'none';
 };
-window.openConsult = function() {
-  if (window._miniPid) window.open('patient.html?id='+window._miniPid+'#consult', '_blank');
+
+window.retourListe = function() {
+  if (_pleinEcran) togglePleinEcran();
+};
+
+window.openConsultMini = function() {
+  // Ouvre la page patient en plein écran dans la même fenêtre Electron
+  if (window._miniPid) window.location.href = 'https://tamalou70500.github.io/Psy/patient.html?id='+window._miniPid;
 };
 
 window.addEventListener('load', function(){
