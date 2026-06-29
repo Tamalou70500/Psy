@@ -1065,11 +1065,36 @@ document.getElementById('logout-btn').onclick = authLogout;
 window.choiceMode = null;
 window.selectedPatient = null;
 window.allPatients = [];
-window.visitType = 'aptitude';
+window.visitType = 'urgence'; // urgence par défaut
 
-window.choiceMode = null;
-window.selectedPatient = null;
-
+// Pré-sélection patient si ?id= dans l'URL
+const _urlId = new URLSearchParams(window.location.search).get('id');
+if(_urlId){
+  // Attendre que patientsGetById soit dispo
+  var _waitPat = setInterval(function(){
+    if(!window._patientsGetById) return;
+    clearInterval(_waitPat);
+    window._patientsGetById(_urlId).then(function(p){
+      if(!p) return;
+      window.selectedPatient = p;
+      window.choiceMode = 'existing';
+      // Passer directement à l'étape 2 (soins urgence)
+      setVtype('urgence');
+      var initials = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+      document.getElementById('exam-patient-name').textContent = p.prenom+' '+p.nom;
+      document.getElementById('exam-patient-meta').textContent = (p.age?p.age+' ans · ':'')+( p.profession||'');
+      var av = document.getElementById('exam-patient-avatar');
+      if(av){ av.textContent = initials; if(p.photo) av.innerHTML='<img src="'+p.photo+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover" alt="">'; }
+      document.getElementById('urg-patient-name') && (document.getElementById('urg-patient-name').textContent = p.prenom+' '+p.nom);
+      document.getElementById('urg-patient-meta') && (document.getElementById('urg-patient-meta').textContent = (p.age?p.age+' ans · ':'')+( p.profession||''));
+      // Sauter l'étape 1
+      document.getElementById('step1').classList.add('hidden');
+      document.getElementById('step2').classList.remove('hidden');
+      document.getElementById('step-tab-1').classList.remove('active');
+      document.getElementById('step-tab-2').classList.add('active');
+    });
+  }, 100);
+}
 
 // Init date
 const now = new Date();
