@@ -1078,20 +1078,12 @@ if(_urlId){
       if(!p) return;
       window.selectedPatient = p;
       window.choiceMode = 'existing';
-      // Passer directement à l'étape 2 (soins urgence)
-      setVtype('urgence');
-      var initials = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
-      document.getElementById('exam-patient-name').textContent = p.prenom+' '+p.nom;
-      document.getElementById('exam-patient-meta').textContent = (p.age?p.age+' ans · ':'')+( p.profession||'');
-      var av = document.getElementById('exam-patient-avatar');
-      if(av){ av.textContent = initials; if(p.photo) av.innerHTML='<img src="'+p.photo+'" style="width:40px;height:40px;border-radius:50%;object-fit:cover" alt="">'; }
-      document.getElementById('urg-patient-name') && (document.getElementById('urg-patient-name').textContent = p.prenom+' '+p.nom);
-      document.getElementById('urg-patient-meta') && (document.getElementById('urg-patient-meta').textContent = (p.age?p.age+' ans · ':'')+( p.profession||''));
-      // Sauter l'étape 1
-      document.getElementById('step1').classList.add('hidden');
-      document.getElementById('step2').classList.remove('hidden');
-      document.getElementById('step-tab-1').classList.remove('active');
-      document.getElementById('step-tab-2').classList.add('active');
+      // Rester sur step0 pour choisir le type, mais afficher le nom du patient
+      var banner = document.createElement('div');
+      banner.style.cssText = 'text-align:center;margin-bottom:1rem;font-family:"Cormorant Garamond",serif;font-size:.95rem;color:var(--parch2)';
+      banner.innerHTML = '🩺 Patient : <strong>' + p.prenom + ' ' + p.nom + '</strong>';
+      var step0 = document.getElementById('step0');
+      if(step0) step0.insertBefore(banner, step0.firstChild);
     });
   }, 100);
 }
