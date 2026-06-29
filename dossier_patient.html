@@ -144,6 +144,17 @@
 .fpill-paper:hover,
 .fpill-paper.active { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-d); }
 
+/* Pagination */
+.pagination { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 0 4px; }
+.page-btn {
+  background: none; border: 1px solid var(--bdr); color: var(--parch2);
+  padding: 4px 12px; cursor: pointer; font-family:'Cormorant Garamond',serif; font-size:0.85rem;
+  transition: all .15s;
+}
+.page-btn:hover:not([disabled]) { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-d); }
+.page-btn[disabled] { opacity: 0.3; cursor: default; }
+.page-info { font-family:'Cormorant Garamond',serif; font-size:0.78rem; color:var(--parch3); letter-spacing:.06em; }
+
 /* Toggle vue */
 .view-toggle { display:flex; gap:4px; }
 .view-btn {
@@ -466,80 +477,97 @@ import { patientsLoad, patientsCreate } from './js/patients.js';
 
 const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
 const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
-let all = [], activeS = 'all';
+const PAGE_SIZE = { grid:12, big:6, list:20 };
+let all = [], activeS = 'all', currentPage = 0, filteredList = [];
 
 async function loadAll(){ all = await patientsLoad(); renderAll(); }
 
-window.renderAll = function(){
-  const q = (document.getElementById('search-pc')?.value || document.getElementById('search-mob')?.value || '').toLowerCase();
-  let list = [...all];
-  if(q) list = list.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
-  if(activeS !== 'all') list = list.filter(p=>p.statut === activeS);
+function ficheCardHtml(p) {
+  const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+  const av = p.photo
+    ? `<img class="fiche-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
+    : `<div class="fiche-av-ph">${ini}</div>`;
+  const nb = (p.seances||[]).length;
+  const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
+  const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
+  return `<a class="fiche fade-up" href="patient.html?id=${p.id}">
+    <div class="fiche-head">${av}<div>
+      <span class="fiche-name">${nomAff}</span>
+      ${metaParts.length?`<span class="fiche-meta">${metaParts.join(' · ')}</span>`:''}
+    </div></div>
+    <div class="fiche-body">
+      ${p.diagnostic?`<div class="fiche-diag">${p.diagnostic}</div>`:''}
+    </div>
+    <div class="fiche-foot">
+      <span class="badge-p ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
+      <span class="fiche-seances">${nb} séance${nb!==1?'s':''}</span>
+    </div>
+  </a>`;
+}
 
-  const txt = `${list.length} dossier${list.length!==1?'s':''} — ${all.length} au total`;
-  const statPc = document.getElementById('stat-pc');
-  const statMob = document.getElementById('stat-mob');
-  if(statPc) statPc.textContent = txt;
-  if(statMob) statMob.textContent = txt;
+function renderPagination(total, page, perPage) {
+  const pages = Math.ceil(total / perPage);
+  if (pages <= 1) return '';
+  const prev = page > 0 ? `<button class="page-btn" onclick="goPage(${page-1})">‹ Préc.</button>` : `<button class="page-btn" disabled>‹ Préc.</button>`;
+  const next = page < pages-1 ? `<button class="page-btn" onclick="goPage(${page+1})">Suiv. ›</button>` : `<button class="page-btn" disabled>Suiv. ›</button>`;
+  const info = `<span class="page-info">Page ${page+1} / ${pages}</span>`;
+  return `<div class="pagination">${prev}${info}${next}</div>`;
+}
 
-  const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
+window.goPage = function(p){ currentPage = p; renderGrid(); };
 
-  /* Version PC — fiches sur le dossier ouvert */
+function renderGrid() {
   const gpc = document.getElementById('grid-pc');
-  if(gpc) {
-    if(!list.length){ gpc.innerHTML = empty; }
-    else {
-      gpc.innerHTML = list.map(p=>{
-        const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
-        const av = p.photo
-          ? `<img class="fiche-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
-          : `<div class="fiche-av-ph">${ini}</div>`;
-        const nb = (p.seances||[]).length;
-        const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
-        const meta = metaParts.join(' · ');
-        const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
-        return `<a class="fiche fade-up" href="patient.html?id=${p.id}">
-          <div class="fiche-head">${av}<div>
-            <span class="fiche-name">${nomAff}</span>
-            ${meta?`<span class="fiche-meta">${meta}</span>`:''}
-          </div></div>
-          <div class="fiche-body">
-            ${p.diagnostic?`<div class="fiche-diag">${p.diagnostic}</div>`:''}
-          </div>
-          <div class="fiche-foot">
-            <span class="badge-p ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
-            <span class="fiche-seances">${nb} séance${nb!==1?'s':''}</span>
-          </div>
-        </a>`;
-      }).join('');
-    }
-  }
+  if (!gpc) return;
+  const perPage = PAGE_SIZE[currentView] || 12;
+  const total = filteredList.length;
+  const start = currentPage * perPage;
+  const page = filteredList.slice(start, start + perPage);
+  const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
+  if (!total) { gpc.innerHTML = empty; document.getElementById('stat-pc').textContent = '0 dossier'; return; }
+  gpc.innerHTML = page.map(ficheCardHtml).join('');
+  document.getElementById('stat-pc').textContent =
+    `${total} dossier${total!==1?'s':''} — page ${currentPage+1}/${Math.ceil(total/perPage)}`;
+  // Pagination après la grille
+  let pag = document.getElementById('pagination-pc');
+  if (!pag) { pag = document.createElement('div'); pag.id='pagination-pc'; gpc.parentNode.insertBefore(pag, gpc.nextSibling); }
+  pag.innerHTML = renderPagination(total, currentPage, perPage);
+}
 
-  /* Version Mobile */
+window.renderAll = function(){
+  const q = (document.getElementById('search-pc')?.value || '').toLowerCase();
+  filteredList = [...all];
+  if(q) filteredList = filteredList.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
+  if(activeS !== 'all') filteredList = filteredList.filter(p=>p.statut === activeS);
+  currentPage = 0;
+  renderGrid();
+
+  /* Version Mobile — pas de pagination, liste complète */
   const gmob = document.getElementById('grid-mob');
   if(gmob) {
-    if(!list.length){ gmob.innerHTML = empty; }
-    else {
-      gmob.innerHTML = list.map(p=>{
-        const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
-        const av = p.photo
-          ? `<img class="mob-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
-          : `<div class="mob-av">${ini}</div>`;
-        const nb = (p.seances||[]).length;
-        return `<a class="mob-fiche" href="patient.html?id=${p.id}">
-          ${av}
-          <div class="mob-info">
-            <span class="mob-name">${p.prenom} ${p.nom}</span>
-            <span class="mob-meta">${p.age?p.age+' ans · ':''}${p.origine||'—'}</span>
-            ${p.diagnostic?`<div class="mob-diag">${p.diagnostic}</div>`:''}
-          </div>
-          <div class="mob-right">
-            <span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
-            <span class="mob-meta">${nb} séance${nb!==1?'s':''}</span>
-          </div>
-        </a>`;
-      }).join('');
-    }
+    const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
+    if(!filteredList.length){ gmob.innerHTML = empty; return; }
+    gmob.innerHTML = filteredList.map(p=>{
+      const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+      const av = p.photo
+        ? `<img class="mob-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
+        : `<div class="mob-av">${ini}</div>`;
+      const nb = (p.seances||[]).length;
+      const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
+      const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
+      return `<a class="mob-fiche" href="patient.html?id=${p.id}">
+        ${av}
+        <div class="mob-info">
+          <span class="mob-name">${nomAff}</span>
+          ${metaParts.length?`<span class="mob-meta">${metaParts.join(' · ')}</span>`:''}
+          ${p.diagnostic?`<div class="mob-diag">${p.diagnostic}</div>`:''}
+        </div>
+        <div class="mob-right">
+          <span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
+          <span class="mob-meta">${nb} séance${nb!==1?'s':''}</span>
+        </div>
+      </a>`;
+    }).join('');
   }
 };
 
@@ -557,8 +585,9 @@ window.setView = function(v){
   if(v !== 'grid') grid.classList.add('view-'+v);
   document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('vbtn-'+v)?.classList.add('active');
+  currentPage = 0;
+  renderGrid();
 };
-// Applique la vue sauvegardée au chargement
 window.addEventListener('DOMContentLoaded', ()=>{ setView(currentView); });
 window.openModal  = ()=>{ document.getElementById('modal').classList.remove('hidden'); document.getElementById('f-nom').focus(); };
 window.closeModal = ()=>{
