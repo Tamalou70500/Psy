@@ -183,22 +183,19 @@ var checkReady = setInterval(function(){
 }, 80);
 
 // ── Google ────────────────────────────────────────────
+// Appel direct sans setInterval pour que le popup ne soit pas bloqué sur mobile
 function doSignIn(){
   var btn = document.getElementById('btn-google');
+  if(!window._fbSignIn){ showError('Chargement en cours, réessayez dans un instant.'); return; }
   btn.disabled = true;
   showLoading(true);
-  waitFb('_fbSignIn', function(fn){
-    var result = fn();
-    if(!result) return; // mobile redirect — la page va se recharger
-    result.then(function(res){
-      if(!res) return; // mobile redirect
-      var p = res.profil;
-      window.location.href = (p && p.profilOk) ? 'dossier_patient.html' : 'setup-profil.html';
-    }).catch(function(e){
-      btn.disabled = false;
-      showLoading(false);
-      showError('Erreur Google : ' + (e.message||'Réessayez'));
-    });
+  window._fbSignIn().then(function(res){
+    var p = res && res.profil;
+    window.location.href = (p && p.profilOk) ? 'dossier_patient.html' : 'setup-profil.html';
+  }).catch(function(e){
+    btn.disabled = false;
+    showLoading(false);
+    showError('Erreur Google : ' + (e.message||'Réessayez'));
   });
 }
 
