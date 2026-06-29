@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="fr" data-theme="dark" data-font="victorien">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MINIDOSS — Cabinet Médical 1904</title>
+<link rel="stylesheet" href="css/style.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    height: 100%; overflow: hidden;
+    background: var(--ink); color: var(--parch3);
+    font-family: 'EB Garamond', serif;
+  }
+
+  /* ── Layout principal ── */
+  #mini-app {
+    display: flex; height: 100vh; width: 100vw;
+  }
+
+  /* ── Colonne gauche — liste ── */
+  #mini-list {
+    width: 260px; flex-shrink: 0;
+    border-right: 1px solid var(--bdr);
+    display: flex; flex-direction: column;
+    background: var(--ink2);
+  }
+
+  #mini-search-wrap {
+    padding: 10px 10px 6px;
+    border-bottom: 1px solid var(--bdr);
+  }
+
+  #mini-search {
+    width: 100%; background: var(--ink3); border: 1px solid var(--bdr);
+    color: var(--parch); padding: 5px 8px; font-family: 'Cormorant Garamond', serif;
+    font-size: .82rem;
+  }
+  #mini-search::placeholder { color: var(--parch4); }
+
+  #mini-filter {
+    display: flex; gap: 4px; padding: 6px 10px;
+    border-bottom: 1px solid var(--bdr); flex-wrap: wrap;
+  }
+  .mf-btn {
+    padding: 2px 8px; font-size: .7rem; font-family: 'Cormorant Garamond', serif;
+    background: none; border: 1px solid var(--bdr); color: var(--parch4); cursor: pointer;
+  }
+  .mf-btn.active { border-color: var(--gold); color: var(--gold); }
+
+  #mini-entries {
+    flex: 1; overflow-y: auto;
+  }
+  #mini-entries::-webkit-scrollbar { width: 4px; }
+  #mini-entries::-webkit-scrollbar-thumb { background: var(--bdr2); }
+
+  .mini-entry {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 10px; border-bottom: 1px solid rgba(255,255,255,.04);
+    cursor: pointer; transition: background .1s;
+  }
+  .mini-entry:hover { background: var(--ink3); }
+  .mini-entry.active { background: rgba(192,154,74,.1); border-left: 2px solid var(--gold); }
+
+  .mini-av {
+    width: 32px; height: 32px; object-fit: cover;
+    border: 1px solid var(--bdr2); flex-shrink: 0;
+    filter: sepia(15%);
+  }
+  .mini-av-ph {
+    width: 32px; height: 32px; flex-shrink: 0;
+    background: var(--ink3); border: 1px solid var(--bdr);
+    display: flex; align-items: center; justify-content: center;
+    font-size: .7rem; color: var(--parch4);
+    font-family: 'Playfair Display', serif;
+  }
+  .mini-entry-name {
+    font-size: .82rem; color: var(--parch); white-space: nowrap;
+    overflow: hidden; text-overflow: ellipsis; flex: 1;
+    font-family: 'Cormorant Garamond', serif;
+  }
+  .mini-entry-badge {
+    font-size: .6rem; padding: 1px 5px; flex-shrink: 0;
+  }
+
+  #mini-count {
+    padding: 5px 10px; font-size: .68rem; color: var(--parch4);
+    border-top: 1px solid var(--bdr); font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+  }
+
+  /* ── Colonne droite — fiche ── */
+  #mini-detail {
+    flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  }
+
+  #mini-empty {
+    flex: 1; display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 1rem;
+    color: var(--parch4); font-style: italic;
+  }
+
+  /* Pat-header compact */
+  #mini-pat-header {
+    display: none; padding: 12px 16px;
+    border-bottom: 1px solid var(--bdr);
+    background: var(--ink2);
+    align-items: center; gap: 12px; flex-shrink: 0;
+  }
+  #mini-pat-header.visible { display: flex; }
+
+  #mh-av {
+    width: 52px; height: 52px; object-fit: cover;
+    border: 1px solid var(--bdr2); filter: sepia(15%);
+  }
+  #mh-av-ph {
+    width: 52px; height: 52px;
+    background: var(--ink3); border: 1px solid var(--bdr);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Playfair Display', serif; font-size: 1.3rem; color: var(--parch4);
+  }
+
+  #mh-info { flex: 1; }
+  #mh-name {
+    font-family: 'Playfair Display', serif; font-size: 1.1rem;
+    color: var(--parch); font-style: italic;
+  }
+  #mh-meta { font-size: .75rem; color: var(--parch3); margin-top: 2px; }
+
+  #mh-actions { display: flex; gap: 6px; }
+  #mh-actions a, #mh-actions button {
+    padding: 4px 10px; font-size: .75rem;
+    font-family: 'Cormorant Garamond', serif;
+    background: none; cursor: pointer;
+  }
+
+  /* Pat-body — colonne gauche + droite */
+  #mini-pat-body {
+    display: none; flex: 1; overflow: hidden;
+    flex-direction: row;
+  }
+  #mini-pat-body.visible { display: flex; }
+
+  #mb-left {
+    width: 220px; flex-shrink: 0; overflow-y: auto;
+    border-right: 1px solid var(--bdr); padding: 12px;
+    font-size: .78rem; line-height: 1.7;
+  }
+  #mb-left::-webkit-scrollbar { width: 3px; }
+  #mb-left::-webkit-scrollbar-thumb { background: var(--bdr2); }
+
+  #mb-right {
+    flex: 1; overflow-y: auto; padding: 12px;
+  }
+  #mb-right::-webkit-scrollbar { width: 3px; }
+  #mb-right::-webkit-scrollbar-thumb { background: var(--bdr2); }
+
+  /* Séances dans mini */
+  .m-seance {
+    border: 1px solid var(--bdr); margin-bottom: 8px;
+    padding: 8px 10px; background: var(--ink2);
+  }
+  .m-seance-head {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 4px;
+  }
+  .m-seance-date { font-size: .7rem; color: var(--gold); font-family: 'Courier Prime', monospace; }
+  .m-seance-med { font-size: .7rem; color: var(--parch4); font-style: italic; }
+  .m-seance-text { font-size: .75rem; color: var(--parch3); line-height: 1.6; }
+
+  .m-info-row { display: flex; gap: 6px; margin-bottom: 3px; }
+  .m-info-label { color: var(--parch4); font-size: .7rem; min-width: 80px; flex-shrink: 0; }
+  .m-info-value { color: var(--parch); font-size: .75rem; }
+
+  .m-section-title {
+    font-family: 'Playfair Display', serif; font-size: .7rem;
+    color: var(--gold); letter-spacing: .1em; text-transform: uppercase;
+    margin: 10px 0 5px; border-bottom: 1px solid var(--bdr); padding-bottom: 2px;
+  }
+
+  /* Statut décédé */
+  .mini-entry.decede .mini-entry-name { text-decoration: line-through; opacity: .5; }
+</style>
+</head>
+<body>
+
+<div id="mini-app">
+
+  <!-- LISTE GAUCHE -->
+  <div id="mini-list">
+    <div id="mini-search-wrap">
+      <input id="mini-search" placeholder="Rechercher…" oninput="renderList()" autocomplete="off">
+    </div>
+    <div id="mini-filter">
+      <button class="mf-btn active" onclick="setF(this,'all')">Tous</button>
+      <button class="mf-btn" onclick="setF(this,'stable')">Stable</button>
+      <button class="mf-btn" onclick="setF(this,'suivi')">Suivi</button>
+      <button class="mf-btn" onclick="setF(this,'grave')">Grave</button>
+      <button class="mf-btn" onclick="setF(this,'decede')">†</button>
+    </div>
+    <div id="mini-entries"></div>
+    <div id="mini-count">Chargement…</div>
+  </div>
+
+  <!-- DÉTAIL DROITE -->
+  <div id="mini-detail">
+    <div id="mini-empty">← Sélectionner un dossier</div>
+
+    <!-- EN-TÊTE patient -->
+    <div id="mini-pat-header">
+      <div id="mh-av-ph">✦</div>
+      <img id="mh-av" style="display:none" alt="">
+      <div id="mh-info">
+        <div id="mh-name">—</div>
+        <div id="mh-meta"></div>
+      </div>
+      <div id="mh-actions">
+        <span id="mh-statut" class="badge"></span>
+        <button class="btn btn-sm btn-gold" onclick="openFullDossier()">Ouvrir →</button>
+        <button class="btn btn-sm" style="border-color:var(--gold);color:var(--gold)" onclick="openConsult()">+ Soin</button>
+      </div>
+    </div>
+
+    <!-- CORPS patient -->
+    <div id="mini-pat-body">
+      <div id="mb-left"></div>
+      <div id="mb-right"></div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module" src="js/auth-firebase.js"></script>
+<script src="js/guard.js" defer></script>
+<script type="module">
+import { patientsLoad, patientsGetById, formatDate } from './js/patients.js';
+
+const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave', decede:'badge-decede' };
+const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave / Dangereux', decede:'† Décédé' };
+
+let all = [], filtered = [], activeFilter = 'all', activePid = null;
+
+function setF(btn, f) {
+  document.querySelectorAll('.mf-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  activeFilter = f;
+  renderList();
+}
+window.setF = setF;
+
+function renderList() {
+  const q = (document.getElementById('mini-search').value || '').toLowerCase();
+  filtered = all.filter(p => {
+    const nom = ((p.prenom||'')+' '+(p.nom||'')).toLowerCase();
+    const matchQ = !q || nom.includes(q) || (p.diagnostic||'').toLowerCase().includes(q);
+    const matchF = activeFilter === 'all' || p.statut === activeFilter;
+    return matchQ && matchF;
+  });
+  const el = document.getElementById('mini-entries');
+  if (!filtered.length) { el.innerHTML = '<div style="padding:12px;font-size:.75rem;color:var(--parch4);font-style:italic">Aucun dossier</div>'; }
+  else {
+    el.innerHTML = filtered.map(p => {
+      const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+      const nom = [p.prenom, p.nom].filter(Boolean).join(' ');
+      const av = p.photo
+        ? `<img class="mini-av" src="${p.photo}" onerror="this.style.display='none'">`
+        : `<div class="mini-av-ph">${ini}</div>`;
+      const isActive = p.id === activePid ? 'active' : '';
+      const isDec = p.statut === 'decede' ? 'decede' : '';
+      return `<div class="mini-entry ${isActive} ${isDec}" onclick="selectPatient('${p.id}')">
+        ${av}
+        <span class="mini-entry-name">${nom}</span>
+        <span class="mini-entry-badge badge ${SB[p.statut]||'badge-suivi'}" style="font-size:.55rem;padding:1px 4px">${SL[p.statut]||''}</span>
+      </div>`;
+    }).join('');
+  }
+  document.getElementById('mini-count').textContent = `${filtered.length} dossier${filtered.length!==1?'s':''}`;
+}
+
+function mf(label, val) {
+  if (!val) return '';
+  return `<div class="m-info-row"><span class="m-info-label">${label}</span><span class="m-info-value">${val}</span></div>`;
+}
+
+function formatResumeMini(text) {
+  if (!text) return '—';
+  if (text.includes('**')) {
+    return text.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>').split('\n').map(l=>l.trim()).filter(l=>l).join('<br>');
+  }
+  const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<span style="white-space:pre-line">${esc}</span>`;
+}
+
+window.selectPatient = async function(id) {
+  activePid = id;
+  renderList();
+  const p = await patientsGetById(id);
+  if (!p) return;
+
+  // Header
+  const avPh = document.getElementById('mh-av-ph');
+  const avImg = document.getElementById('mh-av');
+  if (p.photo) { avImg.src=p.photo; avImg.style.display='block'; avPh.style.display='none'; }
+  else { avImg.style.display='none'; avPh.style.display='flex'; }
+
+  const nom = [p.prenom, p.nom].filter(Boolean).join(' ');
+  document.getElementById('mh-name').textContent = nom;
+  const meta = [p.age ? p.age+' ans' : null, p.profession, p.origine].filter(Boolean).join(' · ');
+  document.getElementById('mh-meta').textContent = meta;
+  const st = document.getElementById('mh-statut');
+  st.className = 'badge '+(SB[p.statut]||'badge-suivi');
+  st.textContent = SL[p.statut]||p.statut;
+
+  // Infos gauche
+  let left = '';
+  left += `<div class="m-section-title">Identité</div>`;
+  left += mf('Âge', p.age ? p.age+' ans' : '');
+  left += mf('Sexe', p.sexe === 'M' ? 'Masculin' : p.sexe === 'F' ? 'Féminin' : '');
+  left += mf('Profession', p.profession);
+  left += mf('Télégramme', p.telegram);
+  left += mf('Groupe sg.', p.groupeSanguin);
+  left += mf('Mensurations', p.mensurations);
+  if (p.antecedents) { left += `<div class="m-section-title">Antécédents</div><div style="font-size:.73rem;color:var(--parch3);line-height:1.6">${p.antecedents}</div>`; }
+  if (p.allergies)   { left += `<div class="m-section-title">Allergies</div><div style="font-size:.73rem;color:#c07070">${p.allergies}</div>`; }
+  if (p.diagnostic)  { left += `<div class="m-section-title">Diagnostic</div><div style="font-size:.73rem;color:var(--parch3)">${p.diagnostic}</div>`; }
+  if (p.traitement)  { left += `<div class="m-section-title">Traitement</div><div style="font-size:.73rem;color:var(--parch3)">${p.traitement}</div>`; }
+  document.getElementById('mb-left').innerHTML = left;
+
+  // Séances droite
+  const seances = (p.seances||[]).slice().reverse();
+  let right = `<div class="m-section-title">Consultations (${seances.length})</div>`;
+  if (!seances.length) right += `<div style="font-size:.75rem;color:var(--parch4);font-style:italic">Aucune consultation enregistrée</div>`;
+  else right += seances.map(s => `
+    <div class="m-seance">
+      <div class="m-seance-head">
+        <span class="m-seance-date">${formatDate(s.date)||s.date||'—'}</span>
+        ${s.medecin ? `<span class="m-seance-med">Dr. ${s.medecin}</span>` : ''}
+      </div>
+      <div class="m-seance-text">${formatResumeMini(s.resume)}</div>
+    </div>`).join('');
+  document.getElementById('mb-right').innerHTML = right;
+
+  document.getElementById('mini-empty').style.display = 'none';
+  document.getElementById('mini-pat-header').classList.add('visible');
+  document.getElementById('mini-pat-body').classList.add('visible');
+
+  // Stocker pid pour les boutons
+  window._miniPid = id;
+  document.getElementById('mh-actions').querySelector('.btn-gold').onclick = () => openFullDossier();
+};
+
+window.openFullDossier = function() {
+  if (window._miniPid) window.open('patient.html?id='+window._miniPid, '_blank');
+};
+window.openConsult = function() {
+  if (window._miniPid) window.open('patient.html?id='+window._miniPid+'#consult', '_blank');
+};
+
+window.addEventListener('load', function(){
+  var wait = setInterval(function(){
+    if (!window.guardPage) return;
+    clearInterval(wait);
+    guardPage({ requirePatients:true, onReady: async function(){
+      all = await patientsLoad();
+      all.sort((a,b) => {
+        const na = ((a.prenom||'')+(a.nom||'')).toLowerCase();
+        const nb = ((b.prenom||'')+(b.nom||'')).toLowerCase();
+        return na.localeCompare(nb);
+      });
+      renderList();
+    }});
+  }, 80);
+});
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var t = localStorage.getItem('psy_theme') || 'dark';
+  var f = localStorage.getItem('psy_font')  || 'victorien';
+  document.documentElement.setAttribute('data-theme', t);
+  document.documentElement.setAttribute('data-font', f);
+});
+</script>
+</body>
+</html>
