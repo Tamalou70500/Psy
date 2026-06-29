@@ -398,6 +398,10 @@ nav.navbar {
         <button class="fpill-paper" onclick="setFilter(this,'stable')">Stable</button>
         <button class="fpill-paper" onclick="setFilter(this,'suivi')">Suivi</button>
         <button class="fpill-paper" onclick="setFilter(this,'grave')">Grave</button>
+        <div class="view-toggle">
+          <button class="view-btn active" id="sbtn-alpha" onclick="setSort('alpha')" title="Ordre alphabétique">A→Z</button>
+          <button class="view-btn" id="sbtn-consult" onclick="setSort('consult')" title="Dernière consultation">🕐</button>
+        </div>
         <div class="view-toggle" style="margin-left:auto">
           <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Grille">▦</button>
           <button class="view-btn" id="vbtn-big" onclick="setView('big')" title="Grandes miniatures">⊞</button>
@@ -539,6 +543,15 @@ window.renderAll = function(){
   filteredList = [...all];
   if(q) filteredList = filteredList.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
   if(activeS !== 'all') filteredList = filteredList.filter(p=>p.statut === activeS);
+  if(currentSort === 'alpha') {
+    filteredList.sort((a,b)=>(a.nom||a.prenom||'').localeCompare(b.nom||b.prenom||'', 'fr'));
+  } else {
+    filteredList.sort((a,b)=>{
+      const da = Math.max(...(a.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(a.createdAt||0).getTime());
+      const db2 = Math.max(...(b.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(b.createdAt||0).getTime());
+      return db2 - da;
+    });
+  }
   currentPage = 0;
   renderGrid();
 
@@ -588,7 +601,16 @@ window.setView = function(v){
   currentPage = 0;
   renderGrid();
 };
-window.addEventListener('DOMContentLoaded', ()=>{ setView(currentView); });
+window.addEventListener('DOMContentLoaded', ()=>{ setView(currentView); setSort(currentSort, true); });
+
+let currentSort = localStorage.getItem('patSort') || 'alpha';
+window.setSort = function(s, init=false){
+  currentSort = s;
+  localStorage.setItem('patSort', s);
+  document.querySelectorAll('[id^="sbtn-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sbtn-'+s)?.classList.add('active');
+  if(!init) renderAll();
+};
 window.openModal  = ()=>{ document.getElementById('modal').classList.remove('hidden'); document.getElementById('f-nom').focus(); };
 window.closeModal = ()=>{
   document.getElementById('modal').classList.add('hidden');
