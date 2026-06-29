@@ -179,18 +179,22 @@
 
 /* Vue liste */
 .folder-grid.view-list {
-  display: flex; flex-direction: column; gap: 1px;
+  display: flex; flex-direction: column; gap: 0;
   grid-template-columns: unset;
 }
 .folder-grid.view-list .fiche {
   display: flex; align-items: center; gap: 12px;
-  padding: 7px 12px;
+  padding: 6px 12px; min-height: 0; overflow: hidden;
 }
-.folder-grid.view-list .fiche-head { margin-bottom: 0; flex-shrink: 0; }
-.folder-grid.view-list .fiche-body { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
-.folder-grid.view-list .fiche-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.folder-grid.view-list .fiche::before { display: none; }
+.folder-grid.view-list .fiche:hover { transform: none; box-shadow: none; background: var(--ink3); }
+.folder-grid.view-list .fiche-head { margin-bottom: 0; flex-shrink: 0; min-width: 0; }
+.folder-grid.view-list .fiche-head > div { min-width: 160px; max-width: 200px; overflow: hidden; }
+.folder-grid.view-list .fiche-body { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; overflow: hidden; }
+.folder-grid.view-list .fiche-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; }
+.folder-grid.view-list .fiche-meta { white-space: nowrap; display: block; }
 .folder-grid.view-list .fiche-diag { margin-bottom: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.folder-grid.view-list .fiche-foot { border-top: none; padding-top: 0; flex-shrink: 0; }
+.folder-grid.view-list .fiche-foot { border-top: none; padding-top: 0; flex-shrink: 0; gap: 8px; }
 
 /* Vue grandes miniatures */
 .folder-grid.view-big {
@@ -481,7 +485,7 @@ import { patientsLoad, patientsCreate } from './js/patients.js';
 
 const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
 const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
-const PAGE_SIZE = { grid:12, big:6, list:20 };
+const PAGE_SIZE = { grid:12, big:6, list:15 };
 let all = [], activeS = 'all', currentPage = 0, filteredList = [];
 
 async function loadAll(){ all = await patientsLoad(); renderAll(); }
