@@ -490,6 +490,7 @@ const PAGE_SIZE = { grid:12, big:6, list:15 };
 let all = [], activeS = 'all', currentPage = 0, filteredList = [];
 
 async function loadAll(){ all = await patientsLoad(); renderAll(); }
+window.loadAll = loadAll;
 
 function ficheCardHtml(p) {
   const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
