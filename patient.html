@@ -272,6 +272,21 @@ nav.navbar {
 <script src="js/voice.js"></script>
 <script type="module">
 import { patientsGetById, patientsUpdate, patientsDelete, patientsAddSeance, patientsDeleteSeance, formatDate } from './js/patients.js';
+import { getAllMedecins } from './js/auth-firebase.js';
+
+// Cache médecins pour correspondance
+let _medecinsList = [];
+getAllMedecins().then(list => { _medecinsList = list; }).catch(()=>{});
+
+// Normalise un nom pour comparaison : lowercase + mots triés
+function normName(n) { return (n||'').toLowerCase().replace(/[^a-zàâçéèêëîïôùûüæœ ]/gi,'').split(/\s+/).sort().join(' '); }
+
+// Cherche un médecin par son nom RP (exact ou mots dans le désordre)
+function findMedecin(nomRp) {
+  if (!nomRp) return null;
+  const n = normName(nomRp);
+  return _medecinsList.find(m => normName((m.prenom||'')+' '+(m.nom||'')) === n || normName((m.nom||'')+' '+(m.prenom||'')) === n) || null;
+}
 
 function formatResume(text) {
   return text
@@ -362,7 +377,7 @@ function render(){
         <div class="seance-card-top">
           <span class="seance-date">${formatDate(s.date)}</span>
           ${i===0?'<span style="font-family:\'Cormorant Garamond\',serif;font-size:.62rem;color:var(--gold);letter-spacing:.1em">DERNIÈRE</span>':''}
-          ${s.medecin ? `<span class="seance-medecin">Dr. ${s.medecin}</span>` : ''}
+          ${s.medecin ? (() => { const med = findMedecin(s.medecin); return med ? `<a class="seance-medecin" href="medecin.html?id=${med.uid}" style="text-decoration:none">Dr. ${s.medecin}</a>` : `<span class="seance-medecin">Dr. ${s.medecin}</span>`; })() : ''}
           ${s.humeur ? `<span class="seance-type">${s.humeur}</span>` : ''}
         </div>
         <div class="seance-text">${formatResume(s.resume||'—')}</div>
