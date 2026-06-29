@@ -314,9 +314,11 @@ function render(){
     : `<div class="info-row"><div class="info-label">${label}</div><div class="info-value empty">—</div></div>`;
 
   // Colonne gauche — photo grande + résumé rapide
+  const ini2 = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+  const phStyle = `width:100%;aspect-ratio:3/4;background:var(--ink3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:3rem;color:var(--parch4);margin-bottom:.75rem`;
   const photoBlock = p.photo
-    ? `<img src="${p.photo}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;border:1px solid var(--bdr2);filter:sepia(15%);margin-bottom:.75rem" onerror="this.style.display='none'">`
-    : `<div style="width:100%;aspect-ratio:3/4;background:var(--ink3);border:1px solid var(--bdr2);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:3rem;color:var(--parch4);margin-bottom:.75rem">${(p.prenom?.[0]||'')+(p.nom?.[0]||'')}</div>`;
+    ? `<img src="${p.photo}" alt="" style="width:100%;aspect-ratio:3/4;object-fit:cover;border:1px solid var(--bdr2);filter:sepia(15%);margin-bottom:.75rem" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div style="${phStyle};display:none">${ini2}</div>`
+    : `<div style="${phStyle}">${ini2}</div>`;
 
   document.getElementById('pat-left').innerHTML = `
     ${photoBlock}
