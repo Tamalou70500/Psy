@@ -3,7 +3,8 @@
 ═══════════════════════════════════════════════════════════ */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-app.js";
 import {
-  getAuth, signInWithPopup, GoogleAuthProvider,
+  getAuth, signInWithPopup, signInWithRedirect, getRedirectResult,
+  GoogleAuthProvider,
   createUserWithEmailAndPassword, signInWithEmailAndPassword,
   signOut, onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/12.15.0/firebase-auth.js";
@@ -52,11 +53,31 @@ async function ensureProfile(user) {
 }
 
 /* ─── Connexion Google ───────────────────────────────────── */
+const isMobile = /Android|iPhone|iPad|iPod|Opera Mini|IEMobile/i.test(navigator.userAgent);
+
 async function signInWithGoogle() {
+  if (isMobile) {
+    // Sur mobile, popup bloqué → redirect flow
+    await signInWithRedirect(auth, provider);
+    return null; // la page va se recharger
+  }
   const result = await signInWithPopup(auth, provider);
   const profil = await ensureProfile(result.user);
   return { user: result.user, profil };
 }
+
+/* ─── Récupérer le résultat après redirect Google mobile ── */
+async function handleRedirectResult() {
+  try {
+    const result = await getRedirectResult(auth);
+    if (!result) return null;
+    const profil = await ensureProfile(result.user);
+    return { user: result.user, profil };
+  } catch(e) {
+    return { error: e.message };
+  }
+}
+window._fbHandleRedirect = handleRedirectResult;
 
 /* ─── Connexion Email/Mot de passe ──────────────────────── */
 async function signInWithEmail(identifier, password) {
