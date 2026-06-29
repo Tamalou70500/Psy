@@ -361,8 +361,9 @@ window.openMedPopup = function(uid) {
   const cabinet = med.cabinet ? `<div class="med-popup-cabinet">${med.cabinet}</div>` : '';
 
   // Certifications uniquement (pas les diplômes d'examen)
+  const BADGES_EXCLUS = ['Diplômé Stagiaire','Diplômé Apprenti médecin','Médecin de campagne','Médecin confirmé'];
   const certs = (med.badges||[])
-    .filter(b => (b.label||'').toLowerCase().includes('certification'))
+    .filter(b => !BADGES_EXCLUS.includes(b.label||''))
     .map(b => `<span class="med-popup-badge">${b.icon||''} ${b.label||''}</span>`)
     .join('');
 
