@@ -423,13 +423,20 @@ window.toggleMateriel = function(m) {
   renderChips();
 };
 
-window.openConsultModal = function() {
+window.openConsultModal = async function() {
   _materielSelectionne = [];
   _consultTab = 'assistee';
   ['c-symptomes','c-soins','c-reco','c-texte-libre','c-materiel-input'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('c-err').style.display='none';
   setConsultTab('assistee');
   renderChips();
+  // Afficher le nom du médecin connecté
+  const label = document.getElementById('c-medecin-label');
+  if(label) {
+    const profil = window._fbGetProfile ? await window._fbGetProfile().catch(()=>null) : null;
+    const nom = profil ? ((profil.prenom||'')+' '+(profil.nom||'')).trim() : '';
+    label.textContent = nom ? 'Médecin : Dr. '+nom : 'Médecin : non identifié';
+  }
   document.getElementById('consult-overlay').classList.remove('hidden');
   setTimeout(()=>document.getElementById('c-symptomes').focus(), 50);
 };
@@ -681,7 +688,8 @@ load();
 <div class="med-popup-overlay hidden" id="consult-overlay" onclick="if(event.target===this)closeConsultModal()">
   <div class="med-popup" style="max-width:520px;text-align:left">
     <button class="med-popup-close" onclick="closeConsultModal()">✕</button>
-    <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--parch);margin-bottom:.75rem">Nouvelle consultation</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--parch);margin-bottom:.25rem">Nouvelle consultation</div>
+    <div id="c-medecin-label" style="font-size:.78rem;color:var(--parch3);font-family:'Cormorant Garamond',serif;margin-bottom:.75rem;font-style:italic">Médecin : —</div>
 
     <!-- Onglets -->
     <div style="display:flex;gap:0;margin-bottom:1rem;border-bottom:1px solid var(--bdr)">
