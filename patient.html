@@ -424,7 +424,7 @@ function render(){
     (p.age ? `<span>· ${p.age} ans</span>` : '')+
     (p.profession ? `<span>· ${p.profession}</span>` : '')+
     (p.telegram ? `<span>· 📡 ${p.telegram}</span>` : '');
-  document.getElementById('btn-consultation').href = `visite.html?id=${pid}`;
+  document.getElementById('btn-consultation').href = `visite.html?id=${pid}&type=soin`;
 
   // Colonne gauche — infos
   const f = (label, val) => val

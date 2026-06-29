@@ -1078,12 +1078,36 @@ if(_urlId){
       if(!p) return;
       window.selectedPatient = p;
       window.choiceMode = 'existing';
-      // Rester sur step0 pour choisir le type, mais afficher le nom du patient
-      var banner = document.createElement('div');
-      banner.style.cssText = 'text-align:center;margin-bottom:1rem;font-family:"Cormorant Garamond",serif;font-size:.95rem;color:var(--parch2)';
-      banner.innerHTML = '🩺 Patient : <strong>' + p.prenom + ' ' + p.nom + '</strong>';
-      var step0 = document.getElementById('step0');
-      if(step0) step0.insertBefore(banner, step0.firstChild);
+      var urlType = new URLSearchParams(window.location.search).get('type');
+      if(urlType === 'soin') {
+        // Aller direct aux soins, sans choix
+        setVtype('urgence');
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+        document.getElementById('step-tab-1') && document.getElementById('step-tab-1').classList.remove('active');
+        document.getElementById('step-tab-2') && document.getElementById('step-tab-2').classList.add('active');
+        // Bouton visite médicale
+        var btnVisite = document.createElement('button');
+        btnVisite.className = 'btn btn-sm';
+        btnVisite.style.cssText = 'margin-bottom:1rem;border-color:var(--gold);color:var(--gold)';
+        btnVisite.textContent = '📋 Passer la visite médicale';
+        btnVisite.onclick = function(){ window.location.href = 'visite.html?id='+p.id+'&type=aptitude'; };
+        var step2 = document.getElementById('step2');
+        if(step2) step2.insertBefore(btnVisite, step2.firstChild);
+      } else if(urlType === 'aptitude') {
+        setVtype('aptitude');
+        document.getElementById('step1').classList.add('hidden');
+        document.getElementById('step2').classList.remove('hidden');
+        document.getElementById('step-tab-1') && document.getElementById('step-tab-1').classList.remove('active');
+        document.getElementById('step-tab-2') && document.getElementById('step-tab-2').classList.add('active');
+      } else {
+        // Pas de type : afficher le choix avec le nom du patient
+        var banner = document.createElement('div');
+        banner.style.cssText = 'text-align:center;margin-bottom:1rem;font-family:"Cormorant Garamond",serif;font-size:.95rem;color:var(--parch2)';
+        banner.innerHTML = '🩺 Patient : <strong>' + p.prenom + ' ' + p.nom + '</strong>';
+        var step0 = document.getElementById('step0');
+        if(step0) step0.insertBefore(banner, step0.firstChild);
+      }
     });
   }, 100);
 }
