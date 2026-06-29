@@ -376,35 +376,79 @@ window.openMedPopup = function(uid) {
   `;
   document.getElementById('med-popup-overlay').classList.remove('hidden');
 };
+const MATERIAUX_COURANTS = [
+  'Bandage','Suture','Cataplasme','Éclisse','Compresse','Pansement',
+  'Alcool','Eau propre','Laudanum','Morphine','Garrot','Aiguille',
+  'Fil de suture','Forceps','Scalpel','Onguent'
+];
+let _consultTab = 'assistee';
+let _materielSelectionne = [];
+
+window.setConsultTab = function(tab) {
+  _consultTab = tab;
+  document.getElementById('c-mode-assistee').style.display = tab==='assistee' ? '' : 'none';
+  document.getElementById('c-mode-simple').style.display   = tab==='simple'   ? '' : 'none';
+  document.getElementById('ctab-assistee').style.borderBottomColor = tab==='assistee' ? 'var(--gold)' : 'transparent';
+  document.getElementById('ctab-assistee').style.color = tab==='assistee' ? 'var(--gold)' : 'var(--parch3)';
+  document.getElementById('ctab-simple').style.borderBottomColor = tab==='simple' ? 'var(--gold)' : 'transparent';
+  document.getElementById('ctab-simple').style.color = tab==='simple' ? 'var(--gold)' : 'var(--parch3)';
+};
+
+function renderChips() {
+  const container = document.getElementById('c-materiel-chips');
+  if (!container) return;
+  container.innerHTML = MATERIAUX_COURANTS.map(m => {
+    const sel = _materielSelectionne.includes(m);
+    return `<button onclick="toggleMateriel('${m}')" style="padding:3px 10px;border:1px solid ${sel?'var(--gold)':'var(--bdr)'};background:${sel?'var(--gold-dim)':'none'};color:${sel?'var(--gold)':'var(--parch3)'};font-family:'Cormorant Garamond',serif;font-size:.78rem;cursor:pointer">${m}</button>`;
+  }).join('');
+}
+window.toggleMateriel = function(m) {
+  const i = _materielSelectionne.indexOf(m);
+  if (i === -1) _materielSelectionne.push(m); else _materielSelectionne.splice(i,1);
+  renderChips();
+};
+
 window.openConsultModal = function() {
-  ['c-symptomes','c-soins','c-reco'].forEach(id => { const el = document.getElementById(id); if(el) el.value=''; });
+  _materielSelectionne = [];
+  _consultTab = 'assistee';
+  ['c-symptomes','c-soins','c-reco','c-texte-libre','c-materiel-input'].forEach(id => { const el=document.getElementById(id); if(el) el.value=''; });
   document.getElementById('c-err').style.display='none';
+  setConsultTab('assistee');
+  renderChips();
   document.getElementById('consult-overlay').classList.remove('hidden');
-  document.getElementById('c-symptomes').focus();
+  setTimeout(()=>document.getElementById('c-symptomes').focus(), 50);
 };
 window.closeConsultModal = function() {
   document.getElementById('consult-overlay').classList.add('hidden');
 };
 window.saveConsult = async function() {
-  const sym  = document.getElementById('c-symptomes').value.trim();
-  const soin = document.getElementById('c-soins').value.trim();
-  const reco = document.getElementById('c-reco').value.trim();
-  if (!sym && !soin && !reco) { document.getElementById('c-err').style.display='block'; return; }
-  const parts = [];
-  if (sym)  parts.push('**Symptômes**\n' + sym.split('\n').map(l=>'• '+l).join('\n'));
-  if (soin) parts.push('**Soins effectués**\n' + soin.split('\n').map(l=>'• '+l).join('\n'));
-  if (reco) parts.push('**Recommandations**\n' + reco.split('\n').map(l=>'• '+l).join('\n'));
+  let resume = '';
+  if (_consultTab === 'simple') {
+    resume = (document.getElementById('c-texte-libre').value||'').trim();
+  } else {
+    const sym   = (document.getElementById('c-symptomes').value||'').trim();
+    const extra = (document.getElementById('c-materiel-input').value||'').trim();
+    const mat   = [..._materielSelectionne, ...(extra?[extra]:[])];
+    const soin  = (document.getElementById('c-soins').value||'').trim();
+    const reco  = (document.getElementById('c-reco').value||'').trim();
+    const parts = [];
+    if (sym)       parts.push('**Symptômes**\n'+sym.split('\n').filter(Boolean).map(l=>'• '+l).join('\n'));
+    if (mat.length) parts.push('**Matériaux**\n'+mat.map(l=>'• '+l).join('\n'));
+    if (soin)      parts.push('**Soins effectués**\n'+soin.split('\n').filter(Boolean).map(l=>'• '+l).join('\n'));
+    if (reco)      parts.push('**Recommandations**\n'+reco.split('\n').filter(Boolean).map(l=>'• '+l).join('\n'));
+    resume = parts.join('\n');
+  }
+  if (!resume) { document.getElementById('c-err').style.display='block'; return; }
   const btn = document.getElementById('c-save-btn');
   btn.disabled = true; btn.textContent = 'Enregistrement…';
   const profil = window._fbGetProfile ? await window._fbGetProfile().catch(()=>null) : null;
   const medecin = profil ? ((profil.prenom||'')+' '+(profil.nom||'')).trim() : '';
   await patientsAddSeance(pid, {
     date: new Date().toISOString().split('T')[0],
-    humeur: 'Soins / Urgence',
-    medecin,
-    resume: parts.join('\n'),
+    humeur: 'Soins / Urgence', medecin, resume,
     createdAt: new Date().toISOString(),
   });
+  btn.disabled = false; btn.textContent = 'Enregistrer';
   closeConsultModal();
   patient = await patientsGetById(pid);
   render();
@@ -573,24 +617,48 @@ load();
 
 <!-- Modal nouvelle consultation -->
 <div class="med-popup-overlay hidden" id="consult-overlay" onclick="if(event.target===this)closeConsultModal()">
-  <div class="med-popup" style="max-width:480px;text-align:left">
+  <div class="med-popup" style="max-width:520px;text-align:left">
     <button class="med-popup-close" onclick="closeConsultModal()">✕</button>
-    <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--parch);margin-bottom:1rem">Nouvelle consultation</div>
-    <div class="form-group" style="margin-bottom:.75rem">
-      <label class="form-label">Symptômes / blessures</label>
-      <textarea class="form-control" id="c-symptomes" rows="2" placeholder="Ex : plaie au bras gauche, fièvre…"></textarea>
+    <div style="font-family:'Playfair Display',serif;font-size:1rem;color:var(--parch);margin-bottom:.75rem">Nouvelle consultation</div>
+
+    <!-- Onglets -->
+    <div style="display:flex;gap:0;margin-bottom:1rem;border-bottom:1px solid var(--bdr)">
+      <button id="ctab-assistee" onclick="setConsultTab('assistee')" style="flex:1;padding:6px;background:none;border:none;border-bottom:2px solid var(--gold);color:var(--gold);font-family:'Cormorant Garamond',serif;font-size:.85rem;cursor:pointer">Assistée</button>
+      <button id="ctab-simple" onclick="setConsultTab('simple')" style="flex:1;padding:6px;background:none;border:none;border-bottom:2px solid transparent;color:var(--parch3);font-family:'Cormorant Garamond',serif;font-size:.85rem;cursor:pointer">Simple</button>
     </div>
-    <div class="form-group" style="margin-bottom:.75rem">
-      <label class="form-label">Soins effectués</label>
-      <textarea class="form-control" id="c-soins" rows="2" placeholder="Ex : nettoyage, points de suture…"></textarea>
+
+    <!-- Mode Assistée -->
+    <div id="c-mode-assistee">
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">Symptômes / blessures</label>
+        <textarea class="form-control" id="c-symptomes" rows="2" placeholder="Ex : plaie au bras gauche, fièvre…"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:.5rem">
+        <label class="form-label">Matériaux utilisés</label>
+        <div id="c-materiel-chips" style="display:flex;flex-wrap:wrap;gap:5px;margin-bottom:6px"></div>
+        <input class="form-control" id="c-materiel-input" placeholder="Ou tapez un matériau…" style="font-size:.8rem">
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">Soins effectués</label>
+        <textarea class="form-control" id="c-soins" rows="2" placeholder="Ex : nettoyage, points de suture x6…"></textarea>
+      </div>
+      <div class="form-group" style="margin-bottom:.75rem">
+        <label class="form-label">Recommandations</label>
+        <textarea class="form-control" id="c-reco" rows="2" placeholder="Ex : repos 3 jours, éviter l'alcool…"></textarea>
+      </div>
     </div>
-    <div class="form-group" style="margin-bottom:.75rem">
-      <label class="form-label">Recommandations</label>
-      <textarea class="form-control" id="c-reco" rows="2" placeholder="Ex : repos 3 jours, éviter l'alcool…"></textarea>
+
+    <!-- Mode Simple -->
+    <div id="c-mode-simple" style="display:none">
+      <div class="form-group">
+        <label class="form-label">Coller votre rapport</label>
+        <textarea class="form-control" id="c-texte-libre" rows="8" placeholder="Collez ici votre rapport de consultation…"></textarea>
+      </div>
     </div>
+
     <div style="display:flex;gap:8px;margin-top:1rem;flex-wrap:wrap">
-      <button class="btn btn-gold w-full" id="c-save-btn" onclick="saveConsult()">Enregistrer le soin</button>
-      <a id="c-visite-btn" href="#" class="btn w-full" style="text-align:center;border-color:var(--gold);color:var(--gold);text-decoration:none">📋 Passer la visite médicale</a>
+      <button class="btn btn-gold w-full" id="c-save-btn" onclick="saveConsult()">Enregistrer</button>
+      <a id="c-visite-btn" href="#" class="btn w-full" style="text-align:center;border-color:var(--gold);color:var(--gold);text-decoration:none;font-size:.82rem">📋 Passer la visite médicale</a>
     </div>
     <div id="c-err" style="color:#c07070;font-size:.8rem;margin-top:.5rem;display:none">Veuillez remplir au moins un champ.</div>
   </div>
