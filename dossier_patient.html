@@ -144,6 +144,14 @@
 .fpill-paper:hover,
 .fpill-paper.active { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-d); }
 
+/* Toggle vue */
+.view-toggle { display:flex; gap:4px; }
+.view-btn {
+  background: none; border: 1px solid var(--bdr); color: var(--parch3);
+  padding: 3px 8px; cursor: pointer; font-size: 0.78rem; transition: all .15s;
+}
+.view-btn.active { background: var(--gold-dim); color: var(--gold); border-color: var(--gold-d); }
+
 /* Grille des fiches patients */
 .folder-grid {
   flex: 1;
@@ -157,6 +165,31 @@
 }
 .folder-grid::-webkit-scrollbar { width: 4px; }
 .folder-grid::-webkit-scrollbar-thumb { background: var(--gold-d); }
+
+/* Vue liste */
+.folder-grid.view-list {
+  display: flex; flex-direction: column; gap: 1px;
+  grid-template-columns: unset;
+}
+.folder-grid.view-list .fiche {
+  display: flex; align-items: center; gap: 12px;
+  padding: 7px 12px;
+}
+.folder-grid.view-list .fiche-head { margin-bottom: 0; flex-shrink: 0; }
+.folder-grid.view-list .fiche-body { flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px; }
+.folder-grid.view-list .fiche-name { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.folder-grid.view-list .fiche-diag { margin-bottom: 0; flex: 1; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.folder-grid.view-list .fiche-foot { border-top: none; padding-top: 0; flex-shrink: 0; }
+
+/* Vue grandes miniatures */
+.folder-grid.view-big {
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 10px;
+}
+.folder-grid.view-big .fiche-av { width: 100%; height: 130px; object-fit: cover; border: none; }
+.folder-grid.view-big .fiche-av-ph { width: 100%; height: 130px; font-size: 1.5rem; border: none; }
+.folder-grid.view-big .fiche-head { flex-direction: column; align-items: flex-start; gap: 4px; }
+.folder-grid.view-big .fiche-diag { display: none; }
 
 /* Fiche patient individuelle */
 .fiche {
@@ -354,6 +387,11 @@ nav.navbar {
         <button class="fpill-paper" onclick="setFilter(this,'stable')">Stable</button>
         <button class="fpill-paper" onclick="setFilter(this,'suivi')">Suivi</button>
         <button class="fpill-paper" onclick="setFilter(this,'grave')">Grave</button>
+        <div class="view-toggle" style="margin-left:auto">
+          <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Grille">▦</button>
+          <button class="view-btn" id="vbtn-big" onclick="setView('big')" title="Grandes miniatures">⊞</button>
+          <button class="view-btn" id="vbtn-list" onclick="setView('list')" title="Liste">☰</button>
+        </div>
       </div>
       <div class="folder-grid" id="grid-pc"></div>
       <div class="folder-stat" id="stat-pc">Chargement…</div>
@@ -457,12 +495,17 @@ window.renderAll = function(){
           ? `<img class="fiche-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
           : `<div class="fiche-av-ph">${ini}</div>`;
         const nb = (p.seances||[]).length;
+        const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
+        const meta = metaParts.join(' · ');
+        const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
         return `<a class="fiche fade-up" href="patient.html?id=${p.id}">
           <div class="fiche-head">${av}<div>
-            <span class="fiche-name">${p.prenom} ${p.nom}</span>
-            <span class="fiche-meta">${p.age?p.age+' ans · ':''}${p.origine||'—'}</span>
+            <span class="fiche-name">${nomAff}</span>
+            ${meta?`<span class="fiche-meta">${meta}</span>`:''}
           </div></div>
-          ${p.diagnostic?`<div class="fiche-diag">${p.diagnostic}</div>`:''}
+          <div class="fiche-body">
+            ${p.diagnostic?`<div class="fiche-diag">${p.diagnostic}</div>`:''}
+          </div>
           <div class="fiche-foot">
             <span class="badge-p ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
             <span class="fiche-seances">${nb} séance${nb!==1?'s':''}</span>
@@ -504,6 +547,19 @@ window.setFilter = function(el, s){
   document.querySelectorAll('.fpill-paper, .fpill').forEach(b=>b.classList.remove('active'));
   el.classList.add('active'); activeS = s; renderAll();
 };
+
+let currentView = localStorage.getItem('patView') || 'grid';
+window.setView = function(v){
+  currentView = v;
+  localStorage.setItem('patView', v);
+  const grid = document.getElementById('grid-pc');
+  grid.classList.remove('view-list','view-big');
+  if(v !== 'grid') grid.classList.add('view-'+v);
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('vbtn-'+v)?.classList.add('active');
+};
+// Applique la vue sauvegardée au chargement
+window.addEventListener('DOMContentLoaded', ()=>{ setView(currentView); });
 window.openModal  = ()=>{ document.getElementById('modal').classList.remove('hidden'); document.getElementById('f-nom').focus(); };
 window.closeModal = ()=>{
   document.getElementById('modal').classList.add('hidden');
