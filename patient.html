@@ -129,6 +129,48 @@
 .seance-medecin {
   font-family: 'Cormorant Garamond', serif;
   font-size: 0.7rem; color: var(--parch4); font-style: italic;
+  cursor: pointer; border-bottom: 1px dotted var(--parch4);
+  background: none; border-top: none; border-left: none; border-right: none; padding: 0;
+}
+.seance-medecin:hover { color: var(--gold); border-bottom-color: var(--gold); }
+
+/* Popup profil médecin */
+.med-popup-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center;
+}
+.med-popup-overlay.hidden { display: none; }
+.med-popup {
+  background: var(--ink2); border: 1px solid var(--bdr2);
+  padding: 24px 28px; min-width: 260px; max-width: 340px; width: 90%;
+  position: relative; text-align: center;
+}
+.med-popup-close {
+  position: absolute; top: 10px; right: 12px;
+  background: none; border: none; color: var(--parch3); cursor: pointer; font-size: 1rem;
+}
+.med-popup-photo {
+  width: 80px; height: 80px; object-fit: cover;
+  border: 2px solid var(--gold-d); margin: 0 auto 12px; display: block;
+}
+.med-popup-photo-ph {
+  width: 80px; height: 80px; display:flex; align-items:center; justify-content:center;
+  background: var(--ink3); border: 2px solid var(--bdr); margin: 0 auto 12px;
+  font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--parch2); font-style: italic;
+}
+.med-popup-name {
+  font-family: 'Playfair Display', serif; font-size: 1.1rem;
+  color: var(--parch); margin-bottom: 4px;
+}
+.med-popup-role {
+  font-family: 'Cormorant Garamond', serif; font-size: 0.78rem;
+  color: var(--gold); letter-spacing: .08em; text-transform: uppercase; margin-bottom: 10px;
+}
+.med-popup-badges { display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.med-popup-badge {
+  font-size: 0.72rem; padding: 2px 8px;
+  border: 1px solid var(--bdr); color: var(--parch3);
+  font-family: 'Cormorant Garamond', serif;
 }
 .seance-type {
   font-family: 'Cormorant Garamond', serif;
@@ -289,6 +331,29 @@ function findMedecin(nomRp) {
   return _medecinsList.find(m => normName((m.prenom||'')+' '+(m.nom||'')) === n || normName((m.nom||'')+' '+(m.prenom||'')) === n) || null;
 }
 
+window.openMedPopup = function(uid) {
+  const med = _medecinsList.find(m => m.uid === uid);
+  if (!med) return;
+  const ini = (med.prenom?.[0]||'')+(med.nom?.[0]||'');
+  const photo = med.photo
+    ? `<img class="med-popup-photo" src="${med.photo}" alt="" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"><div class="med-popup-photo-ph" style="display:none">${ini}</div>`
+    : `<div class="med-popup-photo-ph">${ini}</div>`;
+  const ROLES = { stagiaire:'Stagiaire', apprenti:'Apprenti médecin', campagne:'Médecin de campagne', confirme:'Médecin confirmé' };
+  const role = ROLES[med.role] || med.role || 'Médecin';
+  const badges = (med.badges||[]).map(b=>`<span class="med-popup-badge">${b.icon||''} ${b.label||''}</span>`).join('');
+  document.getElementById('med-popup-body').innerHTML = `
+    ${photo}
+    <div class="med-popup-name">Dr. ${med.prenom||''} ${med.nom||''}</div>
+    <div class="med-popup-role">${role}</div>
+    ${badges?`<div class="med-popup-badges">${badges}</div>`:''}
+  `;
+  document.getElementById('med-popup-overlay').classList.remove('hidden');
+};
+window.closeMedPopup = function(e) {
+  if (e && e.target !== document.getElementById('med-popup-overlay')) return;
+  document.getElementById('med-popup-overlay').classList.add('hidden');
+};
+
 function formatResume(text) {
   return text
     .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
@@ -378,7 +443,7 @@ function render(){
         <div class="seance-card-top">
           <span class="seance-date">${formatDate(s.date)}</span>
           ${i===0?'<span style="font-family:\'Cormorant Garamond\',serif;font-size:.62rem;color:var(--gold);letter-spacing:.1em">DERNIÈRE</span>':''}
-          ${s.medecin ? (() => { const med = findMedecin(s.medecin); return med ? `<a class="seance-medecin" href="medecin.html?id=${med.uid}" style="text-decoration:none">Dr. ${s.medecin}</a>` : `<span class="seance-medecin">Dr. ${s.medecin}</span>`; })() : ''}
+          ${s.medecin ? (() => { const med = findMedecin(s.medecin); return med ? `<button class="seance-medecin" onclick="openMedPopup('${med.uid}')">Dr. ${s.medecin}</button>` : `<span class="seance-medecin">Dr. ${s.medecin}</span>`; })() : ''}
           ${s.humeur ? `<span class="seance-type">${s.humeur}</span>` : ''}
         </div>
         <div class="seance-text">${formatResume(s.resume||'—')}</div>
@@ -443,6 +508,14 @@ window.deletePatient = async function(){
 
 load();
 </script>
+
+<!-- Popup profil médecin -->
+<div class="med-popup-overlay hidden" id="med-popup-overlay" onclick="closeMedPopup(event)">
+  <div class="med-popup" id="med-popup">
+    <button class="med-popup-close" onclick="closeMedPopup()">✕</button>
+    <div id="med-popup-body"></div>
+  </div>
+</div>
 
 <script type="module" src="js/auth-firebase.js"></script>
 <script src="js/guard.js" defer></script>
