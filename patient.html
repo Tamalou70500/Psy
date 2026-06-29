@@ -460,12 +460,16 @@ window.closeMedPopup = function(e) {
 };
 
 function formatResume(text) {
-  return text
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .split('\n')
-    .map(l => l.trim())
-    .filter(l => l)
-    .join('<br>');
+  if (!text) return '—';
+  // Texte structuré (contient **...**) → titres gras + puces
+  if (text.includes('**')) {
+    return text
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .split('\n').map(l=>l.trim()).filter(l=>l).join('<br>');
+  }
+  // Texte libre → préservation des sauts de ligne, pas de transformation
+  const esc = text.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return `<span style="white-space:pre-line">${esc}</span>`;
 }
 
 const pid = new URLSearchParams(window.location.search).get('id');
