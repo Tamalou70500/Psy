@@ -279,8 +279,9 @@ nav.navbar {
     <span>Modifier le dossier</span>
     <button class="btn btn-sm" onclick="closeEdit()">✕</button>
   </div>
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.75rem">
+  <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:0.5rem;align-items:end">
     <div class="form-group"><label class="form-label">Nom</label><input class="form-control" id="e-nom"></div>
+    <button type="button" title="Inverser Nom et Prénom" onclick="const n=document.getElementById('e-nom').value,p=document.getElementById('e-prenom').value;document.getElementById('e-nom').value=p;document.getElementById('e-prenom').value=n;" style="margin-bottom:2px;padding:6px 8px;background:none;border:1px solid var(--bdr);color:var(--gold);cursor:pointer;font-size:1rem;line-height:1">⇄</button>
     <div class="form-group"><label class="form-label">Prénom</label><input class="form-control" id="e-prenom"></div>
     <div class="form-group"><label class="form-label">Âge</label><input class="form-control" id="e-age"></div>
     <div class="form-group"><label class="form-label">Sexe</label>
