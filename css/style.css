@@ -687,8 +687,7 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .cours-layout {
   display: grid;
   grid-template-columns: 280px 1fr;
-  height: calc(100vh - 54px);
-  overflow: hidden;
+  min-height: calc(100vh - 54px);
 }
 
 /* ── SIDEBAR ── */
@@ -753,7 +752,7 @@ hr.divider { border: none; border-top: 1px solid var(--bdr); margin: 1.25rem 0; 
 .cours-link .check { font-size: 0.65rem; margin-left: auto; color: var(--gold-d); }
 
 /* ── CONTENU ── */
-.cours-main { padding: 2.5rem 3rem; max-width: 820px; height: 100%; overflow-y: auto; }
+.cours-main { padding: 2.5rem 3rem; max-width: 820px; }
 
 .cours-header {
   margin-bottom: 2.5rem;
