@@ -9,60 +9,89 @@
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{margin:0;font-family:Georgia,'Times New Roman',serif;color:var(--ink);background:#160f0a;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:40px 20px}
+body:before{content:"";position:fixed;inset:0;pointer-events:none;background:radial-gradient(circle at 50% 30%,rgba(199,154,82,.04),transparent 65%)}
 
-body:before{content:"";position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(circle at 50% 30%,rgba(199,154,82,.04),transparent 65%)}
-
-.card{position:relative;z-index:1;background:linear-gradient(135deg,rgba(234,216,182,.97),rgba(246,237,214,.95));border:1px solid var(--line);box-shadow:0 28px 70px rgba(0,0,0,.5);max-width:560px;width:100%;padding:48px 44px;text-align:center}
-
+.card{position:relative;background:linear-gradient(135deg,rgba(234,216,182,.97),rgba(246,237,214,.95));border:1px solid var(--line);box-shadow:0 28px 70px rgba(0,0,0,.5);max-width:600px;width:100%;padding:48px 44px;text-align:center}
 .card:before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--red),var(--gold),var(--red))}
 
 .seal{width:80px;height:80px;border:1.5px solid var(--gold);border-radius:50%;display:grid;place-items:center;background:rgba(26,16,10,.08);margin:0 auto 24px;box-shadow:0 0 0 8px rgba(199,154,82,.07)}
-
 .seal img{width:54px;height:54px;object-fit:contain}
 
 .kicker{letter-spacing:.22em;text-transform:uppercase;font-size:.7rem;color:var(--gold);font-weight:700;margin-bottom:10px}
-
 h1{font-size:2rem;line-height:1.1;margin:0 0 12px;color:#2a180e;letter-spacing:-.03em}
+.desc{font-size:.95rem;line-height:1.7;color:var(--muted);margin-bottom:28px}
 
-.desc{font-size:.95rem;line-height:1.7;color:var(--muted);margin-bottom:32px}
-
-.btn-dl{display:inline-flex;align-items:center;gap:12px;padding:16px 32px;background:linear-gradient(135deg,#bf8235,#6d3a1c);color:#fff5dc;font-size:1rem;font-weight:700;letter-spacing:.04em;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.25);text-decoration:none;border:none;cursor:pointer;transition:all .2s}
+.btn-dl{display:inline-flex;align-items:center;gap:12px;padding:16px 32px;background:linear-gradient(135deg,#bf8235,#6d3a1c);color:#fff5dc;font-size:1rem;font-weight:700;letter-spacing:.04em;border-radius:999px;box-shadow:0 10px 30px rgba(0,0,0,.25);text-decoration:none;transition:all .2s}
 .btn-dl:hover{background:linear-gradient(135deg,#d4933f,#7d4522);box-shadow:0 14px 40px rgba(0,0,0,.35);transform:translateY(-1px)}
 .btn-dl svg{width:18px;height:18px;fill:currentColor}
 
-.version{font-size:.75rem;color:var(--muted);margin-top:14px;letter-spacing:.08em}
+.version{font-size:.75rem;color:var(--muted);margin-top:12px;letter-spacing:.08em}
 
-.features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:32px 0;text-align:left}
+/* Features */
+.features{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:28px 0;text-align:left}
 .feat{background:rgba(255,249,232,.6);border:1px solid var(--line);padding:12px 14px;font-size:.82rem;color:#5c4633;line-height:1.5}
 .feat b{display:block;color:#3a2012;margin-bottom:2px;font-size:.84rem}
 
-.back{margin-top:28px;font-size:.8rem;color:var(--muted);letter-spacing:.08em}
+/* Tutoriel */
+.tuto{margin:28px 0 0;text-align:left;border-top:1px solid var(--line);padding-top:24px}
+.tuto h2{font-size:1rem;color:#2a180e;letter-spacing:.08em;text-transform:uppercase;margin:0 0 16px;font-size:.8rem}
+.steps{display:flex;flex-direction:column;gap:10px}
+.step{display:flex;gap:12px;align-items:flex-start}
+.step-num{width:24px;height:24px;border-radius:50%;background:#5b331d;color:#f6e5bf;font-size:.75rem;font-weight:700;display:grid;place-items:center;flex-shrink:0;margin-top:1px}
+.step-text{font-size:.83rem;color:#5c4633;line-height:1.55}
+.step-text b{color:#3a2012}
+
+.warning{background:rgba(123,47,33,.07);border:1px solid rgba(123,47,33,.2);padding:10px 14px;font-size:.78rem;color:#7b2f21;margin-top:20px;line-height:1.6;text-align:left}
+
+.back{margin-top:24px;font-size:.8rem;color:var(--muted);letter-spacing:.08em}
 .back a{color:var(--gold);text-decoration:none}
 .back a:hover{text-decoration:underline}
-
-.warning{background:rgba(123,47,33,.07);border:1px solid rgba(123,47,33,.2);padding:10px 14px;font-size:.78rem;color:#7b2f21;margin-top:16px;line-height:1.6;text-align:left}
 </style>
 </head>
 <body>
-
 <div class="card">
   <div class="seal"><img src="images/logo.png" onerror="this.outerHTML='⚕'" alt="Cabinet"></div>
   <div class="kicker">Cabinet Médical · Reckless RP 1904</div>
   <h1>Overlay de streaming</h1>
-  <p class="desc">Consultez les dossiers patients directement par-dessus RedM. Votre push-to-talk reste actif en permanence.</p>
+  <p class="desc">Consultez les dossiers patients directement par-dessus RedM sans jamais quitter le jeu.</p>
 
-  <a class="btn-dl" id="btn-download" href="https://github.com/Tamalou70500/Psy/releases/latest/download/Cabinet.medical.Setup.1.0.0.exe">
+  <a class="btn-dl" href="https://github.com/Tamalou70500/Psy/releases/latest/download/Cabinet.Medical.Setup.1.0.1.exe">
     <svg viewBox="0 0 24 24"><path d="M12 16l-5-5h3V4h4v7h3l-5 5zm-7 2h14v2H5v-2z"/></svg>
-    Télécharger — v1.0.0
+    Télécharger — v1.0.1
   </a>
-
-  <div class="version">Windows 64-bit · ~120 Mo · Droits administrateur requis</div>
+  <div class="version">Windows 64-bit · Droits administrateur requis</div>
 
   <div class="features">
     <div class="feat"><b>⚕ Dossiers patients</b>Accès complet à l'annuaire depuis le jeu</div>
-    <div class="feat"><b>🎙 Push-to-talk</b>Votre touche RP reste fonctionnelle</div>
-    <div class="feat"><b>⚙ Configurable</b>Touches, opacité, position libres</div>
+    <div class="feat"><b>🎙 Push-to-talk</b>Parlez dans RedM sans fermer le dossier</div>
+    <div class="feat"><b>⚙ Configurable</b>Touche PTT, opacité, position libres</div>
     <div class="feat"><b>↑ Mise à jour auto</b>Nouvelles versions installées silencieusement</div>
+  </div>
+
+  <div class="tuto">
+    <h2>Comment utiliser l'overlay</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-num">1</div>
+        <div class="step-text">Installez l'application et lancez-la. Une <b>icône caducée dorée</b> apparaît en haut à droite de votre écran — elle reste visible en permanence par-dessus le jeu.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">2</div>
+        <div class="step-text">Appuyez sur <b>F5</b> (ou cliquez sur l'icône) pour afficher ou masquer le dossier médical. La page ne se recharge jamais — vous reprenez exactement où vous étiez.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">3</div>
+        <div class="step-text">Connectez-vous avec votre compte PSY 1904. Naviguez dans les dossiers, remplissez vos consultations au clavier normalement.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">4</div>
+        <div class="step-text">Pour <b>parler dans le jeu</b> : appuyez sur votre bouton push-to-talk habituel. L'icône caducée <b>pulse en vert</b> pour confirmer que le micro est actif.</div>
+      </div>
+      <div class="step">
+        <div class="step-num">5</div>
+        <div class="step-text">Dans <b>⚙ Paramètres</b> de l'overlay, vous pouvez changer la touche d'affichage, configurer votre bouton PTT et régler l'opacité de la fenêtre.</div>
+      </div>
+    </div>
   </div>
 
   <div class="warning">
@@ -71,6 +100,5 @@ h1{font-size:2rem;line-height:1.1;margin:0 0 12px;color:#2a180e;letter-spacing:-
 
   <p class="back">← <a href="login.html">Retour au cabinet</a></p>
 </div>
-
 </body>
 </html>
