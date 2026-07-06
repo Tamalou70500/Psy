@@ -250,7 +250,7 @@ nav.navbar {
     </div>
     <div class="pat-actions">
       <a href="dossier_patient.html" class="btn btn-sm">← Dossiers</a>
-      <a id="btn-visite" href="#" class="btn btn-sm" style="border-color:var(--gold);color:var(--gold)">📋 Visite médicale</a>
+
       <button class="btn btn-sm btn-gold" onclick="window.openEdit()">Modifier</button>
     </div>
   </div>
@@ -529,8 +529,6 @@ function render(){
     (p.age ? `<span>· ${p.age} ans</span>` : '')+
     (p.profession ? `<span>· ${p.profession}</span>` : '')+
     (p.telegram ? `<span>· 📡 ${p.telegram}</span>` : '');
-  document.getElementById('btn-visite').href = `visite.html?id=${pid}&type=aptitude`;
-  document.getElementById('c-visite-btn') && (document.getElementById('c-visite-btn').href = `visite.html?id=${pid}&type=aptitude`);
 
   // Colonne gauche — infos
   const f = (label, val) => val

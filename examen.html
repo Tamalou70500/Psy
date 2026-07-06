@@ -1734,7 +1734,7 @@ function showResult(){
   if(passed){
     var nextIdx=EXAMENS.findIndex(function(e){return e.id===examState.examId;})+1;
     if(nextIdx<EXAMENS.length) html+='<button class="btn btn-gold" onclick="startExamen(\''+EXAMENS[nextIdx].id+'\')">Niveau suivant →</button>';
-    else html+='<a href="specialites.html" class="btn btn-gold">Choisir ma spécialisation →</a>';
+    else html+='<a href="cours.html" class="btn btn-gold">Choisir ma spécialisation →</a>';
   }
   html+='</div>';
 
