@@ -395,26 +395,12 @@ nav.navbar {
           <span class="folder-eyebrow">Cabinet · Sunset, Texas · 1904</span>
           <div class="folder-title">Dossiers des patients</div>
         </div>
-        <button class="folder-btn" onclick="openModal()">+ Nouveau patient</button>
       </div>
-      <div class="folder-toolbar">
-        <input class="folder-search" type="text" id="search-pc" placeholder="Nom, diagnostic, origine…" oninput="renderAll()">
-        <button class="fpill-paper active" onclick="setFilter(this,'all')">Tous</button>
-        <button class="fpill-paper" onclick="setFilter(this,'stable')">Stable</button>
-        <button class="fpill-paper" onclick="setFilter(this,'suivi')">Suivi</button>
-        <button class="fpill-paper" onclick="setFilter(this,'grave')">Grave</button>
-        <div class="view-toggle">
-          <button class="view-btn active" id="sbtn-alpha" onclick="setSort('alpha')" title="Ordre alphabétique">A→Z</button>
-          <button class="view-btn" id="sbtn-consult" onclick="setSort('consult')" title="Dernière consultation">🕐</button>
-        </div>
-        <div class="view-toggle" style="margin-left:auto">
-          <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Grille">▦</button>
-          <button class="view-btn" id="vbtn-big" onclick="setView('big')" title="Grandes miniatures">⊞</button>
-          <button class="view-btn" id="vbtn-list" onclick="setView('list')" title="Liste">☰</button>
-        </div>
+      <div id="empty-notice" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;text-align:center;gap:1rem">
+        <div style="font-size:2.5rem;opacity:0.35">📂</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:var(--parch)">Aucun dossier disponible</div>
+        <div style="font-family:'EB Garamond',serif;font-size:0.9rem;color:var(--parch3);line-height:1.7;max-width:360px">Les dossiers patients sont gérés en interne par l'administration du cabinet. Contactez votre chef de dispensaire pour toute information.</div>
       </div>
-      <div class="folder-grid" id="grid-pc"></div>
-      <div class="folder-stat" id="stat-pc">Chargement…</div>
     </div>
   </div>
 </div>
@@ -425,233 +411,12 @@ nav.navbar {
     <span class="mob-band-eye">Cabinet · Texas · 1904</span>
     <div class="mob-band-title">Dossiers</div>
   </div>
-  <div class="mob-toolbar">
-    <input class="mob-search form-control" type="text" id="search-mob" placeholder="Nom, diagnostic…" oninput="renderAll()">
-    <div class="mob-filters">
-      <button class="fpill active" onclick="setFilter(this,'all')">Tous</button>
-      <button class="fpill" onclick="setFilter(this,'stable')">Stable</button>
-      <button class="fpill" onclick="setFilter(this,'suivi')">Suivi</button>
-      <button class="fpill" onclick="setFilter(this,'grave')">Grave</button>
-    </div>
-  </div>
-  <div class="mob-stat" id="stat-mob">Chargement…</div>
-  <div class="mob-grid" id="grid-mob"></div>
-  <button class="mob-add" onclick="openModal()">+</button>
-</div>
-
-<!-- MODAL nouveau dossier -->
-<div class="modal-overlay hidden" id="modal">
-<div class="modal">
-  <div class="modal-title">
-    <span>Nouveau dossier patient</span>
-    <button class="btn btn-sm" onclick="closeModal()">✕</button>
-  </div>
-  <div class="form-row-2">
-    <div class="form-group"><label class="form-label">Nom *</label><input class="form-control" id="f-nom" placeholder="Dalton"></div>
-    <div class="form-group"><label class="form-label">Prénom *</label><input class="form-control" id="f-prenom" placeholder="Jack"></div>
-  </div>
-  <div class="form-row-2">
-    <div class="form-group"><label class="form-label">Âge</label><input class="form-control" type="number" id="f-age" placeholder="35"></div>
-    <div class="form-group"><label class="form-label">Sexe</label>
-      <select class="form-control" id="f-sexe"><option value="">—</option><option value="M">Masculin</option><option value="F">Féminin</option></select>
-    </div>
-  </div>
-  <div class="form-row-2">
-    <div class="form-group"><label class="form-label">Origine</label><input class="form-control" id="f-origine" placeholder="Blackwater"></div>
-    <div class="form-group"><label class="form-label">Profession</label><input class="form-control" id="f-profession" placeholder="Éleveur"></div>
-  </div>
-  <div class="form-group"><label class="form-label">Statut clinique</label>
-    <select class="form-control" id="f-statut"><option value="suivi">En suivi</option><option value="stable">Stable</option><option value="grave">Grave</option></select>
-  </div>
-  <div class="form-group"><label class="form-label">Diagnostic initial</label><input class="form-control" id="f-diagnostic" placeholder="Mélancolie, neurasthénie…"></div>
-  <div class="form-group">
-    <label class="form-label">Portrait du patient (URL)</label>
-    <div class="photo-preview-wrap">
-      <div class="photo-ph" id="pp">✦</div>
-      <img class="photo-thumb" id="pi" alt="">
-    </div>
-    <input class="form-control mt-1" id="f-photo" placeholder="https://cdn.discordapp.com/…" oninput="previewUrl(this,'pi','pp')">
-    <p class="url-hint">Lien direct vers l'image (Discord CDN, Imgur, etc.)</p>
-  </div>
-  <div id="merr" class="alert alert-error hidden">Nom et prénom requis.</div>
-  <div style="display:flex;gap:8px;margin-top:1rem">
-    <button class="btn w-full" onclick="closeModal()">Annuler</button>
-    <button class="btn btn-gold w-full" id="cbtn" onclick="createPatient()">Créer le dossier</button>
+  <div style="padding:2.5rem 1.5rem;text-align:center">
+    <div style="font-size:2rem;opacity:0.3;margin-bottom:1rem">📂</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.05rem;font-style:italic;color:var(--parch);margin-bottom:.5rem">Aucun dossier disponible</div>
+    <div style="font-family:'EB Garamond',serif;font-size:0.9rem;color:var(--parch3);line-height:1.7">Les dossiers sont gérés par l'administration. Contactez votre chef de dispensaire.</div>
   </div>
 </div>
-</div>
-
-<script type="module">
-import { patientsLoad, patientsCreate } from './js/patients.js';
-
-const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave' };
-const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave' };
-const PAGE_SIZE = { grid:12, big:8, list:15 };
-let all = [], activeS = 'all', currentPage = 0, filteredList = [];
-
-async function loadAll(){ all = await patientsLoad(); renderAll(); }
-window.loadAll = loadAll;
-
-function ficheCardHtml(p) {
-  const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
-  const av = p.photo
-    ? `<img class="fiche-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
-    : `<div class="fiche-av-ph">${ini}</div>`;
-  const nb = (p.seances||[]).length;
-  const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
-  const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
-  return `<a class="fiche fade-up" href="patient.html?id=${p.id}">
-    <div class="fiche-head">${av}<div>
-      <span class="fiche-name">${nomAff}</span>
-      ${metaParts.length?`<span class="fiche-meta">${metaParts.join(' · ')}</span>`:''}
-    </div></div>
-    <div class="fiche-body">
-      ${p.diagnostic?`<div class="fiche-diag">${p.diagnostic}</div>`:''}
-    </div>
-    <div class="fiche-foot">
-      <span class="badge-p ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
-      <span class="fiche-seances">${nb} séance${nb!==1?'s':''}</span>
-    </div>
-  </a>`;
-}
-
-function renderPagination(total, page, perPage) {
-  const pages = Math.ceil(total / perPage);
-  if (pages <= 1) return '';
-  const prev = page > 0 ? `<button class="page-btn" onclick="goPage(${page-1})">‹ Préc.</button>` : `<button class="page-btn" disabled>‹ Préc.</button>`;
-  const next = page < pages-1 ? `<button class="page-btn" onclick="goPage(${page+1})">Suiv. ›</button>` : `<button class="page-btn" disabled>Suiv. ›</button>`;
-  const info = `<span class="page-info">Page ${page+1} / ${pages}</span>`;
-  return `<div class="pagination">${prev}${info}${next}</div>`;
-}
-
-window.goPage = function(p){ currentPage = p; renderGrid(); };
-
-function renderGrid() {
-  const gpc = document.getElementById('grid-pc');
-  if (!gpc) return;
-  const perPage = PAGE_SIZE[currentView] || 12;
-  const total = filteredList.length;
-  const start = currentPage * perPage;
-  const page = filteredList.slice(start, start + perPage);
-  const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
-  if (!total) { gpc.innerHTML = empty; document.getElementById('stat-pc').textContent = '0 dossier'; return; }
-  gpc.innerHTML = page.map(ficheCardHtml).join('');
-  document.getElementById('stat-pc').textContent =
-    `${total} dossier${total!==1?'s':''} — page ${currentPage+1}/${Math.ceil(total/perPage)}`;
-  // Pagination après la grille
-  let pag = document.getElementById('pagination-pc');
-  if (!pag) { pag = document.createElement('div'); pag.id='pagination-pc'; gpc.parentNode.insertBefore(pag, gpc.nextSibling); }
-  pag.innerHTML = renderPagination(total, currentPage, perPage);
-}
-
-window.renderAll = function(){
-  const q = (document.getElementById('search-pc')?.value || '').toLowerCase();
-  filteredList = [...all];
-  if(q) filteredList = filteredList.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
-  if(activeS !== 'all') filteredList = filteredList.filter(p=>p.statut === activeS);
-  if(currentSort === 'alpha') {
-    filteredList.sort((a,b)=>(a.nom||a.prenom||'').localeCompare(b.nom||b.prenom||'', 'fr'));
-  } else {
-    filteredList.sort((a,b)=>{
-      const da = Math.max(...(a.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(a.createdAt||0).getTime());
-      const db2 = Math.max(...(b.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(b.createdAt||0).getTime());
-      return db2 - da;
-    });
-  }
-  currentPage = 0;
-  renderGrid();
-
-  /* Version Mobile — pas de pagination, liste complète */
-  const gmob = document.getElementById('grid-mob');
-  if(gmob) {
-    const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
-    if(!filteredList.length){ gmob.innerHTML = empty; return; }
-    gmob.innerHTML = filteredList.map(p=>{
-      const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
-      const av = p.photo
-        ? `<img class="mob-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
-        : `<div class="mob-av">${ini}</div>`;
-      const nb = (p.seances||[]).length;
-      const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
-      const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
-      return `<a class="mob-fiche" href="patient.html?id=${p.id}">
-        ${av}
-        <div class="mob-info">
-          <span class="mob-name">${nomAff}</span>
-          ${metaParts.length?`<span class="mob-meta">${metaParts.join(' · ')}</span>`:''}
-          ${p.diagnostic?`<div class="mob-diag">${p.diagnostic}</div>`:''}
-        </div>
-        <div class="mob-right">
-          <span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
-          <span class="mob-meta">${nb} séance${nb!==1?'s':''}</span>
-        </div>
-      </a>`;
-    }).join('');
-  }
-};
-
-window.setFilter = function(el, s){
-  document.querySelectorAll('.fpill-paper, .fpill').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active'); activeS = s; renderAll();
-};
-
-let currentView = localStorage.getItem('patView') || 'grid';
-window.setView = function(v){
-  currentView = v;
-  localStorage.setItem('patView', v);
-  const grid = document.getElementById('grid-pc');
-  grid.classList.remove('view-list','view-big');
-  if(v !== 'grid') grid.classList.add('view-'+v);
-  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
-  document.getElementById('vbtn-'+v)?.classList.add('active');
-  currentPage = 0;
-  renderGrid();
-};
-window.addEventListener('DOMContentLoaded', ()=>{ setView(currentView); setSort(currentSort, true); });
-
-let currentSort = localStorage.getItem('patSort') || 'alpha';
-window.setSort = function(s, init=false){
-  currentSort = s;
-  localStorage.setItem('patSort', s);
-  document.querySelectorAll('[id^="sbtn-"]').forEach(b=>b.classList.remove('active'));
-  document.getElementById('sbtn-'+s)?.classList.add('active');
-  if(!init) renderAll();
-};
-window.openModal  = ()=>{ document.getElementById('modal').classList.remove('hidden'); document.getElementById('f-nom').focus(); };
-window.closeModal = ()=>{
-  document.getElementById('modal').classList.add('hidden');
-  document.getElementById('merr').classList.add('hidden');
-  ['f-nom','f-prenom','f-age','f-origine','f-profession','f-diagnostic','f-photo'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('f-sexe').value=''; document.getElementById('f-statut').value='suivi';
-  document.getElementById('pi').style.display='none'; document.getElementById('pp').style.display='flex';
-};
-window.previewUrl = function(input, imgId, phId){
-  const url = input.value.trim();
-  const img = document.getElementById(imgId);
-  const ph  = document.getElementById(phId);
-  if(url){ img.src=url; img.style.display='block'; ph.style.display='none'; }
-  else   { img.style.display='none'; ph.style.display='flex'; }
-};
-window.createPatient = async function(){
-  const nom=document.getElementById('f-nom').value.trim();
-  const prenom=document.getElementById('f-prenom').value.trim();
-  if(!nom||!prenom){ document.getElementById('merr').classList.remove('hidden'); return; }
-  const btn=document.getElementById('cbtn'); btn.textContent='Création…'; btn.disabled=true;
-  const p = await patientsCreate({
-    nom, prenom,
-    age:        document.getElementById('f-age').value,
-    sexe:       document.getElementById('f-sexe').value,
-    origine:    document.getElementById('f-origine').value.trim(),
-    profession: document.getElementById('f-profession').value.trim(),
-    statut:     document.getElementById('f-statut').value,
-    diagnostic: document.getElementById('f-diagnostic').value.trim(),
-    photo:      document.getElementById('f-photo').value.trim()
-  });
-  closeModal(); window.location.href='patient.html?id='+p.id;
-};
-
-// loadAll() déclenché par guardPage après vérification accesPatients
-</script>
 
 <script type="module" src="js/auth-firebase.js"></script>
 <script src="js/guard.js" defer></script>
@@ -662,12 +427,11 @@ document.addEventListener('DOMContentLoaded', function(){
   document.documentElement.setAttribute('data-theme', t);
   document.documentElement.setAttribute('data-font', f);
 });
-// Lancer le chargement seulement après vérification d'accès
 window.addEventListener('load', function(){
   var waitG = setInterval(function(){
     if(!window.guardPage) return;
     clearInterval(waitG);
-    guardPage({ requirePatients:true, onReady: function(){ loadAll(); } });
+    guardPage({ onReady: function(){} });
   }, 80);
 });
 </script>

@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin — Dossiers patients · Cabinet 1904</title>
+<script>(function(){ var t=localStorage.getItem('psy_theme')||'dark'; var f=localStorage.getItem('psy_font')||'victorien'; document.documentElement.setAttribute('data-theme',t); document.documentElement.setAttribute('data-font',f); })();</script>
+<link rel="stylesheet" href="css/style.css">
+<style>
+.desk-scene {
+  position: fixed; inset: 0;
+  background: url('images/desk/Le fond principal .png') center center / cover no-repeat;
+  z-index: 0;
+}
+.desk-scene::after { content: ''; position: absolute; inset: 0; background: rgba(10,6,2,0.38); }
+
+.desk-content {
+  position: fixed; inset: 0; z-index: 3;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  pointer-events: none; padding-top: 54px;
+}
+
+/* Bandeau admin */
+.admin-banner {
+  position: fixed; top: 50px; left: 0; right: 0; z-index: 9;
+  background: rgba(123,47,33,0.92); backdrop-filter: blur(6px);
+  border-bottom: 1px solid rgba(200,80,40,0.5);
+  padding: 4px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  font-family: 'Cormorant Garamond', serif; font-size: 0.7rem;
+  letter-spacing: 0.2em; text-transform: uppercase; color: #f5c4a0;
+}
+.admin-banner span { color: #f5c4a0; }
+.admin-banner strong { color: #fff; }
+
+.folder-wrap {
+  width: min(900px, 92vw);
+  pointer-events: all;
+  animation: folderOpen 0.5s cubic-bezier(0.22,1,0.36,1) forwards;
+  margin-top: 22px;
+}
+@keyframes folderOpen { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+
+.folder-content {
+  display: flex; flex-direction: column; gap: 0;
+  background: color-mix(in srgb, var(--ink) 80%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(200,80,40,0.4);
+  padding: 1.25rem;
+  max-height: calc(100vh - 120px);
+  overflow: hidden;
+}
+
+.folder-header {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-bottom: 10px; padding-bottom: 8px;
+  border-bottom: 1px solid var(--bdr);
+}
+.folder-title { font-family:'Playfair Display',serif; font-size:1.05rem; font-style:italic; color:var(--parch); }
+.folder-eyebrow { font-family:'Cormorant Garamond',serif; font-size:0.58rem; letter-spacing:0.22em; text-transform:uppercase; color:#d07050; display:block; margin-bottom:2px; }
+.folder-btn { font-family:'Cormorant Garamond',serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; border:1px solid rgba(200,80,40,0.5); color:#e08060; padding:5px 14px; background:rgba(123,47,33,0.2); cursor:pointer; transition:background .2s; }
+.folder-btn:hover { background:rgba(123,47,33,0.4); border-color:rgba(200,80,40,0.8); }
+
+.folder-toolbar { display:flex; gap:8px; margin-bottom:10px; flex-wrap:wrap; }
+.folder-search { flex:1; min-width:160px; background:var(--ink3); border:1px solid var(--bdr); padding:5px 10px; font-family:'EB Garamond',serif; font-size:0.9rem; color:var(--parch); outline:none; }
+.folder-search:focus { border-color: rgba(200,80,40,0.7); }
+.fpill-paper { font-family:'Cormorant Garamond',serif; font-size:0.58rem; letter-spacing:0.13em; text-transform:uppercase; padding:4px 10px; border:1px solid var(--bdr); color:var(--parch3); background:transparent; cursor:pointer; transition:all .15s; }
+.fpill-paper:hover, .fpill-paper.active { background:rgba(123,47,33,0.25); color:#e08060; border-color:rgba(200,80,40,0.5); }
+
+.pagination { display:flex; align-items:center; justify-content:center; gap:8px; padding:10px 0 4px; }
+.page-btn { background:none; border:1px solid var(--bdr); color:var(--parch2); padding:4px 12px; cursor:pointer; font-family:'Cormorant Garamond',serif; font-size:0.85rem; transition:all .15s; }
+.page-btn:hover:not([disabled]) { background:rgba(123,47,33,0.2); color:#e08060; border-color:rgba(200,80,40,0.5); }
+.page-btn[disabled] { opacity:0.3; cursor:default; }
+.page-info { font-family:'Cormorant Garamond',serif; font-size:0.78rem; color:var(--parch3); letter-spacing:.06em; }
+
+.view-toggle { display:flex; gap:4px; }
+.view-btn { background:none; border:1px solid var(--bdr); color:var(--parch3); padding:3px 8px; cursor:pointer; font-size:0.78rem; transition:all .15s; }
+.view-btn.active { background:rgba(123,47,33,0.25); color:#e08060; border-color:rgba(200,80,40,0.5); }
+
+.folder-grid { flex:1; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill,minmax(190px,1fr)); gap:8px; padding-right:4px; scrollbar-width:thin; scrollbar-color:rgba(200,80,40,0.4) transparent; }
+.folder-grid::-webkit-scrollbar { width:4px; }
+.folder-grid::-webkit-scrollbar-thumb { background:rgba(200,80,40,0.4); }
+
+.folder-grid.view-list { display:flex; flex-direction:column; gap:0; grid-template-columns:unset; }
+.folder-grid.view-list .fiche { display:flex; align-items:center; gap:12px; padding:6px 12px; min-height:0; overflow:hidden; }
+.folder-grid.view-list .fiche::before { display:none; }
+.folder-grid.view-list .fiche:hover { transform:none; box-shadow:none; background:var(--ink3); }
+.folder-grid.view-list .fiche-head { margin-bottom:0; flex-shrink:0; min-width:0; }
+.folder-grid.view-list .fiche-av, .folder-grid.view-list .fiche-av-ph { width:32px; height:32px; font-size:0.65rem; }
+.folder-grid.view-list .fiche-head > div { min-width:160px; max-width:200px; overflow:hidden; }
+.folder-grid.view-list .fiche-body { flex:1; min-width:0; display:flex; align-items:center; gap:12px; overflow:hidden; }
+.folder-grid.view-list .fiche-name { white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+.folder-grid.view-list .fiche-meta { white-space:nowrap; display:block; }
+.folder-grid.view-list .fiche-diag { margin-bottom:0; flex:1; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.folder-grid.view-list .fiche-foot { border-top:none; padding-top:0; flex-shrink:0; gap:8px; }
+
+.folder-grid.view-big { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); gap:10px; }
+.folder-grid.view-big .fiche-av { width:100%; height:120px; object-fit:cover; border:none; }
+.folder-grid.view-big .fiche-av-ph { width:100%; height:120px; font-size:1.5rem; border:none; }
+.folder-grid.view-big .fiche-head { flex-direction:column; align-items:flex-start; gap:4px; }
+.folder-grid.view-big .fiche-diag { display:none; }
+
+.fiche { background:var(--ink2); border:1px solid var(--bdr); padding:10px 12px; cursor:pointer; text-decoration:none; display:block; transition:background .15s,transform .15s,box-shadow .15s; position:relative; overflow:hidden; }
+.fiche::before { content:''; position:absolute; top:0; left:0; right:0; height:2px; background:transparent; transition:background .15s; }
+.fiche:hover { background:var(--ink3); transform:translateY(-2px); box-shadow:0 6px 18px rgba(0,0,0,0.35); text-decoration:none; }
+.fiche:hover::before { background:rgba(200,80,40,0.8); }
+
+.fiche-head { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.fiche-av { width:36px; height:36px; flex-shrink:0; object-fit:cover; border:1px solid var(--bdr2); }
+.fiche-av-ph { width:36px; height:36px; flex-shrink:0; display:flex; align-items:center; justify-content:center; background:var(--ink3); border:1px solid var(--bdr); font-family:'Playfair Display',serif; font-size:0.75rem; color:var(--parch2); font-style:italic; }
+.fiche-name { font-family:'Playfair Display',serif; font-size:0.88rem; color:var(--parch); display:block; font-style:italic; line-height:1.2; }
+.fiche-meta { font-family:'Cormorant Garamond',serif; font-size:0.58rem; color:var(--parch3); letter-spacing:0.08em; text-transform:uppercase; }
+.fiche-diag { font-family:'EB Garamond',serif; font-size:0.78rem; color:var(--parch2); font-style:italic; line-height:1.4; margin-bottom:6px; }
+.fiche-foot { display:flex; align-items:center; justify-content:space-between; padding-top:6px; border-top:1px solid var(--bdr); }
+.fiche-seances { font-family:'Cormorant Garamond',serif; font-size:0.58rem; color:var(--parch3); letter-spacing:0.08em; }
+.badge-p { display:inline-block; padding:1px 7px; font-family:'Cormorant Garamond',serif; font-size:0.58rem; letter-spacing:0.1em; text-transform:uppercase; border:1px solid transparent; }
+
+.folder-stat { font-family:'Cormorant Garamond',serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--parch3); text-align:right; padding-top:6px; border-top:1px solid var(--bdr); margin-top:8px; }
+
+nav.navbar { position:fixed !important; top:0; left:0; right:0; z-index:10 !important; background:color-mix(in srgb,var(--ink) 92%,transparent) !important; backdrop-filter:blur(12px); }
+
+/* Mobile */
+.mobile-view { display:none; }
+@media(max-width:768px){
+  .desk-scene,.desk-content,.admin-banner { display:none; }
+  .mobile-view { display:block; }
+  nav.navbar { position:sticky !important; }
+  .mob-band { background:rgba(60,20,10,0.95); border-bottom:3px solid rgba(200,80,40,0.6); padding:1rem; }
+  .mob-band-eye { font-family:'Cormorant Garamond',serif; font-size:0.6rem; letter-spacing:0.25em; text-transform:uppercase; color:#d07050; display:block; margin-bottom:4px; }
+  .mob-band-title { font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:700; color:var(--parch); }
+  .mob-toolbar { padding:0.75rem 1rem; display:flex; flex-direction:column; gap:8px; border-bottom:1px solid var(--bdr); background:var(--ink); }
+  .mob-search { width:100%; background:var(--ink2); border:1px solid var(--bdr); padding:8px 12px; font-family:'EB Garamond',serif; font-size:1rem; color:var(--parch); outline:none; }
+  .mob-filters { display:flex; gap:4px; flex-wrap:wrap; }
+  .mob-grid { display:flex; flex-direction:column; gap:1px; background:var(--bdr); }
+  .mob-fiche { background:var(--ink2); padding:12px 16px; display:flex; align-items:center; gap:12px; text-decoration:none; transition:background .15s; position:relative; }
+  .mob-fiche::before { content:''; position:absolute; left:0; top:0; bottom:0; width:2px; background:transparent; transition:background .2s; }
+  .mob-fiche:hover { background:var(--ink3); }
+  .mob-fiche:hover::before { background:rgba(200,80,40,0.8); }
+  .mob-av { width:44px; height:44px; flex-shrink:0; border:1px solid var(--bdr2); display:flex; align-items:center; justify-content:center; font-family:'Playfair Display',serif; font-size:0.9rem; font-style:italic; color:var(--parch2); background:var(--ink3); object-fit:cover; }
+  .mob-info { flex:1; min-width:0; }
+  .mob-name { font-family:'Playfair Display',serif; font-size:1rem; font-style:italic; color:var(--parch); display:block; }
+  .mob-meta { font-family:'Cormorant Garamond',serif; font-size:0.6rem; letter-spacing:0.1em; text-transform:uppercase; color:var(--parch4); }
+  .mob-diag { font-family:'EB Garamond',serif; font-size:0.85rem; color:var(--parch2); font-style:italic; margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .mob-right { display:flex; flex-direction:column; align-items:flex-end; gap:4px; flex-shrink:0; }
+  .mob-add { position:fixed; bottom:1.5rem; right:1.5rem; width:54px; height:54px; border-radius:50%; background:rgba(160,60,30,0.9); color:#fff; font-size:1.5rem; display:flex; align-items:center; justify-content:center; border:none; cursor:pointer; box-shadow:0 4px 16px rgba(0,0,0,0.4); z-index:50; font-family:serif; }
+  .mob-stat { font-family:'Cormorant Garamond',serif; font-size:0.6rem; letter-spacing:0.15em; text-transform:uppercase; color:var(--parch3); padding:0.6rem 1rem; background:var(--ink); border-bottom:1px solid var(--bdr); }
+}
+</style>
+</head>
+<body>
+<script src="js/header.js"></script>
+
+<div class="admin-banner">
+  <span>⚙ Mode <strong>Administrateur</strong> — Accès base de données complète</span>
+  <span><a href="admin.html" style="color:#f5c4a0;text-decoration:none;letter-spacing:.12em">← Panneau admin</a></span>
+</div>
+
+<div class="desk-scene"></div>
+
+<div class="desk-content">
+  <div class="folder-wrap">
+    <div class="folder-content">
+      <div class="folder-header">
+        <div>
+          <span class="folder-eyebrow">⚙ Administration · Base de données patients</span>
+          <div class="folder-title">Dossiers des patients</div>
+        </div>
+        <button class="folder-btn" onclick="openModal()">+ Nouveau patient</button>
+      </div>
+      <div class="folder-toolbar">
+        <input class="folder-search" type="text" id="search-pc" placeholder="Nom, diagnostic, origine…" oninput="renderAll()">
+        <button class="fpill-paper active" onclick="setFilter(this,'all')">Tous</button>
+        <button class="fpill-paper" onclick="setFilter(this,'stable')">Stable</button>
+        <button class="fpill-paper" onclick="setFilter(this,'suivi')">Suivi</button>
+        <button class="fpill-paper" onclick="setFilter(this,'grave')">Grave</button>
+        <button class="fpill-paper" onclick="setFilter(this,'decede')">† Décédé</button>
+        <div class="view-toggle">
+          <button class="view-btn active" id="sbtn-alpha" onclick="setSort('alpha')" title="Alphabétique">A→Z</button>
+          <button class="view-btn" id="sbtn-consult" onclick="setSort('consult')" title="Dernière consultation">🕐</button>
+        </div>
+        <div class="view-toggle" style="margin-left:auto">
+          <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Grille">▦</button>
+          <button class="view-btn" id="vbtn-big" onclick="setView('big')" title="Grandes miniatures">⊞</button>
+          <button class="view-btn" id="vbtn-list" onclick="setView('list')" title="Liste">☰</button>
+        </div>
+      </div>
+      <div class="folder-grid" id="grid-pc"></div>
+      <div class="folder-stat" id="stat-pc">Chargement…</div>
+    </div>
+  </div>
+</div>
+
+<!-- VUE MOBILE -->
+<div class="mobile-view">
+  <div class="mob-band">
+    <span class="mob-band-eye">⚙ Administration</span>
+    <div class="mob-band-title">Dossiers</div>
+  </div>
+  <div class="mob-toolbar">
+    <input class="mob-search form-control" type="text" id="search-mob" placeholder="Nom, diagnostic…" oninput="renderAll()">
+    <div class="mob-filters">
+      <button class="fpill active" onclick="setFilter(this,'all')">Tous</button>
+      <button class="fpill" onclick="setFilter(this,'stable')">Stable</button>
+      <button class="fpill" onclick="setFilter(this,'suivi')">Suivi</button>
+      <button class="fpill" onclick="setFilter(this,'grave')">Grave</button>
+    </div>
+  </div>
+  <div class="mob-stat" id="stat-mob">Chargement…</div>
+  <div class="mob-grid" id="grid-mob"></div>
+  <button class="mob-add" onclick="openModal()">+</button>
+</div>
+
+<!-- MODAL nouveau dossier -->
+<div class="modal-overlay hidden" id="modal">
+<div class="modal">
+  <div class="modal-title">
+    <span>Nouveau dossier patient</span>
+    <button class="btn btn-sm" onclick="closeModal()">✕</button>
+  </div>
+  <div class="form-row-2">
+    <div class="form-group"><label class="form-label">Nom *</label><input class="form-control" id="f-nom" placeholder="Dalton"></div>
+    <div class="form-group"><label class="form-label">Prénom *</label><input class="form-control" id="f-prenom" placeholder="Jack"></div>
+  </div>
+  <div class="form-row-2">
+    <div class="form-group"><label class="form-label">Âge</label><input class="form-control" type="number" id="f-age" placeholder="35"></div>
+    <div class="form-group"><label class="form-label">Sexe</label>
+      <select class="form-control" id="f-sexe"><option value="">—</option><option value="M">Masculin</option><option value="F">Féminin</option></select>
+    </div>
+  </div>
+  <div class="form-row-2">
+    <div class="form-group"><label class="form-label">Origine</label><input class="form-control" id="f-origine" placeholder="Blackwater"></div>
+    <div class="form-group"><label class="form-label">Profession</label><input class="form-control" id="f-profession" placeholder="Éleveur"></div>
+  </div>
+  <div class="form-group"><label class="form-label">Statut clinique</label>
+    <select class="form-control" id="f-statut">
+      <option value="suivi">En suivi</option>
+      <option value="stable">Stable</option>
+      <option value="grave">Grave / Dangereux</option>
+      <option value="decede">† Décédé</option>
+    </select>
+  </div>
+  <div class="form-group"><label class="form-label">Diagnostic initial</label><input class="form-control" id="f-diagnostic" placeholder="Mélancolie, neurasthénie…"></div>
+  <div class="form-group">
+    <label class="form-label">Portrait du patient (URL)</label>
+    <div class="photo-preview-wrap">
+      <div class="photo-ph" id="pp">✦</div>
+      <img class="photo-thumb" id="pi" alt="">
+    </div>
+    <input class="form-control mt-1" id="f-photo" placeholder="https://cdn.discordapp.com/…" oninput="previewUrl(this,'pi','pp')">
+    <p class="url-hint">Lien direct vers l'image (Discord CDN, Imgur, etc.)</p>
+  </div>
+  <div id="merr" class="alert alert-error hidden">Nom et prénom requis.</div>
+  <div style="display:flex;gap:8px;margin-top:1rem">
+    <button class="btn w-full" onclick="closeModal()">Annuler</button>
+    <button class="btn btn-gold w-full" id="cbtn" onclick="createPatient()">Créer le dossier</button>
+  </div>
+</div>
+</div>
+
+<script type="module">
+import { patientsLoad, patientsCreate } from './js/patients.js';
+
+const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave', decede:'badge-decede' };
+const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave', decede:'† Décédé' };
+const PAGE_SIZE = { grid:12, big:8, list:20 };
+let all = [], activeS = 'all', currentPage = 0, filteredList = [];
+
+async function loadAll(){ all = await patientsLoad(); renderAll(); }
+window.loadAll = loadAll;
+
+function ficheCardHtml(p) {
+  const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+  const av = p.photo
+    ? `<img class="fiche-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
+    : `<div class="fiche-av-ph">${ini}</div>`;
+  const nb = (p.seances||[]).length;
+  const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
+  const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
+  return `<a class="fiche fade-up" href="patient.html?id=${p.id}">
+    <div class="fiche-head">${av}<div>
+      <span class="fiche-name">${nomAff}</span>
+      ${metaParts.length?`<span class="fiche-meta">${metaParts.join(' · ')}</span>`:''}
+    </div></div>
+    <div class="fiche-body">
+      ${p.diagnostic?`<div class="fiche-diag">${p.diagnostic}</div>`:''}
+    </div>
+    <div class="fiche-foot">
+      <span class="badge-p ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
+      <span class="fiche-seances">${nb} séance${nb!==1?'s':''}</span>
+    </div>
+  </a>`;
+}
+
+function renderPagination(total, page, perPage) {
+  const pages = Math.ceil(total / perPage);
+  if (pages <= 1) return '';
+  const prev = page > 0 ? `<button class="page-btn" onclick="goPage(${page-1})">‹ Préc.</button>` : `<button class="page-btn" disabled>‹ Préc.</button>`;
+  const next = page < pages-1 ? `<button class="page-btn" onclick="goPage(${page+1})">Suiv. ›</button>` : `<button class="page-btn" disabled>Suiv. ›</button>`;
+  return `<div class="pagination">${prev}<span class="page-info">Page ${page+1} / ${pages}</span>${next}</div>`;
+}
+
+window.goPage = function(p){ currentPage = p; renderGrid(); };
+
+function renderGrid() {
+  const gpc = document.getElementById('grid-pc');
+  if (!gpc) return;
+  const perPage = PAGE_SIZE[currentView] || 12;
+  const total = filteredList.length;
+  const start = currentPage * perPage;
+  const page = filteredList.slice(start, start + perPage);
+  const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
+  if (!total) { gpc.innerHTML = empty; document.getElementById('stat-pc').textContent = '0 dossier'; return; }
+  gpc.innerHTML = page.map(ficheCardHtml).join('');
+  document.getElementById('stat-pc').textContent =
+    `${total} dossier${total!==1?'s':''} — page ${currentPage+1}/${Math.ceil(total/perPage)}`;
+  let pag = document.getElementById('pagination-pc');
+  if (!pag) { pag = document.createElement('div'); pag.id='pagination-pc'; gpc.parentNode.insertBefore(pag, gpc.nextSibling); }
+  pag.innerHTML = renderPagination(total, currentPage, perPage);
+}
+
+window.renderAll = function(){
+  const q = (document.getElementById('search-pc')?.value || '').toLowerCase();
+  filteredList = [...all];
+  if(q) filteredList = filteredList.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
+  if(activeS !== 'all') filteredList = filteredList.filter(p=>p.statut === activeS);
+  if(currentSort === 'alpha') {
+    filteredList.sort((a,b)=>(a.nom||a.prenom||'').localeCompare(b.nom||b.prenom||'', 'fr'));
+  } else {
+    filteredList.sort((a,b)=>{
+      const da = Math.max(...(a.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(a.createdAt||0).getTime());
+      const db2 = Math.max(...(b.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(b.createdAt||0).getTime());
+      return db2 - da;
+    });
+  }
+  currentPage = 0;
+  renderGrid();
+
+  const gmob = document.getElementById('grid-mob');
+  if(gmob) {
+    const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
+    if(!filteredList.length){ gmob.innerHTML = empty; return; }
+    gmob.innerHTML = filteredList.map(p=>{
+      const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+      const av = p.photo
+        ? `<img class="mob-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
+        : `<div class="mob-av">${ini}</div>`;
+      const nb = (p.seances||[]).length;
+      const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
+      const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
+      return `<a class="mob-fiche" href="patient.html?id=${p.id}">
+        ${av}
+        <div class="mob-info">
+          <span class="mob-name">${nomAff}</span>
+          ${metaParts.length?`<span class="mob-meta">${metaParts.join(' · ')}</span>`:''}
+          ${p.diagnostic?`<div class="mob-diag">${p.diagnostic}</div>`:''}
+        </div>
+        <div class="mob-right">
+          <span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
+          <span class="mob-meta">${nb} séance${nb!==1?'s':''}</span>
+        </div>
+      </a>`;
+    }).join('');
+  }
+};
+
+window.setFilter = function(el, s){
+  document.querySelectorAll('.fpill-paper, .fpill').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); activeS = s; renderAll();
+};
+
+let currentView = localStorage.getItem('adminPatView') || 'grid';
+window.setView = function(v){
+  currentView = v;
+  localStorage.setItem('adminPatView', v);
+  const grid = document.getElementById('grid-pc');
+  grid.classList.remove('view-list','view-big');
+  if(v !== 'grid') grid.classList.add('view-'+v);
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('vbtn-'+v)?.classList.add('active');
+  currentPage = 0; renderGrid();
+};
+window.addEventListener('DOMContentLoaded', ()=>{ setView(currentView); setSort(currentSort, true); });
+
+let currentSort = localStorage.getItem('adminPatSort') || 'alpha';
+window.setSort = function(s, init=false){
+  currentSort = s;
+  localStorage.setItem('adminPatSort', s);
+  document.querySelectorAll('[id^="sbtn-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sbtn-'+s)?.classList.add('active');
+  if(!init) renderAll();
+};
+
+window.openModal  = ()=>{ document.getElementById('modal').classList.remove('hidden'); document.getElementById('f-nom').focus(); };
+window.closeModal = ()=>{
+  document.getElementById('modal').classList.add('hidden');
+  document.getElementById('merr').classList.add('hidden');
+  ['f-nom','f-prenom','f-age','f-origine','f-profession','f-diagnostic','f-photo'].forEach(id=>{ const el=document.getElementById(id); if(el) el.value=''; });
+  const sx=document.getElementById('f-sexe'); if(sx) sx.value='';
+  const st=document.getElementById('f-statut'); if(st) st.value='suivi';
+  const pi=document.getElementById('pi'); if(pi) pi.style.display='none';
+  const pp=document.getElementById('pp'); if(pp) pp.style.display='flex';
+};
+window.previewUrl = function(input, imgId, phId){
+  const url = input.value.trim();
+  const img = document.getElementById(imgId);
+  const ph  = document.getElementById(phId);
+  if(url){ img.src=url; img.style.display='block'; ph.style.display='none'; }
+  else   { img.style.display='none'; ph.style.display='flex'; }
+};
+window.createPatient = async function(){
+  const nom=document.getElementById('f-nom').value.trim();
+  const prenom=document.getElementById('f-prenom').value.trim();
+  if(!nom||!prenom){ document.getElementById('merr').classList.remove('hidden'); return; }
+  const btn=document.getElementById('cbtn'); btn.textContent='Création…'; btn.disabled=true;
+  const p = await patientsCreate({
+    nom, prenom,
+    age:        document.getElementById('f-age').value,
+    sexe:       document.getElementById('f-sexe').value,
+    origine:    document.getElementById('f-origine').value.trim(),
+    profession: document.getElementById('f-profession').value.trim(),
+    statut:     document.getElementById('f-statut').value,
+    diagnostic: document.getElementById('f-diagnostic').value.trim(),
+    photo:      document.getElementById('f-photo').value.trim()
+  });
+  closeModal(); window.location.href='patient.html?id='+p.id;
+};
+</script>
+
+<script type="module" src="js/auth-firebase.js"></script>
+<script src="js/guard.js" defer></script>
+<script>
+document.addEventListener('DOMContentLoaded', function(){
+  var t = localStorage.getItem('psy_theme') || 'dark';
+  var f = localStorage.getItem('psy_font')  || 'victorien';
+  document.documentElement.setAttribute('data-theme', t);
+  document.documentElement.setAttribute('data-font', f);
+});
+window.addEventListener('load', function(){
+  var waitG = setInterval(function(){
+    if(!window.guardPage) return;
+    clearInterval(waitG);
+    guardPage({
+      minGrade: 'admin',
+      onReady: function(p) {
+        if(p && p.role !== 'admin'){
+          document.body.innerHTML = '<div style="max-width:500px;margin:5rem auto;text-align:center;font-family:Georgia,serif;color:#c9a84c">'
+            + '<div style="font-size:2rem;margin-bottom:1rem">🔒</div>'
+            + '<h2 style="color:#e8d5a0">Accès réservé aux administrateurs</h2>'
+            + '<p style="color:#a08060;margin-top:1rem">Cette page est exclusivement accessible aux comptes administrateurs.</p>'
+            + '<a href="index.html" style="display:inline-block;margin-top:1.5rem;color:#c9a84c">← Retour à l\'accueil</a></div>';
+          return;
+        }
+        loadAll();
+      }
+    });
+  }, 80);
+});
+</script>
+</body>
+</html>
