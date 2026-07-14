@@ -383,9 +383,16 @@ nav.navbar {
 <body>
 <script src="js/header.js"></script>
 
-<!-- ═══ BUREAU IMMERSIF (PC) ════════════════════════════════ -->
 <div class="desk-scene"></div>
 
+<!-- Objets décoratifs -->
+<img class="desk-obj desk-lamp"    src="images/desk/lampehuile.png"   alt="">
+<img class="desk-obj desk-stet"    src="images/desk/stetoscope.png"   alt="">
+<img class="desk-obj desk-watch"   src="images/desk/montre.png"       alt="">
+<img class="desk-obj desk-loupe"   src="images/desk/loupe.png"        alt="">
+<img class="desk-obj desk-encrier" src="images/desk/encrier.png"      alt="">
+<img class="desk-obj desk-scalpel" src="images/desk/scalpel.png"      alt="">
+<img class="tampon" src="images/desk/tampon.png" alt="">
 
 <div class="desk-content">
   <div class="folder-wrap">
@@ -396,27 +403,195 @@ nav.navbar {
           <div class="folder-title">Dossiers des patients</div>
         </div>
       </div>
-      <div id="empty-notice" style="display:flex;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;text-align:center;gap:1rem">
-        <div style="font-size:2.5rem;opacity:0.35">📂</div>
-        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:var(--parch)">Aucun dossier disponible</div>
-        <div style="font-family:'EB Garamond',serif;font-size:0.9rem;color:var(--parch3);line-height:1.7;max-width:360px">Les dossiers patients sont gérés en interne par l'administration du cabinet. Contactez votre chef de dispensaire pour toute information.</div>
+      <!-- Message accès refusé (masqué par défaut) -->
+      <div id="acces-refuse" style="display:none;flex-direction:column;align-items:center;justify-content:center;padding:3rem 1rem;text-align:center;gap:1rem">
+        <div style="font-size:2.5rem;opacity:0.35">🔒</div>
+        <div style="font-family:'Playfair Display',serif;font-size:1.1rem;font-style:italic;color:var(--parch)">Accès non accordé</div>
+        <div style="font-family:'EB Garamond',serif;font-size:0.9rem;color:var(--parch3);line-height:1.7;max-width:360px">L'accès aux dossiers patients doit être autorisé par votre chef de dispensaire.</div>
+      </div>
+      <!-- Contenu principal (masqué jusqu'à vérification) -->
+      <div id="patient-content" style="display:none;flex-direction:column;flex:1;overflow:hidden">
+        <div class="folder-toolbar">
+          <input class="folder-search" type="text" id="search-pc" placeholder="Nom, diagnostic, origine…" oninput="renderAll()">
+          <button class="fpill-paper active" onclick="setFilter(this,'all')">Tous</button>
+          <button class="fpill-paper" onclick="setFilter(this,'stable')">Stable</button>
+          <button class="fpill-paper" onclick="setFilter(this,'suivi')">Suivi</button>
+          <button class="fpill-paper" onclick="setFilter(this,'grave')">Grave</button>
+          <button class="fpill-paper" onclick="setFilter(this,'decede')">† Décédé</button>
+          <div class="view-toggle">
+            <button class="view-btn active" id="sbtn-alpha" onclick="setSort('alpha')" title="Alphabétique">A→Z</button>
+            <button class="view-btn" id="sbtn-consult" onclick="setSort('consult')" title="Dernière consultation">🕐</button>
+          </div>
+          <div class="view-toggle" style="margin-left:auto">
+            <button class="view-btn active" id="vbtn-grid" onclick="setView('grid')" title="Grille">▦</button>
+            <button class="view-btn" id="vbtn-big"  onclick="setView('big')"  title="Miniatures">⊞</button>
+            <button class="view-btn" id="vbtn-list" onclick="setView('list')" title="Liste">☰</button>
+          </div>
+        </div>
+        <div class="folder-grid" id="grid-pc"></div>
+        <div class="folder-stat" id="stat-pc">Chargement…</div>
       </div>
     </div>
   </div>
 </div>
 
-<!-- ═══ VUE MOBILE ══════════════════════════════════════════ -->
+<!-- MOBILE -->
 <div class="mobile-view">
   <div class="mob-band">
     <span class="mob-band-eye">Cabinet · Texas · 1904</span>
     <div class="mob-band-title">Dossiers</div>
   </div>
-  <div style="padding:2.5rem 1.5rem;text-align:center">
-    <div style="font-size:2rem;opacity:0.3;margin-bottom:1rem">📂</div>
-    <div style="font-family:'Playfair Display',serif;font-size:1.05rem;font-style:italic;color:var(--parch);margin-bottom:.5rem">Aucun dossier disponible</div>
-    <div style="font-family:'EB Garamond',serif;font-size:0.9rem;color:var(--parch3);line-height:1.7">Les dossiers sont gérés par l'administration. Contactez votre chef de dispensaire.</div>
+  <div id="mob-acces-refuse" style="display:none;padding:2.5rem 1.5rem;text-align:center">
+    <div style="font-size:2rem;opacity:0.3;margin-bottom:1rem">🔒</div>
+    <div style="font-family:'Playfair Display',serif;font-size:1.05rem;font-style:italic;color:var(--parch);margin-bottom:.5rem">Accès non accordé</div>
+    <div style="font-family:'EB Garamond',serif;font-size:0.9rem;color:var(--parch3);line-height:1.7">Contactez votre chef de dispensaire.</div>
+  </div>
+  <div id="mob-patient-content" style="display:none">
+    <div class="mob-toolbar">
+      <input class="mob-search form-control" type="text" id="search-mob" placeholder="Nom, diagnostic…" oninput="renderAll()">
+      <div class="mob-filters">
+        <button class="fpill active" onclick="setFilter(this,'all')">Tous</button>
+        <button class="fpill" onclick="setFilter(this,'stable')">Stable</button>
+        <button class="fpill" onclick="setFilter(this,'suivi')">Suivi</button>
+        <button class="fpill" onclick="setFilter(this,'grave')">Grave</button>
+      </div>
+    </div>
+    <div class="mob-stat" id="stat-mob">Chargement…</div>
+    <div class="mob-grid" id="grid-mob"></div>
   </div>
 </div>
+
+<script type="module">
+import { patientsLoad } from './js/patients.js';
+
+const CHIEF_ROLES = ['chief','chief_texas','chief_louisiane','admin'];
+const SB = { stable:'badge-stable', suivi:'badge-suivi', grave:'badge-grave', decede:'badge-decede' };
+const SL = { stable:'Stable', suivi:'En suivi', grave:'Grave', decede:'† Décédé' };
+const PAGE_SIZE = { grid:12, big:8, list:20 };
+let all = [], activeS = 'all', currentPage = 0, filteredList = [];
+
+async function loadAll(){ all = await patientsLoad(); renderAll(); }
+window.loadAll = loadAll;
+
+function ficheCardHtml(p) {
+  const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+  const av = p.photo
+    ? `<img class="fiche-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
+    : `<div class="fiche-av-ph">${ini}</div>`;
+  const nb = (p.seances||[]).length;
+  const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
+  const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
+  return `<a class="fiche fade-up" href="patient.html?id=${p.id}">
+    <div class="fiche-head">${av}<div>
+      <span class="fiche-name">${nomAff}</span>
+      ${metaParts.length?`<span class="fiche-meta">${metaParts.join(' · ')}</span>`:''}
+    </div></div>
+    <div class="fiche-body">
+      ${p.diagnostic?`<div class="fiche-diag">${p.diagnostic}</div>`:''}
+    </div>
+    <div class="fiche-foot">
+      <span class="badge-p ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
+      <span class="fiche-seances">${nb} séance${nb!==1?'s':''}</span>
+    </div>
+  </a>`;
+}
+
+function renderPagination(total, page, perPage) {
+  const pages = Math.ceil(total / perPage);
+  if (pages <= 1) return '';
+  const prev = page > 0 ? `<button class="page-btn" onclick="goPage(${page-1})">‹ Préc.</button>` : `<button class="page-btn" disabled>‹ Préc.</button>`;
+  const next = page < pages-1 ? `<button class="page-btn" onclick="goPage(${page+1})">Suiv. ›</button>` : `<button class="page-btn" disabled>Suiv. ›</button>`;
+  return `<div class="pagination">${prev}<span class="page-info">Page ${page+1} / ${pages}</span>${next}</div>`;
+}
+
+window.goPage = function(p){ currentPage = p; renderGrid(); };
+
+function renderGrid() {
+  const gpc = document.getElementById('grid-pc');
+  if (!gpc) return;
+  const perPage = PAGE_SIZE[currentView] || 12;
+  const total = filteredList.length;
+  const start = currentPage * perPage;
+  const page = filteredList.slice(start, start + perPage);
+  const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
+  if (!total) { gpc.innerHTML = empty; document.getElementById('stat-pc').textContent = '0 dossier'; return; }
+  gpc.innerHTML = page.map(ficheCardHtml).join('');
+  document.getElementById('stat-pc').textContent =
+    `${total} dossier${total!==1?'s':''} — page ${currentPage+1}/${Math.ceil(total/perPage)}`;
+  let pag = document.getElementById('pagination-pc');
+  if (!pag) { pag = document.createElement('div'); pag.id='pagination-pc'; gpc.parentNode.insertBefore(pag, gpc.nextSibling); }
+  pag.innerHTML = renderPagination(total, currentPage, perPage);
+}
+
+window.renderAll = function(){
+  const q = (document.getElementById('search-pc')?.value || '').toLowerCase();
+  filteredList = [...all];
+  if(q) filteredList = filteredList.filter(p=>(p.nom+p.prenom+(p.diagnostic||'')+(p.origine||'')).toLowerCase().includes(q));
+  if(activeS !== 'all') filteredList = filteredList.filter(p=>p.statut === activeS);
+  if(currentSort === 'alpha') {
+    filteredList.sort((a,b)=>(a.nom||a.prenom||'').localeCompare(b.nom||b.prenom||'', 'fr'));
+  } else {
+    filteredList.sort((a,b)=>{
+      const da = Math.max(...(a.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(a.createdAt||0).getTime());
+      const db2 = Math.max(...(b.seances||[]).map(s=>new Date(s.createdAt||s.date||0).getTime()), new Date(b.createdAt||0).getTime());
+      return db2 - da;
+    });
+  }
+  currentPage = 0;
+  renderGrid();
+  const gmob = document.getElementById('grid-mob');
+  if(gmob) {
+    const empty = '<div class="empty-state"><strong>Aucun dossier</strong>Aucun patient ne correspond.</div>';
+    if(!filteredList.length){ gmob.innerHTML = empty; return; }
+    gmob.innerHTML = filteredList.map(p=>{
+      const ini = (p.prenom?.[0]||'')+(p.nom?.[0]||'');
+      const av = p.photo
+        ? `<img class="mob-av" src="${p.photo}" alt="" onerror="this.style.display='none'">`
+        : `<div class="mob-av">${ini}</div>`;
+      const nb = (p.seances||[]).length;
+      const metaParts = [p.age?p.age+' ans':null, p.origine||null].filter(Boolean);
+      const nomAff = [p.prenom, p.nom].filter(Boolean).join(' ');
+      return `<a class="mob-fiche" href="patient.html?id=${p.id}">
+        ${av}
+        <div class="mob-info">
+          <span class="mob-name">${nomAff}</span>
+          ${metaParts.length?`<span class="mob-meta">${metaParts.join(' · ')}</span>`:''}
+          ${p.diagnostic?`<div class="mob-diag">${p.diagnostic}</div>`:''}
+        </div>
+        <div class="mob-right">
+          <span class="badge ${SB[p.statut]||'badge-suivi'}">${SL[p.statut]||p.statut}</span>
+          <span class="mob-meta">${nb} séance${nb!==1?'s':''}</span>
+        </div>
+      </a>`;
+    }).join('');
+  }
+};
+
+window.setFilter = function(el, s){
+  document.querySelectorAll('.fpill-paper, .fpill').forEach(b=>b.classList.remove('active'));
+  el.classList.add('active'); activeS = s; renderAll();
+};
+
+let currentView = localStorage.getItem('dpPatView') || 'grid';
+window.setView = function(v){
+  currentView = v; localStorage.setItem('dpPatView', v);
+  const grid = document.getElementById('grid-pc');
+  grid.classList.remove('view-list','view-big');
+  if(v !== 'grid') grid.classList.add('view-'+v);
+  document.querySelectorAll('.view-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('vbtn-'+v)?.classList.add('active');
+  currentPage = 0; renderGrid();
+};
+window.addEventListener('DOMContentLoaded', ()=>{ setView(currentView); setSort(currentSort, true); });
+
+let currentSort = localStorage.getItem('dpPatSort') || 'alpha';
+window.setSort = function(s, init=false){
+  currentSort = s; localStorage.setItem('dpPatSort', s);
+  document.querySelectorAll('[id^="sbtn-"]').forEach(b=>b.classList.remove('active'));
+  document.getElementById('sbtn-'+s)?.classList.add('active');
+  if(!init) renderAll();
+};
+</script>
 
 <script type="module" src="js/auth-firebase.js"></script>
 <script src="js/guard.js" defer></script>
@@ -428,10 +603,28 @@ document.addEventListener('DOMContentLoaded', function(){
   document.documentElement.setAttribute('data-font', f);
 });
 window.addEventListener('load', function(){
+  var CHIEF_ROLES = ['chief','chief_texas','chief_louisiane','admin'];
   var waitG = setInterval(function(){
-    if(!window.guardPage) return;
+    if(!window._fbOnReady) return;
     clearInterval(waitG);
-    guardPage({ onReady: function(){} });
+    window._fbOnReady(function(user){
+      if(!user){ window.location.href='login.html'; return; }
+      window._fbGetProfile().then(function(p){
+        if(!p){ window.location.href='login.html'; return; }
+        var nb=document.getElementById('navbar-user');
+        if(nb) nb.textContent=(p.prenom||'')+' '+(p.nom||'');
+        var lb=document.getElementById('logout-btn');
+        if(lb) lb.onclick=function(){ window._fbSignOut(); };
+        if(!p.accesPatients && !CHIEF_ROLES.includes(p.role)){
+          document.getElementById('acces-refuse').style.display='flex';
+          document.getElementById('mob-acces-refuse').style.display='block';
+          return;
+        }
+        document.getElementById('patient-content').style.display='flex';
+        document.getElementById('mob-patient-content').style.display='block';
+        window.loadAll();
+      });
+    });
   }, 80);
 });
 </script>
